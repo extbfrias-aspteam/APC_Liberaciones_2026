@@ -13,6 +13,7 @@ C:\PROYECTOS GIT\Git_asp_api_azul\hotfix_retornos_abonos\asp_api_azul\Asp.Api.Az
 C:\PROYECTOS GIT\Git_asp_api_azul\hotfix_retornos_abonos\asp_api_azul\Asp.Api.Azul.Infrastructure\obj\Debug\net7.0\refint\Asp.Api.Azul.Infrastructure.dll
 C:\PROYECTOS GIT\Git_asp_api_azul\hotfix_retornos_abonos\asp_api_azul\Asp.Api.Azul.Infrastructure\obj\Debug\net7.0\Asp.Api.Azul.Infrastructure.pdb
 C:\PROYECTOS GIT\Git_asp_api_azul\hotfix_retornos_abonos\asp_api_azul\Asp.Api.Azul.Infrastructure\obj\Debug\net7.0\ref\Asp.Api.Azul.Infrastructure.dll
+<<<<<<< HEAD
 C:\Users\LATITUDE\Documents\Liberaciones\Julio\21-07-26\azure_asp_api_azul\Asp.Api.Azul.Infrastructure\bin\Debug\net7.0\Asp.Api.Azul.Infrastructure.deps.json
 C:\Users\LATITUDE\Documents\Liberaciones\Julio\21-07-26\azure_asp_api_azul\Asp.Api.Azul.Infrastructure\bin\Debug\net7.0\Asp.Api.Azul.Infrastructure.dll
 C:\Users\LATITUDE\Documents\Liberaciones\Julio\21-07-26\azure_asp_api_azul\Asp.Api.Azul.Infrastructure\bin\Debug\net7.0\Asp.Api.Azul.Infrastructure.pdb
@@ -29,3 +30,5 @@ C:\Users\LATITUDE\Documents\Liberaciones\Julio\21-07-26\azure_asp_api_azul\Asp.A
 C:\Users\LATITUDE\Documents\Liberaciones\Julio\21-07-26\azure_asp_api_azul\Asp.Api.Azul.Infrastructure\obj\Debug\net7.0\refint\Asp.Api.Azul.Infrastructure.dll
 C:\Users\LATITUDE\Documents\Liberaciones\Julio\21-07-26\azure_asp_api_azul\Asp.Api.Azul.Infrastructure\obj\Debug\net7.0\Asp.Api.Azul.Infrastructure.pdb
 C:\Users\LATITUDE\Documents\Liberaciones\Julio\21-07-26\azure_asp_api_azul\Asp.Api.Azul.Infrastructure\obj\Debug\net7.0\ref\Asp.Api.Azul.Infrastructure.dll
+=======
+>>>>>>> 833a6483c6931f139cb464b0cfee9185f2bfc0b1

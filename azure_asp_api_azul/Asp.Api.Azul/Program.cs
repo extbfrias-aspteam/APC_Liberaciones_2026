@@ -40,7 +40,11 @@ IWebHost BuildWebHost(string[] args) =>
             sources.Insert(3, new Microsoft.Extensions.Configuration.Json.JsonConfigurationSource()
             {
                 Optional = true,
+<<<<<<< HEAD
                 Path = "appsettings.Prod.json",
+=======
+                Path = "appsettings.QA.json",
+>>>>>>> 833a6483c6931f139cb464b0cfee9185f2bfc0b1
                 ReloadOnChange = false
             });
         })
