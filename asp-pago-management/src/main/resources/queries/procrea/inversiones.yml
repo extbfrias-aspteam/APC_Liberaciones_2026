@@ -1,0 +1,15 @@
+inversiones:
+  validaInversionesActivasyVigentes: "SELECT EXISTS ( SELECT 1
+     FROM ahorro_rendimiento_vigente arv
+    JOIN ahorro_contrato ac ON ac.cuenta = arv.cuenta
+    LEFT JOIN (
+     SELECT ac2.ahorro_contrato_id, ac2.valor
+      FROM ahorro_conceptos ac2
+       JOIN cat_conceptos cc2 ON ac2.cat_conceptos_id = cc2.id
+       WHERE cc2.clave = 'NOM_INVERSION'
+    ) acc ON acc.ahorro_contrato_id = ac.ahorro_contrato_id
+    LEFT JOIN ahorro_no_reinvertir anr ON ac.cuenta = anr.cuenta
+    WHERE arv.estatus = 'A'
+    AND ac.tipo_ahorro_id = 1
+    AND ac.cuenta_padre = :cuenta
+   );"

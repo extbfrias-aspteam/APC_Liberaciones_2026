@@ -1,0 +1,10 @@
+codigos2fa:
+  obtenerToken: "select c2.id_codigo, extract (minute from age(current_timestamp, c2.hora_creacion))::integer as minutos, c2.status from codigos_2fa c2 
+                 left join bit_envio_sms be on be.codigo_id = c2.id_codigo 
+                 where be.celular = :celular and c2.codigo = :codigo;"
+
+  actualizaToken: "update codigos_2fa set status = 0, fecha_hora_insercion = now() 
+                   where id_codigo = :codigo;"
+
+  insertarTokenMensaje: "insert into codigos_2fa (codigo, referencia, hora_creacion, status, contingencia) 
+                         values (:codigo, '1', now(), 1, 0) returning id_codigo as id;"
