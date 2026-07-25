@@ -1,59 +1,80 @@
-name: Sync QA / Staging / Main
+name: Sync QA
 
 on:
   workflow_dispatch:
     inputs:
       source_repo:
-        description: "Repositorio origen de QA (owner/repo)"
+        description: "Repositorio origen"
         required: true
         default: "aspintegraopciones/asp-pago-management"
+
       source_branch:
         description: "Rama origen"
         required: true
         default: "main"
+
       target_branch:
-        description: "Rama destino inicial"
+        description: "Rama destino"
         required: true
         default: "QA"
 
 jobs:
+
   sync:
+
     runs-on:
       - self-hosted
       - Windows
       - X64
 
     steps:
-      - name: Checkout repo destino
+
+      - name: Checkout repositorio destino
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          persist-credentials: true
 
       - name: Configurar Git
         shell: powershell
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@users.noreply.github.com"
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "github-actions@github.com"
 
-      - name: Agregar remoto QA origen
+      - name: Agregar remoto QA
         shell: powershell
-        env:
-          SOURCE_REPO: ${{ inputs.source_repo }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git remote remove qa 2>$null
-          git remote add qa "https://x-access-token:$env:GH_TOKEN@github.com/$env:SOURCE_REPO.git"
+          if (git remote | Select-String "qa") {
+              git remote remove qa
+          }
+
+          git remote add qa https://github.com/${{ inputs.source_repo }}.git
+
+      - name: Obtener ramas
+        shell: powershell
+        run: |
           git fetch qa --prune
 
-      - name: Sincronizar main -> QA
+      - name: Mostrar ramas remotas
+        shell: powershell
+        run: |
+          git branch -r
+
+      - name: Cambiar a rama destino
         shell: powershell
         run: |
           git checkout ${{ inputs.target_branch }}
-          git merge --no-edit qa/${{ inputs.source_branch }}
-          git push origin ${{ inputs.target_branch }}
 
-      - name: Mostrar estado final
+      - name: Merge
         shell: powershell
         run: |
-          git log --oneline -n 3
+          git merge qa/${{ inputs.source_branch }} --no-edit
+
+      - name: Push
+        shell: powershell
+        run: |
+          git push origin ${{ inputs.target_branch }}
+
+      - name: Últimos commits
+        shell: powershell
+        run: |
+          git log --oneline -5
