@@ -6,7 +6,7 @@ on:
       source_repo:
         description: "Repositorio origen de QA (owner/repo)"
         required: true
-        default: "aspintegraopciones/REPO_QA_ORIGEN"
+        default: "aspintegraopciones/asp-pago-management"
       source_branch:
         description: "Rama origen"
         required: true
