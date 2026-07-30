@@ -8,7 +8,6 @@ on:
 
 jobs:
   convert-docs:
-    # Le indica a GitHub que use tu runner local de Windows
     runs-on: [self-hosted, windows]
 
     permissions:
@@ -17,6 +16,9 @@ jobs:
     steps:
       - name: Checkout del repositorio
         uses: actions/checkout@v4
+        with:
+          # Necesario para poder hacer push de vuelta desde la misma rama
+          fetch-depth: 0
 
       - name: Convertir archivos .docx a Markdown en Windows
         shell: powershell
@@ -40,7 +42,21 @@ jobs:
           }
 
       - name: Commit y Push de los cambios
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: 'docs: conversión automática local de .docx a .md vía Pandoc [skip ci]'
-          file_pattern: '*.md *.png *.jpg *.jpeg'
+        shell: powershell
+        run: |
+          # Configurar identidad de Git temporal para la acción
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Agregar archivos Markdown e imágenes generadas
+          git add *.md *.png *.jpg *.jpeg
+
+          # Verificar si hay cambios pendientes antes de hacer commit
+          $status = git status --porcelain
+          if ($status) {
+              Write-Host "Cambios detectados, realizando commit..."
+              git commit -m "docs: conversión automática local de .docx a .md vía Pandoc [skip ci]"
+              git push
+          } else {
+              Write-Host "No hay cambios para guardar."
+          }
