@@ -1,0 +1,46 @@
+name: Convert DOCX to Markdown (Local Windows Runner)
+
+on:
+  push:
+    paths:
+      - '**.docx'
+  workflow_dispatch:
+
+jobs:
+  convert-docs:
+    # Le indica a GitHub que use tu runner local de Windows
+    runs-on: [self-hosted, windows]
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Convertir archivos .docx a Markdown en Windows
+        shell: powershell
+        run: |
+          # Crear directorio de imágenes si no existe
+          if (!(Test-Path "docs/images")) {
+              New-Item -ItemType Directory -Force -Path "docs/images"
+          }
+
+          # Buscar y convertir todos los archivos .docx
+          Get-ChildItem -Recurse -Filter "*.docx" | ForEach-Object {
+              $docxPath = $_.FullName
+              $dir = $_.DirectoryName
+              $baseName = $_.BaseName
+              $mdPath = Join-Path $dir "$baseName.md"
+              $imagesDir = Join-Path $dir "images"
+
+              Write-Host "Converting $docxPath -> $mdPath ..."
+
+              pandoc "$docxPath" -f docx -t gfm --extract-media="$imagesDir" -o "$mdPath"
+          }
+
+      - name: Commit y Push de los cambios
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'docs: conversión automática local de .docx a .md vía Pandoc [skip ci]'
+          file_pattern: '*.md *.png *.jpg *.jpeg'
