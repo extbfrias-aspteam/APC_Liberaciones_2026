@@ -1,9 +1,0 @@
-jwt:
-  canales:
-    externos:
-      # ventanilla
-      - 459
-      # EiYu
-      - 458
-      # procesaTraspasosEiYu
-      - 457

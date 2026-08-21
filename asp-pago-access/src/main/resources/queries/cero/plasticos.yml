@@ -1,9 +1,0 @@
-plconfiguraciones_asppago:
-  obtenerValorConfAspPagoByConcepto: "select cnf.id, cnf.concepto, cnf.valor from plasticos.plconfiguraciones_asppago cnf 
-                                      where cnf.concepto = :concepto;"
-
-  obtenerListadoConfiguracionesAspPago: "select cnf.id, cnf.concepto, cnf.valor from plasticos.plconfiguraciones_asppago cnf 
-                                         where cnf.visible = true;"
-
-plcosto_tarjeta:
-  obtenerCostosTarjetas: "select pt.id, pt.tipo, pt.descripcion, pt.costo from plasticos.plcosto_tarjeta pt;"

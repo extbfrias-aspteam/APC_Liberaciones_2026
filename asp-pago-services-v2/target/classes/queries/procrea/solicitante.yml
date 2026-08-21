@@ -1,4 +1,0 @@
-solicitante:
-  obtenerInfoById: "select s.numero, s.nombre, s.curp, s.rfc1 || s.rfc2 || s.rfc3 as rfc, s.correo, dt.telefono from solicitante s 
-                    join directorio_telefonico dt on dt.id_solicitante = s.numero
-                    where numero = :numero and dt.id_cat_telefono = 7;"

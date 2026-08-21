@@ -1,7 +1,0 @@
-jwt:
-  endpoints:
-    excluidos:
-      # asp-pago-jwt
-      - login-auth
-      - refresh-token
-      - validaJWTToken
