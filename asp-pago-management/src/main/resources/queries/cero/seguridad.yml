@@ -1,0 +1,14 @@
+seincode_proceso:
+  obtenerSesionIncode: "select sp.sesion_incode_id, sp.activo, sp.estatus
+                        from seguridad.seincode_proceso sp
+                        where sp.cuentaah = :cuentaah and activo = true limit 1;"
+
+  obtenerSesionIncodeByEstatus: "select sp.sesion_incode_id, sp.activo, sp.estatus
+                        from seguridad.seincode_proceso sp
+                        where sp.cuentaah = :cuentaah and estatus in ('FAIL', 'RETRY') and activo = false ORDER BY estatus desc limit 1;"
+
+seuuid_sospechosos:
+  registraUUIDSospechoso: "insert into seguridad.seuuid_sospechosos
+						   (uuid_txt, uuid_signed, ip_cliente, endpoint, observaciones)
+						   values 
+						   (:uuid_txt, :uuid_signed, :ip_cliente, :endpoint, :observaciones);"

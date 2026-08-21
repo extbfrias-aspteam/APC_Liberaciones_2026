@@ -1,0 +1,83 @@
+sejwt_refresh_token:
+  registrarRefreshToken: "insert into seguridad.sejwt_refresh_token
+                         (token, fecha_expiracion, estatus, telefono_claims, dispositivoid_claims, usuario_creacion, fecha_creacion)
+                         values
+                         (:token, :fecha_expiracion, 'VIGENTE', :telefono_claims, :dispositivoid_claims, 9, now()) returning id;"
+
+  obtenerRefreshTokenVigentePorTelefonoDispositivo: "select rft.id, rft.token
+                                                     from seguridad.sejwt_refresh_token rft 
+                                                     where rft.telefono_claims = :telefono 
+                                                     and rft.dispositivoid_claims = :dispositivo_id
+                                                     and rft.estatus = 'VIGENTE' order by rft.fecha_creacion desc;"
+
+  obtenerRefreshTokenVigentePorToken: "select rft.id, rft.token
+                                       from seguridad.sejwt_refresh_token rft 
+                                       where rft.token = :token 
+                                       and rft.estatus = 'VIGENTE' order by rft.fecha_creacion desc;"
+
+  expirarRefreshToken: "update seguridad.sejwt_refresh_token 
+                        set estatus = 'EXPIRADO', fecha_modificacion = now(), usuario_modificacion = 9
+                        where id = :token_id;"
+
+sejwt_acces_token:
+  registrarAccessToken: "insert into seguridad.sejwt_acces_token
+                         (token, refresh_token_id, fecha_expiracion, estatus, telefono_claims, dispositivoid_claims, usuario_creacion, fecha_creacion)
+                         values
+                         (:token, :refresh_token_id, :fecha_expiracion, 'VIGENTE', :telefono_claims, :dispositivoid_claims, 9, now()) returning id;"
+
+  obtenerAccessTokenVigentePorRefreshId: "select act.id, act.refresh_token_id, act.token
+                                          from seguridad.sejwt_acces_token act 
+                                          where act.refresh_token_id = :refresh_token_id and 
+                                          act.estatus = 'VIGENTE' order by act.fecha_creacion desc;"
+
+  expirarAccessToken: "update seguridad.sejwt_acces_token 
+                       set estatus = 'EXPIRADO', fecha_modificacion = now(), usuario_modificacion = 9
+                       where id = :token_id;"
+
+  obtenerAccessTokenByTokenEstatus: "select act.id, act.refresh_token_id, act.token
+                                     from seguridad.sejwt_acces_token act
+                                     where act.token = :token and
+                                     act.estatus = :estatus order by act.fecha_creacion desc;"
+
+telefonos_bloqueados_jwt:
+  obtenerTelfenoBloqueado: "select 1
+                            from seguridad.telefonos_bloqueados_jwt
+                            where telefono = :telefono
+                            limit 1;"
+
+sejwt_token_logs:
+  registraJwtTokenLog: "insert into seguridad.sejwt_token_logs 
+                        (token_id, tipo_token, tipo_operacion, servicio, codigo, mensaje, resultado, latitud, longitud, ip_cliente, id_canal, token_utilizado)
+                        values
+                        (:token_id, :tipo_token, :tipo_operacion, :servicio, :codigo, :mensaje, :resultado, :latitud, :longitud, :ip_cliente, :id_canal, :token_utilizado);"
+
+seuuid_sospechosos:
+  registraUUIDSospechoso: "insert into seguridad.seuuid_sospechosos
+                           (uuid_txt, uuid_signed, ip_cliente, endpoint, observaciones)
+                           values 
+                           (:uuid_txt, :uuid_signed, :ip_cliente, :endpoint, :observaciones);"
+
+documentacion_asppago:
+  nuevoRegistroDocumentacionAspPago: "insert into seguridad.se_documentacion_asppago
+                                      (categoria, identificador, nombre_archivo, ruta_archivo, storage_tipo, origen, estado, uuid_peticion)
+                                      values
+                                      (:categoria, :identificador, :nombre_archivo, :ruta_archivo, :storage_tipo, :origen, :estado, :uuid_peticion) returning id;"
+
+  actualizaRegistroDocumentacionAspPago: "update seguridad.se_documentacion_asppago
+                                          set ruta_archivo = :ruta_archivo, estado = :estado, 
+                                          storage_tipo = :storage_tipo, fecha_modificacion = now()
+                                          where id = :id"
+
+  registraLogDocumentacionAspPago: "insert into seguridad.se_documentacion_asppago_log
+                                    (biometria_id, ruta_archivo, evento, observaciones, fecha_evento)
+                                    values
+                                    (:biometria_id, :ruta_archivo, :evento, :observaciones, now());"
+
+  actualizaDocPendienteAspPago: "update seguridad.se_documentacion_pendiente
+                                 set tiene_documentos = true, uuid_peticion = :uuid_peticion, fecha_modificacion = now()
+                                 where idpersona = :idpersona and tiene_documentos = false;"
+
+  consultaDocPendienteAspPago: "select 1
+                                from seguridad.se_documentacion_pendiente
+                                where idpersona = :idpersona
+                                and tiene_documentos = false;"

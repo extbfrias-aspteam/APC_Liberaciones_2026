@@ -1,0 +1,27 @@
+ncposicionglobalah:
+  obtenerCuentaPosicionGlobalByPersonaId: "select tipocuentaah, cuentaah, cuenta_clabe 
+                                           from nucleocentral.ncposicionglobalah 
+                                           where idpersona = :personaId;"
+
+  obtenerCuentaPosicionGlobalByCuentaAh: "select pg.tipocuentaah, pg.cuentaah, pg.cuenta_clabe, coalesce(cc.cuenta, '') as cuenta_pago,
+                                          coalesce(cc2.cuenta, '') as cuenta_cobro, pg.estatusah
+                                          from nucleocentral.ncposicionglobalah  pg
+                                          left join codi.registro_codi rc on rc.cuenta = pg.cuentaah 
+                                          left join codi.cuentas_codi cc on cc.tipo_cuenta_codi_id = 1 and cc.registro_codi_id = rc.id
+                                          left join codi.cuentas_codi cc2 on cc2.tipo_cuenta_id = 2 and cc2.registro_codi_id = rc.id
+                                          where pg.cuentaah = :cuentaah;"
+
+  registrarCuentaPosicionGlobal: "insert into nucleocentral.ncposicionglobalah 
+                                  (estatusah, tipocuentaah, cuentaah, referenciaah, saldodisponibleah, saldototalah, idpersona, cuenta_clabe) 
+                                  values (:estatusah, :tipocuentaah, :cuentaah, :referenciaah, :saldodisponibleah, :saldototalah, :idpersona, :cuenta_clabe) "
+
+  validaCuentaExistePosicionGlobal: "SELECT 1 FROM nucleocentral.ncposicionglobalah nc WHERE nc.cuentaah = :cuentaah;"
+
+ncposicionglobalcr:
+  obtenerCreditosActivosByPersonaId: "select c.cuenta , c.monto::numeric, c.referencia, nc.idpersona, nc.estadocr, nc.cuenta_clabe 
+                                      from nucleocentral.ncposicionglobalcr nc join credito.crcreditos c on nc.contratocr = c.cuenta 
+                                      where c.validado = 3 and c.revisado = 3 and nc.estadocr  = 'ACTIVO' and nc.idpersona = :personaId;"
+
+nc_solicitantes_cuenta_onboarding:
+  obtenerCuentaOnboardingByPersonaId: "select ncs.tipo_cuenta from nucleocentral.nc_solicitantes_cuenta_onboarding ncs 
+                                       where ncs.solicitante_id = :personaId limit 1;"

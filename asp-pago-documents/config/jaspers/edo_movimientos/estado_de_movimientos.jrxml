@@ -1,0 +1,147 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="estado_de_movimientos" language="groovy" pageWidth="612" pageHeight="792" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b4b16b9c-1e46-4721-8197-da5ba93835cd">
+	<property name="ireport.zoom" value="1.4641000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="cuenta" class="java.lang.String"/>
+	<parameter name="clabe" class="java.lang.String"/>
+	<parameter name="rfc" class="java.lang.String"/>
+	<parameter name="nombre" class="java.lang.String"/>
+	<parameter name="calle" class="java.lang.String"/>
+	<parameter name="colonia" class="java.lang.String"/>
+	<parameter name="ciudad" class="java.lang.String"/>
+	<parameter name="tipoCuenta" class="java.lang.String"/>
+	<parameter name="fechaInicio" class="java.lang.String"/>
+	<parameter name="fechaFin" class="java.lang.String"/>
+	<parameter name="fechaEmision" class="java.lang.String"/>
+	<parameter name="P_RUTAIMAGEN" class="java.lang.String"/>
+	<parameter name="empresa" class="java.lang.String"/>
+	<parameter name="direccion" class="java.lang.String"/>
+	<parameter name="col" class="java.lang.String"/>
+	<parameter name="cp" class="java.lang.String"/>
+	<parameter name="plaza" class="java.lang.String"/>
+	<parameter name="tellpz" class="java.lang.String"/>
+	<parameter name="telint" class="java.lang.String"/>
+	<parameter name="titulos" class="java.lang.String"/>
+	<query language="sql"><![CDATA[]]></query>
+	<field name="fecha" class="java.lang.String">
+		<description><![CDATA[fecha]]></description>
+	</field>
+	<field name="detalle" class="java.lang.String">
+		<description><![CDATA[detalle]]></description>
+	</field>
+	<field name="cargo" class="java.lang.String">
+		<description><![CDATA[cargo]]></description>
+	</field>
+	<field name="abono" class="java.lang.String">
+		<description><![CDATA[abono]]></description>
+	</field>
+	<field name="saldo" class="java.lang.String">
+		<description><![CDATA[saldo]]></description>
+	</field>
+	<variable name="anterior" class="java.lang.String"/>
+	<group name="grupo2" reprintHeaderOnEachPage="true">
+		<groupHeader>
+			<band height="60">
+				<printWhenExpression><![CDATA[true]]></printWhenExpression>
+				<element kind="staticText" uuid="105f0791-0402-4d4b-83d2-db37ae637eef" x="172" y="3" width="258" height="20" forecolor="#405C7C" fontName="DejaVu Sans" fontSize="13.0" bold="true" hTextAlign="Center">
+					<text><![CDATA[Detallado de movimientos Realizados]]></text>
+				</element>
+				<element kind="textField" uuid="c503447f-cdec-487a-babe-0b3834619f10" x="0" y="3" width="156" height="20" fontName="DejaVu Sans">
+					<expression><![CDATA["Fecha de Emisión: " + $P{fechaEmision}]]></expression>
+				</element>
+				<element kind="staticText" uuid="9b080c75-46d9-47c1-9942-bd26c703d731" x="21" y="32" width="332" height="20" forecolor="#405C7C" fontName="DejaVu Sans" fontSize="11.0" bold="true">
+					<text><![CDATA[DESCRIPCIÓN]]></text>
+				</element>
+				<element kind="staticText" uuid="2eb1cee9-0745-4df3-8530-9a24f9a24dfe" x="486" y="32" width="65" height="20" forecolor="#405C7C" fontName="DejaVu Sans" fontSize="11.0" bold="true" hTextAlign="Center">
+					<text><![CDATA[SALDO]]></text>
+				</element>
+				<element kind="line" uuid="c8e80953-0273-4fce-898b-074ccc353955" x="0" y="27" width="572" height="1"/>
+				<element kind="staticText" uuid="ea1e1849-1a36-4671-8ed4-a0435a63c07c" x="421" y="32" width="65" height="20" forecolor="#405C7C" fontName="DejaVu Sans" fontSize="11.0" bold="true" hTextAlign="Center">
+					<text><![CDATA[ABONO]]></text>
+				</element>
+				<element kind="staticText" uuid="3f4be576-a57c-4e35-ae5d-3a994a60ee20" x="356" y="32" width="65" height="20" forecolor="#405C7C" fontName="DejaVu Sans" fontSize="11.0" bold="true" hTextAlign="Center">
+					<text><![CDATA[CARGO]]></text>
+				</element>
+				<element kind="staticText" uuid="8a473ab2-3d0a-4ab2-93ab-c0004c132fe5" x="486" y="3" width="86" height="20" fontName="DejaVu Sans">
+					<text><![CDATA[Moneda Nacional]]></text>
+				</element>
+			</band>
+		</groupHeader>
+	</group>
+	<background splitType="Stretch"/>
+	<title splitType="Stretch"/>
+	<pageHeader height="82" splitType="Immediate">
+		<printWhenExpression><![CDATA[true]]></printWhenExpression>
+		<element kind="staticText" uuid="40fdef73-bfe0-4107-8a3a-3985012eaebe" mode="Transparent" x="189" y="3" width="195" height="20" forecolor="#405C7C" fontName="DejaVu Sans" fontSize="14.0" bold="true" strikeThrough="false" underline="false" italic="false" hTextAlign="Center">
+			<text><![CDATA[Estado de Movimientos]]></text>
+		</element>
+		<element kind="textField" uuid="92cb6e94-2e06-4265-b85d-284e7b7e0067" x="415" y="3" width="154" height="15" forecolor="#405C7C" fontName="DejaVu Sans" fontSize="11.0" hTextAlign="Right">
+			<expression><![CDATA["CUENTA: " + $P{tipoCuenta}]]></expression>
+		</element>
+		<element kind="textField" uuid="965f7382-4dc7-4a79-9dfc-8d8540de6ce6" x="368" y="18" width="201" height="15" forecolor="#405C7C" fontName="DejaVu Sans" fontSize="10.0" bold="true" underline="true" hTextAlign="Right">
+			<expression><![CDATA["Periodo " + $P{fechaInicio} +" al " + $P{fechaFin} + ""]]></expression>
+		</element>
+		<element kind="textField" uuid="d9da904b-1dbd-4cb8-9c23-703b10b495e4" x="478" y="33" width="80" height="20" forecolor="#405C7C" fontName="DejaVu Sans" fontSize="10.0" bold="true" hTextAlign="Right">
+			<expression><![CDATA["Hoja "+$V{PAGE_NUMBER}+" de "]]></expression>
+		</element>
+		<element kind="image" uuid="583e0f3a-153e-497e-b0e5-6375e9c23266" x="10" y="10" width="140" height="48">
+			<expression><![CDATA[$P{P_RUTAIMAGEN}+"/asp.png"]]></expression>
+		</element>
+		<element kind="textField" uuid="70495288-0767-45f7-a6d7-dc961083c5e5" x="558" y="33" width="40" height="20" forecolor="#405C7C" fontName="DejaVu Sans" fontSize="10.0" evaluationTime="Report" bold="true" hTextAlign="Left">
+			<expression><![CDATA[" " + $V{PAGE_NUMBER}]]></expression>
+		</element>
+	</pageHeader>
+	<columnHeader height="119" splitType="Stretch">
+		<printWhenExpression><![CDATA[($V{PAGE_NUMBER} == 1)]]></printWhenExpression>
+		<element kind="textField" uuid="20bfcc51-7f9f-4ee6-b1e6-924aadb9c9d9" x="-1" y="0" width="252" height="15" fontName="DejaVu Sans">
+			<expression><![CDATA["NO° de Cuenta: " + $P{cuenta}]]></expression>
+		</element>
+		<element kind="textField" uuid="8ad2fede-fc25-403b-b71a-a7e74cd5e44c" x="-1" y="15" width="252" height="15" fontName="DejaVu Sans">
+			<expression><![CDATA["CUENTA INTERBANCARIA: " + $P{clabe}]]></expression>
+		</element>
+		<element kind="textField" uuid="a80d77e4-67bb-4011-bd96-1f5acd934290" x="0" y="30" width="251" height="15" fontName="DejaVu Sans">
+			<expression><![CDATA["RFC: " + $P{rfc}]]></expression>
+		</element>
+		<element kind="textField" uuid="fc25c53f-a113-41eb-800d-c8281de80e42" x="0" y="45" width="251" height="15" fontName="DejaVu Sans">
+			<expression><![CDATA[$P{nombre}]]></expression>
+		</element>
+		<element kind="textField" uuid="3736cc07-5d55-4e7f-845e-da6563663f53" x="-1" y="75" width="252" height="15" fontName="DejaVu Sans">
+			<expression><![CDATA["Colonia: " + $P{colonia}]]></expression>
+		</element>
+		<element kind="textField" uuid="351c2233-566e-403f-83e5-82167025ece0" x="0" y="90" width="251" height="15" fontName="DejaVu Sans">
+			<expression><![CDATA["Ciudad: " + $P{ciudad}]]></expression>
+		</element>
+		<element kind="textField" uuid="a84cb98b-6547-49bf-9936-961c992e3ea9" x="328" y="0" width="244" height="105" fontName="DejaVu Sans" textAdjust="StretchHeight">
+			<paragraph lineSpacing="1_1_2"/>
+			<expression><![CDATA[$P{titulos}]]></expression>
+		</element>
+		<element kind="textField" uuid="9bf57812-688d-42ad-9d8c-bf10e022a4b7" x="-1" y="60" width="252" height="15" fontName="DejaVu Sans">
+			<expression><![CDATA["Calle: " + $P{calle}]]></expression>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="50">
+			<element kind="textField" uuid="c6b5cf09-e304-40ca-8aeb-bda991e8bb46" x="21" y="2" width="203" height="20" fontName="DejaVu Sans" fontSize="9.0" removeLineWhenBlank="true" bold="true" underline="true">
+				<expression><![CDATA[$F{fecha}]]></expression>
+			</element>
+			<element kind="textField" uuid="de9c5d93-ef55-49fa-a4c3-fc27393fac63" x="21" y="22" width="332" height="23" fontName="DejaVu Sans" fontSize="8.0" textAdjust="StretchHeight" printWhenDetailOverflows="true">
+				<expression><![CDATA[$F{detalle}]]></expression>
+			</element>
+			<element kind="textField" uuid="1923ec51-8112-4861-96b9-7f8bde6ac49d" x="356" y="29" width="65" height="16" fontName="DejaVu Sans" fontSize="9.0" underline="false" hTextAlign="Center">
+				<expression><![CDATA[!$F{cargo}.equals("") ? "-\044" + $F{cargo} : ""]]></expression>
+			</element>
+			<element kind="textField" uuid="ec391a05-98ce-4406-9c0d-1c84e76d85b0" x="421" y="29" width="65" height="16" fontName="DejaVu Sans" fontSize="9.0" hTextAlign="Center">
+				<expression><![CDATA[!$F{abono}.equals("") ? "+\044" + $F{abono} : ""]]></expression>
+			</element>
+			<element kind="textField" uuid="10b1dcf8-99c7-4162-83fa-e5e76c2be480" x="486" y="29" width="65" height="16" fontName="DejaVu Sans" fontSize="9.0" hTextAlign="Center">
+				<expression><![CDATA["\044" + $F{saldo}]]></expression>
+			</element>
+			<element kind="line" uuid="9569e18f-9ee7-4632-b541-b2904e6222f9" positionType="FixRelativeToBottom" x="0" y="47" width="572" height="1" forecolor="#CCCCCC" printWhenDetailOverflows="true"/>
+		</band>
+	</detail>
+	<columnFooter height="45" splitType="Stretch"/>
+	<pageFooter height="22" splitType="Stretch"/>
+	<summary height="13" splitType="Stretch"/>
+	<noData height="50"/>
+</jasperReport>

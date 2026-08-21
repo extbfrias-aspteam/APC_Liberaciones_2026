@@ -1,0 +1,63 @@
+ahcuentas:
+  obtenerDatosCuentaAhByCuentaAh: "select ac.cuenta, ac.id as cuentaId, pg.cuenta_clabe as clabe, pa.descripcion as descripcion, pa.clave as producto, pa.id as productoId,
+                                   coalesce(pg.tarjeta_principal, '') as tarjeta_principal, pg.tipo_tarjeta, pv.nombre as proveedor,
+                                   coalesce(pg.tarjeta_adicional, '') as tarjeta_adicional, pg.tipo_tarjeta_adicional, pv2.nombre as proveedor_tarjeta_adicional,
+                                   coalesce(cc.cuenta,'') as cuenta_pago, coalesce(cc2.cuenta, '') as cuenta_cobro, pg.estatusah from ahorro.ahcuentas ac
+                                   join nucleocentral.ncposicionglobalah pg on pg.cuentaah = ac.cuenta
+                                   join productos.prproductos_ahorro pa on pa.id = ac.producto_ahorro_id
+                                   left join plasticos.plproveedores pv on pv.proveedor_id = pg.proveedor_id
+                                   left join plasticos.plproveedores pv2 on pv2.proveedor_id = pg.proveedor_tarjeta_adicional
+                                   left join codi.cuentas_codi cc on cc.tipo_cuenta_id = 1 and cc.cuenta = pg.cuenta_clabe
+                                   left join codi.cuentas_codi cc2 on cc2.tipo_cuenta_id = 2 and cc2.cuenta = pg.cuenta_clabe
+                                   where pg.cuentaah = :cuentaah;"
+
+  obtenerDatosGeneralesCuentaAhByCuentaAh: "select ac.cuenta, ac.id as cuentaId, pg.cuenta_clabe as clabe, pa.descripcion as descripcion,
+                                            pa.clave as producto, pa.id as productoId, pg.estatusah
+                                            from ahorro.ahcuentas ac
+                                            join nucleocentral.ncposicionglobalah pg on pg.cuentaah = ac.cuenta
+                                            join productos.prproductos_ahorro pa on pa.id = ac.producto_ahorro_id
+                                            where pg.cuentaah = :cuentaah;"
+
+  obtenerEstatusCuentaAh: "select ac.estatus_id from ahorro.ahcuentas ac where ac.cuenta = :cuentaah;"
+
+  obtenerCuentaExistenteByCuentaAh: "select ac.cuenta from ahorro.ahcuentas ac where ac.cuenta = :cuentaah;"
+
+  obtenerCuentaExistenteByCuentaClabe: "select ac.clabe_interbancaria from ahorro.ahcuentas ac where ac.cuenta = :clabe;"
+
+ahtraspasos_cuentas:
+  grabarTraspasoCuentas: "insert into ahorro.ahtraspasos_cuentas
+                          (id, tipo_trasp, cuenta_ori, cuenta_dest, id_retiro, id_deposito, fecha, monto, fecha_creacion, usuario_creacion)
+                          values (:id, :tipo_trasp, :cuenta_ori, :cuenta_dest, :id_retiro, :id_deposito, now(), :monto, now(), 9);"
+
+ahtraspasos_eiyu:
+  registraAhorroTraspasoEiYu: "insert into ahorro.ahtraspasos_eiyu
+                               (idretiro, iddeposito, ctaorigen, nomborigen, ctadestino, nombdestino, monto, conceptopago, refnum, bancoorigen,
+						 	   idtipopago, cverastreo, estatus, observaciones, no_intento, tipocuentaah, latitud, longitud)
+						 	   values (:idretiro, :iddeposito, :ctaorigen, :nomborigen, :ctadestino, :nombdestino, :monto, :conceptopago, :refnum, :bancoorigen,
+						 	   :idtipopago, :cverastreo, :estatus, :observaciones, :no_intento, :tipocuentaah, :latitud, :longitud) returning id;"
+
+  actualizaEstatusTraspasoEiYu: "update ahorro.ahtraspasos_eiyu set estatus = :estatus
+                                 where cverastreo = :cverastreo and refnum = :refnum and ctaorigen = :ctaorigen returning id;"
+
+  updateTraspasoEiYuById: "update ahorro.ahtraspasos_eiyu 
+                            set estatus = :estatus, observaciones = :obs, fecha_modificacion = now(), fhoperacion= now() 
+                            where id = :id;"
+
+ahtraspasos_eiyu_historico:
+  registraAhorroTraspasoEiYuHistorico: "insert into ahorro.ahtraspasos_eiyu_historico (idtraspasoeiyu, estatus, observaciones)
+                                        values (:idtraspasoeiyu, :estatus, :observaciones);"
+
+  insertHistoricoTraspasoEiYu: "insert into ahorro.ahtraspasos_eiyu_historico 
+                                (idtraspasoeiyu, estatus, observaciones) 
+                                values (:idtraspasoeiyu, :estatus, :obs);"
+
+secuencias:
+  sigSecTraspasoCuentas: "select nextval('ahorro.ahtraspasos_cuentas_id_seq') as id;"
+
+ahtransacciones_cuentas:
+  esPagoCreditoCFReciente: "SELECT 1 FROM ahorro.ahtransacciones_cuentas at
+						 		join ahorro.ahcuentas ac on at.cuenta_id = ac.id
+						 		JOIN ahorro.ahtipos_transacciones att on att.id = at.tipo_transaccion_id
+								WHERE ac.cuenta = :cuentaah AND at.monto = :monto AND att.clave_trans_dock = :claveMovimiento
+								AND at.fecha_creacion >= current_timestamp - (:segundos || ' seconds')::interval
+								ORDER BY at.fecha_creacion desc;"

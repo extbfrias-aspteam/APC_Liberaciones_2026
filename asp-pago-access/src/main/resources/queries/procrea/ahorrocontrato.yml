@@ -1,0 +1,2 @@
+ahorro_contrato:
+  obtenerEstatusCuentaAh: "select ac.estatus from ahorro_contrato ac where ac.cuenta = :cuentaah;"

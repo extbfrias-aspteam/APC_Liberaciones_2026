@@ -1,0 +1,15 @@
+plconfiguraciones_asppago:
+  obtenerValorConfAspPagoByConcepto: "select cnf.id, cnf.concepto, cnf.valor from plasticos.plconfiguraciones_asppago cnf 
+                                      where cnf.concepto = :concepto"
+
+  obtenerListadoConfiguracionesAspPago: "select cnf.id, cnf.concepto, cnf.valor from plasticos.plconfiguraciones_asppago cnf 
+                                         where cnf.visible = true;"
+
+plvalidacion_correo:
+  obtenerValidacionDeCorreo: "select vc.id, vc.correo, vc.estado from plasticos.plvalidacion_correo vc where vc.rfc = :rfc and curp = :curp;"
+
+  actualizarValidacionDeCorreo: "update plasticos.plvalidacion_correo set correo = :correo, token = :token, estado = :estado, 
+                                 fecha_modificacion = now() where id = :id;"
+
+  guardarValidacionDeCorreo: "insert into plasticos.plvalidacion_correo (correo, rfc, curp, token, estado, fecha_creacion) 
+                              values (:correo, :rfc, :curp, :token, :estado, now());"

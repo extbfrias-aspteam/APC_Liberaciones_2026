@@ -1,0 +1,66 @@
+servicios_asppago:
+  obtnerServicioAspPagoById: "select id from public.servicios_asppago where id = :idServicio;"
+
+bitacora_codigo_autorizacion:
+  guardarBitacora: "insert into public.bitacora_codigo_autorizacion (id_servicio, id_usuario, cod_autorizacion, estatus, observaciones) 
+                    values (:id_servicio, :id_usuario, :cod_autorizacion, CASE WHEN :estatus THEN B'1' ELSE B'0' END, :observaciones);"
+reca_ahorro:
+  obtenerRecaByProductoId: "select reca from reca_ahorro ra where ra.tipo_ahorro_id = :productoId;"
+
+cat_relacion:
+  obtenerParentescoById: "select descripcion as parentesco from cat_relacion where id = :id;"
+
+parametros_generales:
+  obtenerValorParamGeneralByClave: "select valor from parametros_generales as pg where pg.clave = :clave;"
+
+creditos:
+  obtenerCreditosActivosByPersonaId: "select c.numero, s.nombre, c.control, c.cuenta_clabe, c.referencia, c.monto::numeric
+                                      from contrato as c
+                                      join solicitante as s on c.numero = s.numero
+                                      join cheques as ch on ch.control = c.control and ch.tipo = 'C' and ch.estatus = 'E' and ch.ministracion = 1
+                                      where s.numero = :personaId and c.estatus != 'P' and c.exclusivo = 'S' and c.campot5 !='T' and c.validado ='S';"
+
+ahorro_contrato:
+  tieneCuentaProcrea: "select cuenta from ahorro_contrato where solicitante_id = :solicitanteid and tipo_ahorro_id = :tipoahorro and estatus = :estatus;"
+                                      
+  buscarCuentaByCuenta: "SELECT C.SOLICITANTE_ID,C.CUENTA,C.CONTRATO,C.TIPO_AHORRO_ID,C.RENDIMIENTO_ID,C.FECHA_APERTURA,C.FECHA_DEPOSITO,C.SOLICITANTE_ID,C.TITULAR_ID,C.MONEDA_ID,C.SUCURSAL_APERTURA,C.
+                         ASOCIACION_ID,C.DOMICILIO,C.NUMERO_CASA,C.COLONIA_ID,C.CTA_CONTABLE,C.ESTATUS,C.SALDO,C.REFERENCIA,C.OFICIAL_ID,C.CREADO_POR,C.FECHA_CREACION,C.MODIFICADO_POR,C.
+                         FECHA_MODIFICACION,C.FECHA_CANCELACION,C.CUENTA_PADRE,C.CUENTA_DESTINO_CAP,C.CUENTA_DESTINO_REN,C.AHORRO_CONTRATO_ID,C.PIN,C.PIN_FECHA_CAMBIO,C.PIN_USUARIO_CAMBIO,C.
+                         MONTO_APERTURA,C.EXTERNA_CUENTA,C.EXTERNA_CLABE,C.EXTERNA_TARJETA,C.EXTERNA_BANCO,C.META_MONTO,C.META_FECHA,C.META_APORTACION,C.META_PERIODO,C.META_DESTINO_ID,C.
+                         META_MOTIVO,C.GAT,C.CORREO_EDOCUENTA,C.CUENTA_CLABE,C.ID_COMO_ENTERO,C.PIN_AUTO,C.CENTRO_TRABAJO,C.PUESTO,C.MONTO_MAX_AHORRO,C.INGRESOS,C.PROV_REC_ID,C.PROV_REC_REL_ID,C.
+                         PROV_REC_MONTO_MAX_AHORRO,C.PROV_REC_INGRESOS,C.PROV_CENTRO_TRABAJO,C.PROV_PUESTO,C.ACTIVIDAD_ID,C.GIRO_ID,C.OCUPACION_ID,C.PROV_OCUPACION_ID,C.CVE_DESTINO,C.
+                         ERRORES,C.STATUS_BLOQUEO,C.HORA_PRIMER_ERROR,C.HORA_BLOQUEO,C.NUM_BLOQUEO,C.REQUIERE_IDENTIFICADOR,C.RESPALDO_MD5,
+                         R.CLAVE AS SUCURSAL_ID, COALESCE(S.RFC1 || S.RFC2 || S.RFC3, 'AAAA999999') AS RFC,S.NOMBRE , COALESCE(T.TELEFONO,'') AS TELEFONO_CODI, solicitante2fechanacompleta(S.NUMERO) AS FECHA_NACIMIENTO
+                         FROM AHORRO_CONTRATO C
+                         JOIN AGENTE A ON A.CLAVE = C.SUCURSAL_APERTURA
+                         JOIN REGIONES R ON R.CLAVE = A.REGION_ID
+                         JOIN SOLICITANTE S ON S.NUMERO = C.SOLICITANTE_ID
+                         LEFT JOIN DIRECTORIO_TELEFONICO T ON T.ID_SOLICITANTE = S.NUMERO AND T.ID_CAT_TELEFONO = 7
+                         WHERE C.CUENTA = :cuenta ; "
+
+
+ahorro_rendimiento:
+  ahorroTipocuenta: "select coalesce(ar.deposito,'N') as tipo_cuenta from ahorro_rendimiento ar where ar.rendimiento_id = :rendi_id ; "
+ 
+ahorro_renovaciones:
+  ultimaFechaRenovacion: "select max(fecha_renovacion) from ahorro_renovaciones where cuenta = :cuenta  "
+ 
+ahorro_rendimiento_vigente:
+  buscarRendimientoByCuenta: "SELECT rendimiento_vigente_id,cuenta,tipo_ahorro_id,periodicidad,coalesce(plazo,0) as plazo,tipo_tasa,calculo_iva,tasa_int,tasa_id,base,formula,tipo_corte,deposito,num_dias,dias_gracia,cta_contable,vigencia_desde,vigencia_hasta,condiciones_retiros,condiciones_apertura,
+                              creado_por,fecha_creacion,modificado_por,fecha_modificacion,rendimiento_id,gat,tipo_capitalizar_id,no_disposicion,estatus,tipo,capital,
+                              fecha_inicio,fecha_final,interes,fecha_deposito
+                              FROM ahorro_rendimiento_vigente WHERE cuenta = :cuenta "
+                              
+ahorro_saldos:
+  buscarSaldoByCuenta: "SELECT cuenta,solicitante_id,saldo_real,saldo_promedio,saldo_acumulado,fecha_corte,fecha_deposito,intereses,iva,isr,retenciones,desviacion,dias,saldo_disponible,ahorro_saldos_id,ide 
+                        FROM ahorro_saldos WHERE cuenta = :cuenta ; "
+                       
+ahorro_garantias:
+  montoGarantia: "select sum(monto_garantia) from ahorro_garantias where cuenta= :cuenta and (estatus='C' or estatus='V') "
+
+ahorro_retenciones:
+  montoRetenciones: "select coalesce(sum(monto),0) from ahorro_retenciones where cuenta= :cuenta and estatus=1;"
+ 
+ahorro_saldos_mensual:
+  obtenerSaldoAcumuladoCuentaSimplificada: "select asm.saldo_acumulado::double precision, ((select (cast(valor as double precision)*valor_udi()) from parametros_generales where clave='SEG_MTO_MAX_AHO_SIMP') - asm.saldo_acumulado)::double precision as disponible_mensual from ahorro_saldos_mensual asm
+                                             where asm.cuenta = :cuenta "                                     

@@ -1,0 +1,30 @@
+ahcuentas:
+  obtenerNivelCuentaAh: "select
+                         case
+                           when nivel.clave = 'CTA_N1' then 'N1'
+                           when nivel.clave = 'CTA_N2' then 'N2'
+                           when nivel.clave = 'CTA_N3' then 'N3'
+                           when nivel.clave = 'CTA_N4' then 'N4'
+                         end as nivel_cuenta, c.producto_ahorro_id, c.id
+                         from ahorro.ahcuentas as c
+                         join ahorro.ahcuentas_ahorro_datos as datos on datos.cuenta_id = c.id
+                         join nucleocentral.ncconceptos as nc on datos.concepto_id = nc.id
+                         join ahorro.ahnivel_cuenta_ahorro as nivel on nivel.clave = datos.valor
+                         where nc.clave = 'AHO_NIVEL_CUENTA' and datos.valor is not null and c.cuenta = :cuentaah;"
+
+  actualizarNivelCuentaAh: "with datos_filtrados as (
+                                select datos.id
+                                from ahorro.ahcuentas_ahorro_datos as datos
+                                join ahorro.ahcuentas as c on datos.cuenta_id = c.id
+                                join nucleocentral.ncconceptos as nc on datos.concepto_id = nc.id
+                                join ahorro.ahnivel_cuenta_ahorro as nivel on nivel.clave = datos.valor
+                                where nc.clave = 'AHO_NIVEL_CUENTA' and datos.valor is not null and c.cuenta = :cuentaah
+                            )
+                            update ahorro.ahcuentas_ahorro_datos as datos
+                            set valor = :ctaNivel, fecha_modificacion = now()
+                            where datos.id in (select id from datos_filtrados);"
+
+  guardarNcBitacora: "insert into nucleocentral.ncbitacora (tipo_bitacora_id, dato, observaciones, fecha_creacion, usuario_creacion)
+                      values ((select id from nucleocentral.nctipos_bitacora where clave = :claveTipoBitacora), :dato, :observaciones, now(), 9);"
+
+  obtenerPersonaIdByCuenta: "select persona_id from ahorro.ahcuentas where cuenta = :cuentaah;"

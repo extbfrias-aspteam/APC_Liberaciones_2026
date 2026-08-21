@@ -1,0 +1,123 @@
+sejwt_refresh_token:
+  registrarRefreshToken: "insert into seguridad.sejwt_refresh_token
+                         (token, fecha_expiracion, estatus, telefono_claims, dispositivoid_claims, usuario_creacion, fecha_creacion, uuid, tenantid_claims, idcanal_claims)
+                         values
+                         (:token, :fecha_expiracion, 'VIGENTE', :telefono_claims, :dispositivoid_claims, 9, now(), :uuid, :tenantid_claims, :idcanal_claims) returning id;"
+
+  obtenerRefreshTokenVigentePorTelefonoDispositivo: "select rft.id, rft.token
+                                                     from seguridad.sejwt_refresh_token rft 
+                                                     where rft.telefono_claims = :telefono 
+                                                     and rft.dispositivoid_claims = :dispositivo_id
+                                                     and rft.estatus = 'VIGENTE' order by rft.fecha_creacion desc;"
+
+  obtenerRefreshTokenVigentePorTenantIdCanalId: "select rft.id, rft.token
+                                                 from seguridad.sejwt_refresh_token rft 
+                                                 where rft.tenantid_claims = :tenantid_claims 
+                                                 and rft.idcanal_claims = :idcanal_claims
+                                                 and rft.estatus = 'VIGENTE' order by rft.fecha_creacion desc;"
+
+  obtenerRefreshTokenVigentePorToken: "select rft.id, rft.token
+                                       from seguridad.sejwt_refresh_token rft 
+                                       where rft.token = :token 
+                                       and rft.estatus = 'VIGENTE' order by rft.fecha_creacion desc;"
+
+  expirarRefreshToken: "update seguridad.sejwt_refresh_token 
+                        set estatus = 'EXPIRADO', fecha_modificacion = now(), usuario_modificacion = 9
+                        where id = :token_id;"
+
+  revocarRefreshTokenByTelefono: "WITH updated_refresh AS (
+                                      UPDATE seguridad.sejwt_refresh_token
+                                      SET estatus = 'REVOCADO',
+                                          fecha_modificacion = now()
+                                      WHERE estatus = 'VIGENTE' AND telefono_claims = :telefono
+                                      RETURNING id as token_id, token as token_utilizado
+                                  )
+                                   INSERT INTO seguridad.sejwt_token_logs (
+                                       token_id, tipo_token, tipo_operacion, servicio, codigo, mensaje,
+                                       resultado, latitud, longitud, ip_cliente, id_canal, token_utilizado
+                                   )
+                                   SELECT 
+                                       ur.token_id,
+                                       'REFRESH' AS tipo_token,
+                                       'HARDWARE ID' AS tipo_operacion,
+                                       '/validaTelefono' AS servicio,
+                                       0 AS codigo,
+                                       'REVOCADO POR CAMBIO DE ID DISPOSITIVO - TEL: ' || :telefono AS mensaje,
+                                       'INFO' AS resultado,
+                                       NULL AS latitud,
+                                       NULL AS longitud,
+                                       NULL AS ip_cliente,
+                                       NULL AS id_canal,
+                                       ur.token_utilizado
+                                   FROM updated_refresh ur;"
+
+sejwt_acces_token:
+  registrarAccessToken: "insert into seguridad.sejwt_acces_token
+                         (token, refresh_token_id, fecha_expiracion, estatus, telefono_claims, dispositivoid_claims, usuario_creacion, fecha_creacion, uuid, tenantid_claims, idcanal_claims)
+                         values
+                         (:token, :refresh_token_id, :fecha_expiracion, 'VIGENTE', :telefono_claims, :dispositivoid_claims, 9, now(), :uuid, :tenantid_claims, :idcanal_claims) returning id;"
+
+  obtenerAccessTokenVigentePorRefreshId: "select act.id, act.refresh_token_id, act.token
+                                          from seguridad.sejwt_acces_token act 
+                                          where act.refresh_token_id = :refresh_token_id and 
+                                          act.estatus = 'VIGENTE' order by act.fecha_creacion desc;"
+
+  expirarAccessToken: "update seguridad.sejwt_acces_token 
+                       set estatus = 'EXPIRADO', fecha_modificacion = now(), usuario_modificacion = 9
+                       where id = :token_id;"
+
+  obtenerAccessTokenByTokenEstatus: "select act.id, act.refresh_token_id, act.token
+                                     from seguridad.sejwt_acces_token act
+                                     where act.token = :token and
+                                     act.estatus = :estatus order by act.fecha_creacion desc;"
+
+  revocarAccessTokenByTelefono: "WITH updated_access AS (
+                                       UPDATE seguridad.sejwt_acces_token
+                                       SET estatus = 'REVOCADO',
+                                           fecha_modificacion = now()
+                                       WHERE estatus = 'VIGENTE' AND telefono_claims = :telefono
+                                       RETURNING id as token_id, token as token_utilizado
+                                  )
+                                  INSERT INTO seguridad.sejwt_token_logs (
+                                      token_id, tipo_token, tipo_operacion, servicio, codigo, mensaje,
+                                      resultado, latitud, longitud, ip_cliente, id_canal, token_utilizado
+                                  )
+                                  SELECT 
+                                      ua.token_id,
+                                      'ACCESS' AS tipo_token,
+                                      'HARDWARE ID' AS tipo_operacion,
+                                      '/validaTelefono' AS servicio,
+                                      0 AS codigo,
+                                      'REVOCADO POR CAMBIO DE ID DISPOSITIVO - TEL: ' || :telefono AS mensaje,
+                                      'INFO' AS resultado,
+                                      NULL AS latitud,
+                                      NULL AS longitud,
+                                      NULL AS ip_cliente,
+                                      NULL AS id_canal,
+                                      ua.token_utilizado
+                                  FROM updated_access ua;"
+
+telefonos_bloqueados_jwt:
+  obtenerTelfenoBloqueado: "select 1
+                            from seguridad.telefonos_bloqueados_jwt
+                            where telefono = :telefono;"
+
+sejwt_token_logs:
+  registraJwtTokenLog: "insert into seguridad.sejwt_token_logs 
+                        (token_id, tipo_token, tipo_operacion, servicio, codigo, mensaje, resultado, latitud, longitud, ip_cliente, id_canal, token_utilizado, uuid, fecha_creacion)
+                        values
+                        (:token_id, :tipo_token, :tipo_operacion, :servicio, :codigo, :mensaje, :resultado, :latitud, :longitud, :ip_cliente, :id_canal, :token_utilizado, :uuid, now());"
+
+seuuid_sospechosos:
+  registraUUIDSospechoso: "insert into seguridad.seuuid_sospechosos
+						   (uuid_txt, uuid_signed, ip_cliente, endpoint, observaciones)
+						   values 
+						   (:uuid_txt, :uuid_signed, :ip_cliente, :endpoint, :observaciones);"
+
+sejwt_tenant_id:
+  obtenerTenantIdByIdCanal: "select st.tenant_id, st.activo, st.id_canal 
+                             from seguridad.sejwt_tenant_id st
+                             where st.id_canal = :idCanal;"
+  obtenerTenantIdByIdCanalAndByTenantIdClaims: "select st.tenant_id, st.activo, st.id_canal 
+                             from seguridad.sejwt_tenant_id st
+                             where st.id_canal = :idCanal and st.tenant_id = :idTenant;"

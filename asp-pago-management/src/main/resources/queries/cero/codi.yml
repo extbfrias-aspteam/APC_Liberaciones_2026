@@ -1,0 +1,82 @@
+registro_codi:
+  obtenerRegistroCoDiByCuentaAh: "select rc.id, rc.cuenta, rc.solicitante_id, rsd.password, rc.id_hardware, 
+                                  coalesce(rsd.registro_nueva_app, '1') registro_nueva_app, rc.activo, coalesce(rsd.telefono_validado, 'NO') telefono_validado,
+                                  coalesce(rc.bloqueado, 0) as bloqueado, rc.fecha_bloqueo, coalesce(rc.intentos, 0) as intentos, coalesce(rc.bloqueos_temporales, 0) as bloqueos_temporales
+                                  from codi.registro_codi rc 
+                                  join codi.registro_servicios_digitales rsd on rsd.cuenta = rc.cuenta
+                                  where rc.cuenta = :cuentaah and rc.activo = true;"
+
+  obtenerRegistroCoDiPrincipal: "select rc.id, rc.cuenta, rc.solicitante_id, rsd.password, rc.id_hardware, 
+                                 coalesce(rsd.registro_nueva_app, '1') registro_nueva_app, rc.activo, coalesce(rsd.telefono_validado, 'NO') telefono_validado,
+                                 coalesce(rc.bloqueado, 0) as bloqueado, rc.fecha_bloqueo, coalesce(rc.intentos, 0) as intentos, coalesce(rc.bloqueos_temporales, 0) as bloqueos_temporales
+                                 from codi.registro_codi rc 
+                                 join codi.registro_servicios_digitales rsd on rsd.cuenta = rc.cuenta
+                                 where rc.solicitante_id = :personaId and rc.activo = true and rc.principal = true;"
+
+  obtenerRegistroCoDiByPersonaId: "select rc.id, rc.cuenta, rc.solicitante_id, rsd.password, rc.id_hardware, 
+                                   coalesce(rsd.registro_nueva_app, '1') registro_nueva_app, rc.activo, coalesce(rsd.telefono_validado, 'NO') telefono_validado,
+                                   coalesce(rc.bloqueado, 0) as bloqueado, rc.fecha_bloqueo, coalesce(rc.intentos, 0) as intentos, coalesce(rc.bloqueos_temporales, 0) as bloqueos_temporales, rc.principal
+                                   from codi.registro_codi rc 
+                                   join codi.registro_servicios_digitales rsd on rsd.cuenta = rc.cuenta
+                                   where rc.solicitante_id = :personaId and rc.activo = true;"
+
+  consultarRegistroCoDiCliente: "select rc.id, rc.cuenta, rc.solicitante_id, rsd.password, rc.id_hardware, 
+                                 coalesce(rsd.registro_nueva_app, '1') registro_nueva_app, rc.activo, coalesce(rsd.telefono_validado, 'NO') telefono_validado,
+                                 coalesce(rc.bloqueado, 0) as bloqueado, rc.fecha_bloqueo, coalesce(rc.intentos, 0) as intentos, coalesce(rc.bloqueos_temporales, 0) as bloqueos_temporales, rc.principal
+                                 from codi.registro_codi rc 
+                                 join codi.registro_servicios_digitales rsd on rsd.cuenta = rc.cuenta
+                                 where rc.solicitante_id = :personaId and rc.activo = true and rsd.registro_nueva_app = '2';"
+
+  obtenerListRegistroCoDiByPersonaId: "select rc.id, rc.cuenta, rc.solicitante_id, rsd.password, rc.id_hardware, 
+                                       coalesce(rsd.registro_nueva_app, '1') registro_nueva_app, rc.activo, coalesce(rsd.telefono_validado, 'NO') telefono_validado,
+                                       coalesce(rc.bloqueado, 0) as bloqueado, rc.fecha_bloqueo, coalesce(rc.intentos, 0) as intentos, coalesce(rc.bloqueos_temporales, 0) as bloqueos_temporales
+                                       from codi.registro_codi rc 
+                                       join codi.registro_servicios_digitales rsd on rsd.cuenta = rc.cuenta
+                                       where rc.solicitante_id = :personaId and rc.activo = true;"
+
+
+  actualizarIdHardwareByCuentaAh: "update codi.registro_codi set id_hardware = :dispositivoId where cuenta = :cuentaah;"
+
+  actualizarIdHardwareBySolicitanteId: "update codi.registro_codi set id_hardware = :dispositivoId, fecha_modificacion = now() where solicitante_id = :solicitante_id;"
+
+favoritos_transferencias:
+  registraFavoritoCuenta: "insert into codi.favoritos_transferencias
+                           (id, numero_cuenta_codi, nombre_beneficiario, numero_cuenta_beneficiario, id_tipo_cuenta_beneficiario, 
+                           id_institucion_beneficiario, nombre_institucion, correo_beneficiario, alias, id_estatus, fecha_creacion) 
+                           values (:id , :numero_cuenta_codi, :nombre_beneficiario, :numero_cuenta_beneficiario, :id_tipo_cuenta_beneficiario, 
+                           :id_institucion_beneficiario, :nombre_institucion, :correo_beneficiario, :alias, 1, :fecha_creacion);"
+
+  obtenerFavoritoCuentaById: "select id, numero_cuenta_codi, nombre_beneficiario, numero_cuenta_beneficiario, id_tipo_cuenta_beneficiario, 
+                              id_institucion_beneficiario, nombre_institucion, alias
+                              from codi.favoritos_transferencias where id = :id and id_estatus = 1;"
+
+  obtenerListadoFavoritosCuentaByCuenta: "select ft.id, ft.numero_cuenta_codi, ft.nombre_beneficiario, ft.numero_cuenta_beneficiario, 
+                                          ft.id_tipo_cuenta_beneficiario, ft.id_institucion_beneficiario, ft.nombre_institucion, ft.alias,
+                                          ft.correo_beneficiario, to_char(ft.fecha_creacion, 'YYYY-MM-DD HH:MI') as fecha_creacion
+                                          from codi.favoritos_transferencias ft 
+                                          where ft.numero_cuenta_codi = :cuenta_codi and ft.id_estatus = 1;"
+
+  eliminaFavoritoCuentaById: "update codi.favoritos_transferencias set id_estatus = 0, fecha_modificacion = now() where id = :id;"
+
+  validarFavoritoExistenteTelefono: "select cast(count(*) as integer) from codi.favoritos_transferencias ft 
+                                     where ft.numero_cuenta_codi = :cuenta 
+                                     and ft.numero_cuenta_beneficiario = :cuentaBeneficiario 
+                                     and ft.id_estatus = 1 
+                                     and ft.id_institucion_beneficiario = :id_institucion_ben;"
+
+  validarFavoritoExistente: "select cast(count(*) as integer) from codi.favoritos_transferencias ft 
+                             where ft.numero_cuenta_codi = :cuenta 
+                             and ft.numero_cuenta_beneficiario = :cuentaBeneficiario 
+                             and ft.id_estatus = 1;"
+
+  obtenerTiempoFavoritos: "SELECT valor FROM plasticos.plconfiguraciones_asppago WHERE concepto = 'TIEMPO_FAVORITOS'"
+
+bitacora_procesamiento:
+  nuevoBitPro: "insert into codi.bitacora_procesamiento(id, cuenta, operacion_id, fecha_inicio, fecha_fin, id_procesamiento) values (:id, :cuenta, :operacion_id, :fhInicio, :fhFin, :idProcesamiento);"
+
+  sigSecProId: "select nextval('codi.bitacora_procesamiento_id_procesamiento_seq'::regclass);"
+
+  sigSecBitPro: "select nextval('codi.bitacora_procesamiento_id_seq'::regclass);"
+
+secuencias:
+  sigSecFavTrans: "select nextval('codi.favoritos_transferencias_id_seq'::regclass);"

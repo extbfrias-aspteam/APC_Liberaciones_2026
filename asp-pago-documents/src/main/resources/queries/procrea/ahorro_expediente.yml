@@ -1,0 +1,5 @@
+ahorro_expediente:
+  insertaAhorroExpediente: "insert into ahorro_expediente 
+                            (cuenta, ruta_alfresco, observaciones, nombre, fecha_creacion, usuario_creacion, documentos_ahorro_id) 
+		                    values
+		                    (:cuenta, :ruta_alfresco, :observaciones, :nombre, CURRENT_TIMESTAMP, :usuario_creacion, :documentos_ahorro_id);"

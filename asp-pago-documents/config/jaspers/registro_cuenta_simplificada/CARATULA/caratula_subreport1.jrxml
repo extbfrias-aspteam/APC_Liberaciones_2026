@@ -1,0 +1,93 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="caratula_subreport1" language="java" pageWidth="572" pageHeight="752" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="3003c622-3d2e-47e1-af8d-66e7b1e9a78f">
+	<property name="ireport.zoom" value="1.331000000000001"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="P_SUCURSAL" class="java.lang.Integer"/>
+	<parameter name="SUBREPORT_DIR" forPrompting="false" class="java.lang.String">
+		<defaultValueExpression><![CDATA["C:\\CEROServicios\\wildfly-10.1.0.Final\\portal\\config\\Reportes\\ahorro\\"]]></defaultValueExpression>
+	</parameter>
+	<query language="sql"><![CDATA[Select Distinct Coalesce(ru.region,'') as region,
+  Case when r.ppal_une= 1 then r.domicilio else rune.domicilio end as dom,
+  Coalesce(case when r.ppal_une= 1 then r.telefono else rune.telefono end, '') as tel,
+  Coalesce(u.correo, '') as correo,a.condusef
+  From regiones r
+  left join regiones_une ru on r.region_une_id = ru.id
+  left join regiones rune on ru.region_id = rune.clave
+  left join usuarios u on ru.empleado_responsable_id = u.no_empleado
+  left join agente as a on r.clave=a.region_id
+  Where r.clave=$P{P_SUCURSAL} and a.empresa=2;]]></query>
+	<field name="region" class="java.lang.String"/>
+	<field name="dom" class="java.lang.String"/>
+	<field name="tel" class="java.lang.String"/>
+	<field name="correo" class="java.lang.String"/>
+	<field name="condusef" class="java.lang.String"/>
+	<detail>
+		<band height="176" splitType="Stretch">
+			<element kind="staticText" uuid="dd8fa332-49ba-4e4a-9150-326d57b9c791" x="0" y="0" width="572" height="20" fontName="DejaVu Sans" fontSize="8.0" bold="true" hTextAlign="Center">
+				<text><![CDATA[ACLARACIONES Y RECLAMACIONES]]></text>
+				<box topPadding="2">
+					<topPen lineWidth="1.5"/>
+					<leftPen lineWidth="1.5"/>
+					<rightPen lineWidth="1.5"/>
+				</box>
+			</element>
+			<element kind="textField" uuid="de6c5860-1076-4d2d-8562-cbf617fdeba9" x="0" y="20" width="572" height="20" fontName="DejaVu Sans" fontSize="8.0">
+				<expression><![CDATA["Unidad Especializada de Atención a Usuarios: "+$F{region}]]></expression>
+				<box leftPadding="12">
+					<leftPen lineWidth="1.5"/>
+					<rightPen lineWidth="1.5"/>
+				</box>
+			</element>
+			<element kind="textField" uuid="ee06eaae-2964-425b-a5c0-bbe9382b4c3a" x="0" y="40" width="572" height="20" fontName="DejaVu Sans" fontSize="8.0">
+				<expression><![CDATA["Domicilio: "+$F{dom}]]></expression>
+				<box leftPadding="12">
+					<leftPen lineWidth="1.5"/>
+					<rightPen lineWidth="1.5"/>
+				</box>
+			</element>
+			<element kind="textField" uuid="671cf8cd-2b06-464a-81e4-0c2537a0d23e" x="0" y="60" width="286" height="20" fontName="DejaVu Sans" fontSize="8.0">
+				<expression><![CDATA["Teléfono: "+$F{tel}]]></expression>
+				<box leftPadding="12">
+					<leftPen lineWidth="1.5"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+			</element>
+			<element kind="textField" uuid="bef96e2f-61e0-4452-ac41-30ff31a3b0d8" x="286" y="60" width="286" height="20" fontName="DejaVu Sans" fontSize="8.0">
+				<expression><![CDATA["Correo Electrónico: "+$F{correo}]]></expression>
+				<box leftPadding="0">
+					<leftPen lineWidth="0.0"/>
+					<rightPen lineWidth="1.5"/>
+				</box>
+			</element>
+			<element kind="staticText" uuid="eb69f6d5-5fc4-4e8e-97dc-8a49c0a0c69f" x="0" y="80" width="572" height="20" fontName="DejaVu Sans" fontSize="8.0">
+				<text><![CDATA[Página Internet: www.aspintegraopciones.com]]></text>
+				<box leftPadding="12">
+					<leftPen lineWidth="1.5"/>
+					<bottomPen lineWidth="1.5"/>
+					<rightPen lineWidth="1.5"/>
+				</box>
+			</element>
+			<element kind="staticText" uuid="7802a30e-130e-44a7-96a6-e5aa28da04cf" x="0" y="100" width="572" height="20" fontName="DejaVu Sans" fontSize="8.0" bold="true" hTextAlign="Center">
+				<text><![CDATA[REGISTRO DE CONTRATO DE ADHESION NUMERO:]]></text>
+				<box topPadding="2">
+					<topPen lineWidth="1.5"/>
+					<leftPen lineWidth="1.5"/>
+					<rightPen lineWidth="1.5"/>
+				</box>
+			</element>
+			<element kind="textField" uuid="3fafb62e-1893-48f4-a46a-034502ee5d6e" x="0" y="140" width="572" height="36" fontName="DejaVu Sans" fontSize="8.0">
+				<expression><![CDATA[$F{condusef}]]></expression>
+				<box topPadding="6" leftPadding="6">
+					<leftPen lineWidth="1.5"/>
+					<bottomPen lineWidth="1.5"/>
+					<rightPen lineWidth="1.5"/>
+				</box>
+			</element>
+			<element kind="subreport" uuid="a02bfe0c-dd1d-4f52-abcd-57002e9937d0" positionType="Float" x="0" y="120" width="572" height="20">
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<expression><![CDATA[$P{SUBREPORT_DIR} + "caratula_subreport1_subreport1.jasper"]]></expression>
+			</element>
+		</band>
+	</detail>
+</jasperReport>

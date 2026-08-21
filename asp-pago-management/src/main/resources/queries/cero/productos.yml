@@ -1,0 +1,6 @@
+productos:
+  obtenerConceptoProductoByClave: "select pr.id as productoId, pr.clave, nc.clave, nc.descripcion, prd.valor
+                                   from productos.prproductos_ahorro pr
+                                   join productos.prproductos_ahorro_datos prd on pr.id = prd.producto_id
+                                   join nucleocentral.ncconceptos nc on nc.id = prd.concepto_id
+                                   where nc.clave = :clave and pr.id = :productoId;"

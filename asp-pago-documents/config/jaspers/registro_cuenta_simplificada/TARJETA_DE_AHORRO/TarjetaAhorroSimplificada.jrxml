@@ -1,0 +1,89 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="TarjetaAhorro" language="java" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="8a1ff505-aa50-4113-a349-eba4b1a14099">
+	<property name="ireport.zoom" value="3.797498335832415"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="144"/>
+	<parameter name="P_RUTAIMAGEN" class="java.lang.String"/>
+	<parameter name="P_CUENTA" class="java.lang.String"/>
+	<parameter name="P_CLABE_INT" class="java.lang.String"/>
+	<parameter name="P_REFERENCIA" class="java.lang.String"/>
+	<parameter name="P_SOLICITANTE" class="java.lang.String"/>
+	<parameter name="P_REGION" class="java.lang.String"/>
+	<query language="sql"><![CDATA[select $P{P_CUENTA} AS cuenta,$P{P_REFERENCIA} as referencia,$P{P_CLABE_INT} as cuenta_int,
+$P{P_SOLICITANTE} as solicitante,
+ce.nombre as nombre_empresa,a.telefono,a.domicilio
+from agente as A
+left join cat_empresas as ce on ce.clave = a.empresa
+where a.region_id=$P{P_REGION} LIMIT 1]]></query>
+	<field name="cuenta" class="java.lang.String"/>
+	<field name="referencia" class="java.lang.String"/>
+	<field name="cuenta_int" class="java.lang.String"/>
+	<field name="solicitante" class="java.lang.String"/>
+	<field name="nombre_empresa" class="java.lang.String"/>
+	<field name="telefono" class="java.lang.String"/>
+	<field name="domicilio" class="java.lang.String"/>
+	<background splitType="Stretch"/>
+	<title height="5" splitType="Stretch"/>
+	<pageHeader height="5" splitType="Stretch"/>
+	<columnHeader height="8" splitType="Stretch"/>
+	<detail>
+		<band height="189" splitType="Stretch">
+			<element kind="rectangle" uuid="c5143b76-6f4c-4ca4-874a-ec489202a84a" x="0" y="0" width="284" height="189" forecolor="#3B547B" radius="0"/>
+			<element kind="image" uuid="bd59e457-9304-4d4a-8a5f-ec6244ea638f" x="215" y="17" width="61" height="22" onErrorType="Blank" linkType="None" linkTarget="Self">
+				<expression><![CDATA[$P{P_RUTAIMAGEN}+"Logo.png"]]></expression>
+			</element>
+			<element kind="staticText" uuid="b06bdea6-5922-43a9-9e70-aee547b9fa47" x="0" y="39" width="284" height="14" forecolor="#3B547B" fontName="DejaVu Sans" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Bottom">
+				<text><![CDATA[Cuenta]]></text>
+			</element>
+			<element kind="textField" uuid="d8a53dc6-e579-459a-a0b5-68b19f819c59" x="0" y="53" width="284" height="10" forecolor="#666666" fontName="DejaVu Sans" fontSize="8.0" bold="false" hTextAlign="Center">
+				<expression><![CDATA[$P{P_CUENTA}]]></expression>
+			</element>
+			<element kind="staticText" uuid="138ad950-c341-435b-b0b8-92b572a0b074" x="0" y="63" width="284" height="14" forecolor="#3B547B" fontName="DejaVu Sans" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Bottom">
+				<text><![CDATA[CLABE Ahorro]]></text>
+			</element>
+			<element kind="textField" uuid="2beba611-8d02-45c6-b7ec-c5dbeacf1964" x="0" y="77" width="284" height="12" forecolor="#666666" fontName="DejaVu Sans" fontSize="8.0" bold="false" hTextAlign="Center">
+				<expression><![CDATA[$P{P_CLABE_INT}]]></expression>
+			</element>
+			<element kind="staticText" uuid="4e6e4911-04be-4ddc-8005-9c7a803af55a" x="89" y="97" width="98" height="12" forecolor="#3B547B" fontName="DejaVu Sans" fontSize="8.0" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[Cuenta]]></text>
+			</element>
+			<element kind="staticText" uuid="c41d4afc-536e-4422-bf9f-aec579f881e5" x="187" y="97" width="87" height="12" forecolor="#3B547B" fontName="DejaVu Sans" fontSize="8.0" hTextAlign="Center" vTextAlign="Middle">
+				<text><![CDATA[Referencia]]></text>
+			</element>
+			<element kind="line" uuid="4ebe2b40-85fa-4b88-964f-750d5e6db078" x="7" y="97" width="269" height="1" forecolor="#3B547B"/>
+			<element kind="component" uuid="455b2180-4911-4498-a444-b1eedc491c25" mode="Opaque" x="89" y="109" width="98" height="23" forecolor="#666666">
+				<component kind="barcode4j:Code39" textPosition="bottom">
+					<codeExpression><![CDATA[$P{P_REFERENCIA}]]></codeExpression>
+				</component>
+			</element>
+			<element kind="textField" uuid="c11e17bf-2290-45eb-8fad-1b1a34e2431f" mode="Opaque" x="0" y="151" width="284" height="38" forecolor="#FFFFFF" backcolor="#3B547B" fontName="DejaVu Sans" fontSize="6.0">
+				<expression><![CDATA[""]]></expression>
+			</element>
+			<element kind="textField" uuid="4f2817d7-9117-4e52-a323-ca167b0b2759" x="187" y="109" width="89" height="23" forecolor="#666666" fontName="DejaVu Sans" fontSize="8.0" hTextAlign="Center" vTextAlign="Bottom">
+				<expression><![CDATA[$P{P_REFERENCIA}]]></expression>
+			</element>
+			<element kind="textField" uuid="fb3369a4-3698-4481-8c48-1b03e947378c" x="0" y="151" width="177" height="12" forecolor="#FFFFFF" fontName="DejaVu Sans" fontSize="5.0" bold="true" vTextAlign="Bottom">
+				<paragraph leftIndent="7"/>
+				<expression><![CDATA[$F{nombre_empresa}]]></expression>
+			</element>
+			<element kind="textField" uuid="75a74cac-75fd-496f-ad83-4844eaf09d50" x="0" y="163" width="177" height="12" forecolor="#FFFFFF" fontName="DejaVu Sans" fontSize="4.0" bold="false">
+				<paragraph leftIndent="7"/>
+				<expression><![CDATA["Unidad Especializada de Atencion a Usuarios.- " + $F{domicilio} + " , Teléfono " + $F{telefono} + " Horario de Lunes a Viernes De 09:00 A 14:00 hrs."]]></expression>
+			</element>
+			<element kind="textField" uuid="a7cceae1-51d9-4f80-b1f9-f9248d530438" x="0" y="175" width="177" height="12" forecolor="#FFFFFF" fontName="DejaVu Sans" fontSize="4.0" bold="false">
+				<paragraph leftIndent="7"/>
+				<expression><![CDATA["Comisión Nacional para la protección y Defensa de los Usuarios de Servicios Financieros: 53-400-900 o Lada sin costo 01 800 999 8080 www.condusef.gob.mx"]]></expression>
+			</element>
+			<element kind="textField" uuid="1781f5e8-a11f-45bf-a205-1d6dc65c8d17" x="0" y="17" width="141" height="13" forecolor="#3B547B" fontName="DejaVu Sans" fontSize="10.0" bold="true" vTextAlign="Middle">
+				<paragraph leftIndent="10"/>
+				<expression><![CDATA[$F{solicitante}]]></expression>
+			</element>
+			<element kind="image" uuid="7a3af3a8-68f4-4591-a609-75b369f5b464" x="17" y="98" width="61" height="22" onErrorType="Blank" linkTarget="Self">
+				<expression><![CDATA[$P{P_RUTAIMAGEN}+"Ventanilla.png"]]></expression>
+			</element>
+		</band>
+	</detail>
+	<columnFooter height="20" splitType="Stretch"/>
+	<pageFooter height="14" splitType="Stretch"/>
+	<summary height="15" splitType="Stretch"/>
+</jasperReport>

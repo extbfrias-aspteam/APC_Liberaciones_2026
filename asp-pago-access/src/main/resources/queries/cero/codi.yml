@@ -1,0 +1,85 @@
+registro_codi:
+  obtenerRegistroCoDiByCuentaAh: "select rc.id, rc.cuenta, rc.solicitante_id, rsd.password, rc.id_hardware, 
+                                  coalesce(rsd.registro_nueva_app, '1') registro_nueva_app, rc.activo, coalesce(rsd.telefono_validado, 'NO') telefono_validado,
+                                  coalesce(rc.bloqueado, 0) as bloqueado, rc.fecha_bloqueo, coalesce(rc.intentos, 0) as intentos, coalesce(rc.bloqueos_temporales, 0) as bloqueos_temporales
+                                  from codi.registro_codi rc 
+                                  join codi.registro_servicios_digitales rsd on rsd.cuenta = rc.cuenta
+                                  where rc.cuenta = :cuentaah and rc.activo = true;"
+
+  obtenerRegistroCoDiPrincipalByCuentaAh: "select rc.id, rc.cuenta, rc.solicitante_id, rsd.password, rc.id_hardware, 
+                                           coalesce(rsd.registro_nueva_app, '1') registro_nueva_app, rc.activo, coalesce(rsd.telefono_validado, 'NO') telefono_validado,
+                                           coalesce(rc.bloqueado, 0) as bloqueado, rc.fecha_bloqueo, coalesce(rc.intentos, 0) as intentos, coalesce(rc.bloqueos_temporales, 0) as bloqueos_temporales
+                                           from codi.registro_codi rc 
+                                           join codi.registro_servicios_digitales rsd on rsd.cuenta = rc.cuenta
+                                           where rc.cuenta = :cuentaah and rc.activo = true and rc.principal = true;"
+
+  obtenerRegistroCoDiByPersonaId: "select rc.id, rc.cuenta, rc.solicitante_id, rsd.password, rc.id_hardware, 
+                                   coalesce(rsd.registro_nueva_app, '1') registro_nueva_app, rc.activo, coalesce(rsd.telefono_validado, 'NO') telefono_validado,
+                                   coalesce(rc.bloqueado, 0) as bloqueado, rc.fecha_bloqueo, coalesce(rc.intentos, 0) as intentos, coalesce(rc.bloqueos_temporales, 0) as bloqueos_temporales, rc.principal
+                                   from codi.registro_codi rc 
+                                   join codi.registro_servicios_digitales rsd on rsd.cuenta = rc.cuenta
+                                   where rc.solicitante_id = :personaId and rc.activo = true and rc.principal = true;"
+
+  consultarRegistroCoDiCliente: "select rc.id, rc.cuenta, rc.solicitante_id, rsd.password, rc.id_hardware, 
+                                 coalesce(rsd.registro_nueva_app, '1') registro_nueva_app, rc.activo, coalesce(rsd.telefono_validado, 'NO') telefono_validado,
+                                 coalesce(rc.bloqueado, 0) as bloqueado, rc.fecha_bloqueo, coalesce(rc.intentos, 0) as intentos, coalesce(rc.bloqueos_temporales, 0) as bloqueos_temporales, rc.principal
+                                 from codi.registro_codi rc 
+                                 join codi.registro_servicios_digitales rsd on rsd.cuenta = rc.cuenta
+                                 where rc.solicitante_id = :personaId and rc.activo = true and rsd.registro_nueva_app = '2';"
+  
+  obtenerListRegistroCoDiByPersonaId: "select rc.id, rc.cuenta, rc.solicitante_id, rsd.password, rc.id_hardware, 
+                                       coalesce(rsd.registro_nueva_app, '1') registro_nueva_app, rc.activo, coalesce(rsd.telefono_validado, 'NO') telefono_validado,
+                                       coalesce(rc.bloqueado, 0) as bloqueado, rc.fecha_bloqueo, coalesce(rc.intentos, 0) as intentos, coalesce(rc.bloqueos_temporales, 0) as bloqueos_temporales, rc.principal
+                                       from codi.registro_codi rc 
+                                       join codi.registro_servicios_digitales rsd on rsd.cuenta = rc.cuenta
+                                       where rc.solicitante_id = :personaId and rc.activo = true;"
+
+  actualizarIdHardwareByCuentaAh: "update codi.registro_codi set id_hardware = :dispositivoId, fecha_modificacion = now() where cuenta = :cuentaah;"
+
+  actualizarIdHardwareBySolicitanteId: "update codi.registro_codi set id_hardware = :dispositivoId, fecha_modificacion = now() where solicitante_id = :solicitante_id;"
+
+  actualizarBloqueoAccesoAspPago: "update codi.registro_codi set bloqueado = :bloqueado, fecha_bloqueo = :fbloqueo, intentos = :intentos, 
+                                   fecha_modificacion = now(), bloqueos_temporales = :btemp where solicitante_id = :solicitante_id;"
+
+  limpiarBloqueoRegistroCoDi: "update codi.registro_codi set bloqueado = 0, fecha_bloqueo = null, intentos = 0, 
+                               fecha_modificacion = now(), bloqueos_temporales = 0 where solicitante_id = :solicitante_id;"
+
+url_codi:
+  obtenerListadoUrlCoDi: "select uc.id, uc.clave, uc.url from codi.url_codi uc order by uc.id;"
+
+bitacora_procesamiento:
+  nuevoBitPro: "insert into codi.bitacora_procesamiento(id, cuenta, operacion_id, fecha_inicio, fecha_fin, id_procesamiento) 
+				values (:id, :cuenta, :operacion_id, :fhInicio, :fhFin, :idProcesamiento);"
+
+  sigSecProId: "select nextval('codi.bitacora_procesamiento_id_procesamiento_seq'::regclass);"
+
+  sigSecBitPro: "select nextval('codi.bitacora_procesamiento_id_seq'::regclass);"
+
+versiones:
+  obtenerVersionAppActiva: "select cv.version from codi.versiones cv where cv.activo = 1 and cv.id_canal = :idCanal order by cv.versiones_id desc limit 1;"
+
+token_cambio_pass:
+  obtenerTokenActivos: "select tp.id, tp.token, tp.cuenta, tp.correo, tp.fecha_generado, tp.fecha_expira, tp.estatus, tp.folio
+				        from codi.token_cambio_pass tp where tp.cuenta = :cuentaah and tp.estatus = 1;"
+
+  actualizarTokenCambioPass: "update codi.token_cambio_pass 
+                              set token = :token, cuenta = :cuentaah, correo = :correo, fecha_generado = :fGenerado, fecha_expira = :fExpira, 
+                              estatus = :estatus, fecha_modificacion = now(), usuario_modificacion = :usuarioModificacion 
+				              where id = :id;"
+
+  guardarTokenCambioPass: "insert into codi.token_cambio_pass 
+                           (token, cuenta, correo, fecha_generado, fecha_expira, estatus, fecha_creacion, usuario_creacion, folio) 
+				           values 
+				           (:token, :cuentaah, :correo, :fGenerado, :fExpira, :estatus, now(), :usuarioCreacion, :folio);"
+
+  obtenerTokenCambioPassByToken: "select tp.id, tp.token, tp.cuenta, tp.correo, tp.fecha_generado, tp.fecha_expira, tp.estatus, tp.folio
+  				                  from codi.token_cambio_pass tp where tp.token = :token;"
+
+registro_servicios_digitales:
+  actualizarPassword: "update codi.registro_servicios_digitales rsd 
+                       set password = :password, fecha_modificacion = now(), usuario_modificacion = :usuarioModificacion
+                       from codi.registro_codi rc
+                       where rsd.cuenta = rc.cuenta and rc.solicitante_id = :personaId;"
+
+valores_properties_iniciales:
+  obtenerListadoPropertiesIniciales: "select pr.id, pr.clave, pr.valor from codi.valores_properties_iniciales pr order by pr.id;"

@@ -1,0 +1,12 @@
+registro_codi:
+  obtenerRegistroCoDiByCuentaAh: "select rc.id, rc.cuenta, rc.solicitante_id, coalesce(rsd.registro_nueva_app, '1') registro_nueva_app
+                                  from codi.registro_codi rc 
+                                  join codi.registro_servicios_digitales rsd on rsd.cuenta = rc.cuenta 
+                                  where rc.cuenta = :cuentaah and rc.activo = true;"
+
+  consultarRegistroCoDiCliente: "select rc.id, rc.cuenta, rc.solicitante_id, rsd.password, rc.id_hardware, 
+                                 coalesce(rsd.registro_nueva_app, '1') registro_nueva_app, rc.activo, coalesce(rsd.telefono_validado, 'NO') telefono_validado,
+                                 coalesce(rc.bloqueado, 0) as bloqueado, rc.fecha_bloqueo, coalesce(rc.intentos, 0) as intentos, coalesce(rc.bloqueos_temporales, 0) as bloqueos_temporales, rc.principal
+                                 from codi.registro_codi rc 
+                                 join codi.registro_servicios_digitales rsd on rsd.cuenta = rc.cuenta
+                                 where rc.solicitante_id = :personaId and rc.activo = true and rsd.registro_nueva_app = '2';"

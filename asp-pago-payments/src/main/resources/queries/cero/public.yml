@@ -1,0 +1,15 @@
+prestado:
+  obtenerInformacionDomicilioByColoniaId: "select pre.descripcion as estado, prm.nombre as municipio, prl.nombre as localidad, 
+                                           prc.nombre as colonia, prc.codigo_postal as cp
+                                           from public.prestado pre
+                                           join public.prmunicipio prm on pre.estado_id = prm.estado_id 
+                                           join public.prlocalidad prl on prm.municipio_id = prl.municipio_id 
+                                           join public.prcolonia prc on prl.localidad_id = prc.localidad_id 
+                                           where prc.colonia_id  = :coloniaId;"
+
+  obtenerEstadoByClave: "select pre.estado_id, pre.descripcion as estado from public.prestado pre where pre.abreviatura = :clave;"
+
+prcolonia:
+  obtenerColoniaByCpNombre: "select pr.colonia_id, pr.nombre, pr.codigo_postal 
+                             from prcolonia pr 
+                             where pr.codigo_postal = :cp and pr.nombre = :nombre"

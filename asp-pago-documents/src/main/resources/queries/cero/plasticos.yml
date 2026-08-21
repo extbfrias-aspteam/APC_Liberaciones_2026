@@ -1,0 +1,6 @@
+plconfiguraciones_asppago:
+  obtenerValorConfAspPagoByConcepto: "select cnf.id, cnf.concepto, cnf.valor from plasticos.plconfiguraciones_asppago cnf 
+                                      where cnf.concepto = :concepto"
+
+  obtenerListadoConfiguracionesAspPago: "select cnf.id, cnf.concepto, cnf.valor from plasticos.plconfiguraciones_asppago cnf 
+                                         where cnf.visible = true;"

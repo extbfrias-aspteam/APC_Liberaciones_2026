@@ -1,0 +1,69 @@
+ahcuentas:
+  obtenerDatosCuentaAhByCuentaAh: "select ac.cuenta, ac.id as cuentaId, pg.cuenta_clabe as clabe, pa.descripcion as descripcion, pa.clave as producto, pa.id as productoId, 
+                                   coalesce(pg.tarjeta_principal, '') as tarjeta_principal, pg.tipo_tarjeta, pv.nombre as proveedor,
+                                   coalesce(pg.tarjeta_adicional, '') as tarjeta_adicional, pg.tipo_tarjeta_adicional, pv2.nombre as proveedor_tarjeta_adicional,
+                                   coalesce(cc.cuenta,'') as cuenta_pago, coalesce(cc2.cuenta, '') as cuenta_cobro, pg.estatusah from ahorro.ahcuentas ac
+                                   join nucleocentral.ncposicionglobalah pg on pg.cuentaah = ac.cuenta
+                                   join productos.prproductos_ahorro pa on pa.id = ac.producto_ahorro_id
+                                   left join plasticos.plproveedores pv on pv.proveedor_id = pg.proveedor_id 
+                                   left join plasticos.plproveedores pv2 on pv2.proveedor_id = pg.proveedor_tarjeta_adicional
+                                   left join codi.cuentas_codi cc on cc.tipo_cuenta_id = 1 and cc.cuenta = pg.cuenta_clabe 
+                                   left join codi.cuentas_codi cc2 on cc2.tipo_cuenta_id = 2 and cc2.cuenta = pg.cuenta_clabe
+                                   where pg.cuentaah = :cuentaah;"
+
+  obtenerDatosGeneralesCuentaAhByCuentaAh: "select ac.cuenta, ac.id as cuentaId, pg.cuenta_clabe as clabe, pa.descripcion as descripcion, 
+                                            pa.clave as producto, pa.id as productoId, pg.estatusah, ac.persona_id   
+                                            from ahorro.ahcuentas ac
+                                            join nucleocentral.ncposicionglobalah pg on pg.cuentaah = ac.cuenta
+                                            join productos.prproductos_ahorro pa on pa.id = ac.producto_ahorro_id
+                                            where pg.cuentaah = :cuentaah;"
+                                    
+  obtenerDatosCuentaReporteEdoMovCERO: "select ah.cuenta, ah.clabe_interbancaria, ah.persona_id, pa.id, pa.descripcion
+                                        from ahorro.ahcuentas ah
+                                        join productos.prproductos_ahorro pa on ah.producto_ahorro_id = pa.id where cuenta = :cuenta;"
+
+ahcuentas_ahorro_datos:
+  obtenerConceptoCuentaByClave: "select cad.valor, cad.id from ahorro.ahcuentas ac
+                                 left join ahorro.ahcuentas_ahorro_datos cad on cad.cuenta_id = ac.id
+                                 left join nucleocentral.ncconceptos nc on nc.id = cad.concepto_id
+                                 where ac.persona_id = :personaId and ac.cuenta = :cuentaah and nc.clave = :clave;"
+
+  obtenerListaConceptosCuentaByClaves: "select nc.clave, cad.id from ahorro.ahcuentas ac 
+                                        left join ahorro.ahcuentas_ahorro_datos cad on cad.cuenta_id = ac.id
+                                        left join nucleocentral.ncconceptos nc on nc.id = cad.concepto_id
+                                        where ac.persona_id = :personaId and ac.cuenta = :cuentaah and nc.clave in (:claves);"
+
+  actualizarValorConceptoCuentaById: "update ahorro.ahcuentas_ahorro_datos set valor = :valor where id = :id;"
+
+  guardarConceptoCuenta: "insert into ahorro.ahcuentas_ahorro_datos
+					      (cuenta_id, concepto_id, estatus_id, valor, usuario_creacion, fecha_creacion)
+					      (select ac.id as cuenta_id, nc.id as concepto_id, 1 as estatus_id, :valor as valor, 
+					      9 as usuario_creacion, now() as fecha_creacion 
+					      from nucleocentral.ncconceptos nc cross join ahorro.ahcuentas ac
+					      where nc.clave = :clave
+					      and cuenta = :cuentaah);"
+
+ahcuentas_beneficiarios:
+  obtenerBeneficiarioCuentaAhByCuentaId: "select ahcb.nombre_beneficiario, ahcb.relacion_id, ahcb.porcentaje, ahcb.detalle_estatus, ac.cuenta
+                                          from ahorro.ahcuentas_beneficiarios ahcb
+                                          join ahorro.ahcuentas ac on ac.id = ahcb.cuenta_id
+                                          where ac.id = :cuentaId;"
+
+  obtenerBeneficiarioCuentaAhByCuentaAh: "select ahcb.nombre_beneficiario, ahcb.relacion_id, ahcb.porcentaje, ahcb.detalle_estatus, ac.cuenta
+                                          from ahorro.ahcuentas_beneficiarios ahcb
+                                          join ahorro.ahcuentas ac on ac.id = ahcb.cuenta_id
+                                          where ac.cuenta = :cuentaah;"
+
+  guardarBeneficiarioCuentaAh: "insert into ahorro.ahcuentas_beneficiarios 
+                                (cuenta_id, nombre_beneficiario, relacion_id, porcentaje, fecha_creacion, estatus_id, usuario_creacion, persona_id, detalle_estatus) 
+		                        values(:cuentaId, :nombreBeneficiario, :relacionId, :porcentaje, now(), 1, 9, '0BF', false) returning id;"
+
+ahcuentas_beneficiarios_detalle:
+  obtenerDetalleBeneficiarioByCuentaAh: "select ahcb.nombre_beneficiario as nombre_b, ahcb.relacion_id as parentesco_b, ahcb.porcentaje as porcentaje_b, ahcb.detalle_estatus,
+                                         ahc.cuenta, ahcbd.id as id, ahcbd.fecha_nacimiento as fechaNacimiento, ahcbd.domicilio as domicilio, ahcbd.cp as codigoPostal, 
+                                         ahcbd.colonia as colonia, ahcbd.ciudad as ciudad, ahcbd.no_interior as numeroInterior, ahcbd.calle as calle, ahcbd.no_exterior as numeroExterior, 
+                                         ahcbd.curp as curp, ahcbd.rfc as rfc, ahcbd.numero_celular as numeroCelular,ahcbd.id_beneficiario as idBeneficiario
+                                         from ahorro.ahcuentas_beneficiarios_detalle ahcbd
+                                         left join ahorro.ahcuentas_beneficiarios ahcb on ahcb.id = ahcbd.id_beneficiario
+                                         inner join ahorro.ahcuentas ahc on ahc.id = ahcb.cuenta_id
+                                         where ahc.cuenta = :cuentaah;"

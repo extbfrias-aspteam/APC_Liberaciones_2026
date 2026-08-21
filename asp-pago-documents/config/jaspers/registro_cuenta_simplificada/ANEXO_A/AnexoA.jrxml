@@ -1,0 +1,349 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="ahorro_edo_movtosv" language="java" pageWidth="612" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6aede929-b7e0-484f-a2b0-812f0ae5bbc8">
+	<property name="ireport.zoom" value="1.6105100000000008"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="USUARIO" class="java.lang.String"/>
+	<parameter name="RUTA_IMAGEN" class="java.lang.String"/>
+	<parameter name="nombre_cliente" class="java.lang.String"/>
+	<parameter name="numero_cuenta" class="java.lang.String"/>
+	<parameter name="periodo_presentacion" class="java.lang.String"/>
+	<parameter name="saldo_real" class="java.lang.Double"/>
+	<parameter name="SUBREPORT_DIR" forPrompting="false" class="java.lang.String">
+		<defaultValueExpression><![CDATA["C:\\Users\\aliem\\OneDrive\\Documentos\\Documentos ASP\\Reportes\\Nuevos\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_NUM_SOLICITANTE" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_NUM_SOCIO" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_NOMBRES" class="java.lang.String">
+		<defaultValueExpression><![CDATA["'val1', 'val2'"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_PORCENTAJES" class="java.lang.String">
+		<defaultValueExpression><![CDATA["'val3', 'val4'"]]></defaultValueExpression>
+	</parameter>
+	<query language="sql"><![CDATA[select * from (select s.numero, s.nombre_p as nombre, s.apellidos as apellido_p, s.apellido_m, solicitante2fechanacompleta(S.NUMERO) AS FECHA_NACIMIENTO, '100%' as porcentaje,
+    (COALESCE(S.RFC1,'')||COALESCE(S.RFC2,'')||COALESCE(S.RFC3,'')) AS RFC, COALESCE(S.CURP,'') AS CURP,
+    s.descripcion_domicilio1 as calle, s.descripcion_domicilio4 as numero_ext, s.descripcion_domicilio5 as num_interior,
+    c.nombre as colonia, m.nombre as municipio, e.descripcion as entidad_federativa,
+    c.codigo_postal as cp,dt.telefono, s.correo, coalesce(s.t_persona, 'F') as tipo,ss.id_socio
+    from solicitante as s
+    left join directorio_telefonico dt on dt.id_solicitante = s.numero
+    left join prcolonia c on c.codigo_postal = s.colonia
+    left join prlocalidad l on l.prlocalidad_localidad_ix = c.localidad_id
+    left join prmunicipio m on m.prmunicipio_municipio_ix = l.municipio_id
+    left join prestado e on e.estado_id = m.estado_id
+    left join solicitante_socios ss on ss.id_solicitante = s.numero
+    where numero = $P{P_NUM_SOLICITANTE} and dt.id_cat_telefono = 7) as cliente
+    left join  (select s.numero as numero_s, s.nombre_p as nombre_s, s.apellidos as apellido_p_s, s.apellido_m as apellido_m_s, solicitante2fechanacompleta(S.NUMERO) AS FECHA_NACIMIENTO_s, '100%' as porcentaje_s,
+    (COALESCE(S.RFC1,'')||COALESCE(S.RFC2,'')||COALESCE(S.RFC3,'')) AS RFC_s, COALESCE(S.CURP,'') AS CURP_s,
+    s.descripcion_domicilio1 as calle_s, s.descripcion_domicilio4 as numero_ext_s, s.descripcion_domicilio5 as num_interior_s,
+    c.nombre as colonia_s, m.nombre as municipio_s, e.descripcion as entidad_federativa_s,
+    c.codigo_postal as cp_s,dt.telefono as telefono_s, s.correo as correo_s
+    from solicitante as s
+    left join directorio_telefonico dt on dt.id_solicitante = s.numero
+    left join prcolonia c on c.codigo_postal = s.colonia
+    left join prlocalidad l on l.prlocalidad_localidad_ix = c.localidad_id
+    left join prmunicipio m on m.prmunicipio_municipio_ix = l.municipio_id
+    left join prestado e on e.estado_id = m.estado_id
+    left join solicitante_socios ss on ss.id_solicitante = s.numero
+    where s.numero = $P{P_NUM_SOCIO} and dt.id_cat_telefono = 7) as socio on socio.numero_s = cliente.id_socio]]></query>
+	<field name="nombre" class="java.lang.String"/>
+	<field name="apellido_p" class="java.lang.String"/>
+	<field name="apellido_m" class="java.lang.String"/>
+	<field name="fecha_nacimiento" class="java.lang.String"/>
+	<field name="porcentaje" class="java.lang.String"/>
+	<field name="rfc" class="java.lang.String"/>
+	<field name="curp" class="java.lang.String"/>
+	<field name="calle" class="java.lang.String"/>
+	<field name="numero_ext" class="java.lang.String"/>
+	<field name="num_interior" class="java.lang.String"/>
+	<field name="colonia" class="java.lang.String"/>
+	<field name="municipio" class="java.lang.String"/>
+	<field name="entidad_federativa" class="java.lang.String"/>
+	<field name="cp" class="java.lang.String"/>
+	<field name="telefono" class="java.lang.String"/>
+	<field name="correo" class="java.lang.String"/>
+	<field name="nombre_s" class="java.lang.String"/>
+	<field name="apellido_p_s" class="java.lang.String"/>
+	<field name="apellido_m_s" class="java.lang.String"/>
+	<field name="fecha_nacimiento_s" class="java.lang.String"/>
+	<field name="porcentaje_s" class="java.lang.String"/>
+	<field name="rfc_s" class="java.lang.String"/>
+	<field name="curp_s" class="java.lang.String"/>
+	<field name="calle_s" class="java.lang.String"/>
+	<field name="numero_ext_s" class="java.lang.String"/>
+	<field name="num_interior_s" class="java.lang.String"/>
+	<field name="colonia_s" class="java.lang.String"/>
+	<field name="municipio_s" class="java.lang.String"/>
+	<field name="entidad_federativa_s" class="java.lang.String"/>
+	<field name="cp_s" class="java.lang.String"/>
+	<field name="telefono_s" class="java.lang.String"/>
+	<field name="correo_s" class="java.lang.String"/>
+	<variable name="P_NUM_SOCIO" class="java.lang.String"/>
+	<variable name="P_NUM_SOLICITANTE" class="java.lang.String"/>
+	<background splitType="Stretch"/>
+	<title height="39" splitType="Stretch"/>
+	<pageHeader height="483" splitType="Stretch">
+		<element kind="textField" uuid="847bdd3b-bc99-434d-aeb4-39e5e0c9ae99" x="366" y="119" width="55" height="31" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["APELLIDO MATERNO:"]]></expression>
+		</element>
+		<element kind="textField" uuid="c228f8b9-e8f8-4f24-a799-f9364026ec3c" x="10" y="58" width="539" height="42" fontName="DejaVu Sans" hTextAlign="Justified">
+			<expression><![CDATA["DECLARA EL CLIENTE, POR SU PROPIO DERECHO O A TRAVÉS DE SU REPRESENTANTE O APODERADO LEGAL QUE LA INFORMACIÓN CONTENIDA A CONTINUACIÓN, SON SUS DATOS GENERALES, PERSONAS AUTORIZADAS PARA DISPONER DE LOS RECURSOS DE SUS CUENTAS, Y BENEFICIARIOS"]]></expression>
+		</element>
+		<element kind="textField" uuid="b8f083c2-b84e-4e74-b5d8-41b7da0f303c" x="10" y="281" width="125" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["DATOS DEL AUTORIZADO:"]]></expression>
+		</element>
+		<element kind="textField" uuid="2c304d27-c34d-4af6-9a19-ce1bdd3c9d6f" x="61" y="398" width="100" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{calle_s}]]></expression>
+		</element>
+		<element kind="textField" uuid="e1486093-c09e-4475-9b81-c58188103b76" x="10" y="119" width="51" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["NOMBRE:"]]></expression>
+		</element>
+		<element kind="textField" uuid="80acbb6d-7145-4410-abb4-753a14f1b210" x="10" y="214" width="51" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["CALLE: "]]></expression>
+		</element>
+		<element kind="textField" uuid="0c27f62a-51d1-4508-bee4-beae9f6fec52" x="164" y="178" width="45" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["CURP: "]]></expression>
+		</element>
+		<element kind="textField" uuid="fe744c36-794f-457a-8b1f-16cb5b6e2d3b" x="10" y="246" width="70" height="28" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["ENTIDAD FEDERATIVA:"]]></expression>
+		</element>
+		<element kind="textField" uuid="ef80ba3a-6a11-4944-82a3-b9dd21575954" x="164" y="382" width="78" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["NO. EXTERIOR: "]]></expression>
+		</element>
+		<element kind="textField" uuid="e78a722e-8faa-464c-9e28-5e0607d31dfc" x="10" y="414" width="70" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["COLONIA: "]]></expression>
+		</element>
+		<element kind="textField" uuid="f2993809-2a9a-4fea-a560-f1510383ccf5" x="164" y="414" width="62" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["TELEFONO: "]]></expression>
+		</element>
+		<element kind="textField" uuid="c16bece5-e9e7-44ff-8148-77ff813a1f95" x="366" y="230" width="75" height="26" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["CORREO ELECTRONICO:"]]></expression>
+		</element>
+		<element kind="textField" uuid="6b5264f3-9ffc-4e16-89a5-97c5c863a252" x="10" y="297" width="51" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["NOMBRE:"]]></expression>
+		</element>
+		<element kind="textField" uuid="937b34e1-48a3-4872-ad4e-603d78b786d6" x="164" y="297" width="100" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["APELLIDO PATERNO:"]]></expression>
+		</element>
+		<element kind="textField" uuid="4c67c9bb-2e0d-44d8-bc13-9064521b65f8" x="264" y="119" width="100" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{apellido_p}]]></expression>
+		</element>
+		<element kind="textField" uuid="53042f08-d84c-435f-8092-102dfbb7fb71" x="441" y="198" width="108" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{num_interior}]]></expression>
+		</element>
+		<element kind="textField" uuid="7a221175-7b87-4cfd-9152-ed58bb5d9285" x="209" y="356" width="155" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{curp_s}]]></expression>
+		</element>
+		<element kind="textField" uuid="9e012977-9ff3-40e4-a809-f5f743e55b36" x="80" y="150" width="81" height="28" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{fecha_nacimiento}]]></expression>
+		</element>
+		<element kind="textField" uuid="8dbe559e-d04f-48f6-a08b-93895d280f84" x="61" y="119" width="100" height="31" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{nombre}]]></expression>
+		</element>
+		<element kind="textField" uuid="2bed04f6-4058-4e24-b5dd-21b8cc726656" x="244" y="198" width="122" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{numero_ext}]]></expression>
+		</element>
+		<element kind="textField" uuid="6b64ecfa-0c18-4b61-b890-7feba9022a24" x="366" y="214" width="36" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["C.P.:  "]]></expression>
+		</element>
+		<element kind="textField" uuid="e0a0d227-1149-440d-8072-a1e0ea1fe0b7" x="242" y="382" width="122" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{numero_ext_s}]]></expression>
+		</element>
+		<element kind="textField" uuid="481b539a-f508-4ad1-96f8-0cee53ca5c44" x="366" y="414" width="75" height="26" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["CORREO ELECTRONICO:"]]></expression>
+		</element>
+		<element kind="textField" uuid="7e00eb03-5905-4481-8c7b-0e193c922c9e" x="80" y="230" width="81" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{colonia}]]></expression>
+		</element>
+		<element kind="textField" uuid="fa51c40b-693e-422e-988f-c2ee9b2ea531" x="421" y="119" width="128" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{apellido_m}]]></expression>
+		</element>
+		<element kind="textField" uuid="2675b255-39b3-4bf2-92e7-b0b2fbd066c0" x="10" y="382" width="70" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["DOMICILIO: "]]></expression>
+		</element>
+		<element kind="textField" uuid="ca466090-cd20-472f-934a-b1af8ad77d75" x="10" y="198" width="70" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["DOMICILIO: "]]></expression>
+		</element>
+		<element kind="textField" uuid="6024a10d-8e00-4580-8aa8-05910f66d3a3" x="366" y="398" width="36" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["C.P.:  "]]></expression>
+		</element>
+		<element kind="textField" uuid="4fff03f8-7fa7-43a0-b1b5-6ae1d8f4eec0" x="61" y="356" width="100" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{rfc_s}]]></expression>
+		</element>
+		<element kind="textField" uuid="b65098cd-1d34-440f-963b-23b8d9be607c" x="441" y="382" width="108" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{num_interior_s}]]></expression>
+		</element>
+		<element kind="textField" uuid="dd0e737b-2a5a-4965-b24c-81e603a67fd2" x="10" y="103" width="112" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["DATOS DEL CLIENTE:"]]></expression>
+		</element>
+		<element kind="textField" uuid="50941495-3eb4-4dfa-9bfc-68a206b314c9" x="280" y="398" width="84" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{municipio_s}]]></expression>
+		</element>
+		<element kind="textField" uuid="85a4a885-cbc7-476e-9821-106c360e5d56" x="264" y="328" width="100" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{porcentaje_s}]]></expression>
+		</element>
+		<element kind="textField" uuid="816fdfab-474c-4b2c-915a-dd93a500fdfa" x="164" y="214" width="116" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["MUNICIPIO/ALCALDÍA: "]]></expression>
+		</element>
+		<element kind="textField" uuid="011b8c33-8cdd-4202-a90e-70b90b5440ec" x="164" y="198" width="78" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["NO. EXTERIOR: "]]></expression>
+		</element>
+		<element kind="textField" uuid="7c649f8d-72f0-4fa7-8996-c1b441c9a554" x="441" y="230" width="108" height="26" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{correo}]]></expression>
+		</element>
+		<element kind="textField" uuid="1f552987-f42e-49db-b151-9099cfa36229" x="10" y="10" width="539" height="48" fontName="DejaVu Sans" hTextAlign="Justified">
+			<expression><![CDATA["DECLARA EL CLIENTE, POR SU PROPIO DERECHO O A TRAVÉS DE SU REPRESENTANTE O APODERADO LEGAL QUE LA INFORMACIÓN CONTENIDA A CONTINUACIÓN, SON SUS DATOS GENERALES, PERSONAS AUTORIZADAS PARA DISPONER DE LOS RECURSOS DE SUS CUENTAS, Y BENEFICIARIOS"]]></expression>
+		</element>
+		<element kind="textField" uuid="adc02cc4-83a7-44dc-b8a0-8f0b3d9102bc" x="366" y="297" width="55" height="31" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["APELLIDO MATERNO:"]]></expression>
+		</element>
+		<element kind="textField" uuid="f83c6779-17eb-473b-be78-ec8cdd3b03f7" x="226" y="414" width="138" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{telefono_s}]]></expression>
+		</element>
+		<element kind="textField" uuid="42938a49-7673-4ea6-96ff-dd47074a161c" x="10" y="398" width="51" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["CALLE: "]]></expression>
+		</element>
+		<element kind="textField" uuid="7365532f-2f80-4f1b-9d72-31f35cd2526b" x="402" y="398" width="147" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{cp_s}]]></expression>
+		</element>
+		<element kind="textField" uuid="ede3aed7-0917-45b9-8bca-d88d401487d2" x="80" y="414" width="81" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{colonia_s}]]></expression>
+		</element>
+		<element kind="textField" uuid="0eb7e805-b76a-4e0e-9a55-c6c53cc1eaec" x="421" y="297" width="128" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{apellido_m_s}]]></expression>
+		</element>
+		<element kind="textField" uuid="7a3551a9-0d75-4e4b-9ae6-b97bef1ea474" x="164" y="356" width="45" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["CURP: "]]></expression>
+		</element>
+		<element kind="textField" uuid="3b83ae18-1353-43d4-b3b5-05576e83394a" x="61" y="214" width="100" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{calle}]]></expression>
+		</element>
+		<element kind="textField" uuid="3100b191-f0ea-4e58-b6ac-a42c7ad7f915" x="164" y="150" width="100" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["PORCENTAJE: "]]></expression>
+		</element>
+		<element kind="textField" uuid="0116ee86-aeb5-45a7-b6ad-f93e6b6ff416" x="280" y="214" width="84" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{municipio}]]></expression>
+		</element>
+		<element kind="textField" uuid="27bdce05-abe1-4949-b3c8-63cc6ee17852" x="164" y="398" width="116" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["MUNICIPIO/ALCALDÍA: "]]></expression>
+		</element>
+		<element kind="textField" uuid="71c6a231-43ff-4c52-baae-81556d8e12e9" x="164" y="119" width="100" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["APELLIDO PATERNO:"]]></expression>
+		</element>
+		<element kind="textField" uuid="bf5a73ef-5e1d-47a4-a4a2-c567c6e00018" x="10" y="328" width="70" height="28" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["FECHA DE NACIMIENTO:"]]></expression>
+		</element>
+		<element kind="textField" uuid="f70e579b-c046-4b39-802b-2685492fea9a" x="402" y="214" width="147" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{cp}]]></expression>
+		</element>
+		<element kind="textField" uuid="335e3243-04da-4581-b477-de6b761b1061" x="10" y="230" width="70" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["COLONIA: "]]></expression>
+		</element>
+		<element kind="textField" uuid="b7908607-8151-41f1-8869-828ec4b61d3b" x="80" y="246" width="81" height="28" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{entidad_federativa}]]></expression>
+		</element>
+		<element kind="textField" uuid="a450d1d4-69c6-4480-813a-cac0333f2fbd" x="10" y="356" width="51" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["RFC :"]]></expression>
+		</element>
+		<element kind="textField" uuid="250d8963-4527-449a-95a1-60b23c728275" x="264" y="150" width="100" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{porcentaje}]]></expression>
+		</element>
+		<element kind="textField" uuid="d5aa8dd4-0091-4470-8870-f5820b1e6b84" x="61" y="178" width="100" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{rfc}]]></expression>
+		</element>
+		<element kind="textField" uuid="f9bf1846-939c-42a9-a5be-f94d61df75c1" x="80" y="328" width="81" height="28" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{fecha_nacimiento_s}]]></expression>
+		</element>
+		<element kind="textField" uuid="13228f79-8bff-4ba5-b46e-c73d6b117cd2" x="366" y="198" width="75" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["NO. INTERIOR:"]]></expression>
+		</element>
+		<element kind="textField" uuid="2250ec92-bc45-46d5-ae45-fd82d296709a" x="441" y="414" width="108" height="26" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{correo_s}]]></expression>
+		</element>
+		<element kind="textField" uuid="72ebf987-f2e3-4db3-a473-9db3d48def19" x="209" y="178" width="155" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{curp}]]></expression>
+		</element>
+		<element kind="textField" uuid="aa29110f-0404-4b1d-918f-096e2bc6a5e6" x="10" y="150" width="70" height="28" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["FECHA DE NACIMIENTO:"]]></expression>
+		</element>
+		<element kind="textField" uuid="3fdb5851-2e17-4ba5-a806-bb0c6b7e64f2" x="10" y="430" width="70" height="28" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["ENTIDAD FEDERATIVA:"]]></expression>
+		</element>
+		<element kind="textField" uuid="03728ce2-c4ed-426a-95fc-59c2d3aac48a" x="61" y="297" width="100" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{nombre_s}]]></expression>
+		</element>
+		<element kind="textField" uuid="1496c4f1-4d27-4685-bbd2-9e2a338c8098" x="10" y="463" width="136" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["BENEFICIARIOS"]]></expression>
+		</element>
+		<element kind="textField" uuid="d13b08a0-e189-4b46-ab18-9ebc7708d794" x="366" y="382" width="75" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["NO. INTERIOR:"]]></expression>
+		</element>
+		<element kind="textField" uuid="ee957c0d-5989-4e69-a504-5138222e4e6f" x="164" y="328" width="100" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["PORCENTAJE: "]]></expression>
+		</element>
+		<element kind="textField" uuid="1299aed8-4341-40c9-a1d6-b9603e438ce4" x="10" y="178" width="51" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["RFC: "]]></expression>
+		</element>
+		<element kind="textField" uuid="1103e844-a788-462c-a656-20c33bdffb4d" x="264" y="297" width="100" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{apellido_p_s}]]></expression>
+		</element>
+		<element kind="textField" uuid="663f01f2-c1dc-4a25-98f8-3499a8253505" x="80" y="430" width="81" height="28" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{entidad_federativa}]]></expression>
+		</element>
+		<element kind="textField" uuid="7beef208-a6e3-4221-ba56-b6ac836dc670" x="226" y="230" width="138" height="16" fontName="DejaVu Sans" fontSize="8.0" blankWhenNull="true">
+			<expression><![CDATA[$F{telefono}]]></expression>
+		</element>
+		<element kind="textField" uuid="bdd625fa-b755-438a-81c5-e87e9fbb0dfa" x="164" y="230" width="62" height="16" fontName="DejaVu Sans" fontSize="8.0">
+			<expression><![CDATA["TELEFONO: "]]></expression>
+		</element>
+	</pageHeader>
+	<columnHeader height="25" splitType="Stretch">
+		<element kind="staticText" uuid="0e286584-5d96-4b66-9c4b-9a5c81f854c5" x="0" y="13" width="170" height="12" markup="none" fontSize="8.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Detalle de la Operación]]></text>
+			<box>
+				<topPen lineWidth="0.25" lineStyle="Dashed"/>
+				<leftPen lineWidth="0.25" lineStyle="Dashed"/>
+				<bottomPen lineWidth="0.25" lineStyle="Dashed"/>
+				<rightPen lineWidth="0.25"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="1fdb0770-7aa4-410b-afbd-d5a15edd62fc" x="170" y="13" width="110" height="12" markup="none" fontSize="8.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Fecha de Operación]]></text>
+			<box>
+				<topPen lineWidth="0.25" lineStyle="Dashed"/>
+				<leftPen lineWidth="0.25" lineStyle="Dashed"/>
+				<bottomPen lineWidth="0.25" lineStyle="Dashed"/>
+				<rightPen lineWidth="0.25"/>
+			</box>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="12" splitType="Stretch">
+			<element kind="textField" uuid="4ffd39e2-b938-4efa-9cf1-0f33a2e1fca2" x="0" y="0" width="170" height="12" fontSize="8.0" blankWhenNull="true" vTextAlign="Middle">
+				<expression><![CDATA[$P{P_NOMBRES}]]></expression>
+				<box leftPadding="2">
+					<pen lineStyle="Dashed"/>
+					<topPen lineWidth="0.25" lineStyle="Dashed"/>
+					<leftPen lineWidth="0.25" lineStyle="Dashed"/>
+					<bottomPen lineWidth="0.25" lineStyle="Dashed"/>
+					<rightPen lineWidth="0.25" lineStyle="Dashed"/>
+				</box>
+			</element>
+			<element kind="textField" uuid="40c4fb9c-cc60-4de4-857b-d7f0f9a35009" x="170" y="0" width="110" height="12" fontSize="8.0" pattern="dd-MMM-yyyy" blankWhenNull="true" vTextAlign="Middle">
+				<expression><![CDATA[$P{P_PORCENTAJES}]]></expression>
+				<box leftPadding="2">
+					<pen lineStyle="Dashed"/>
+					<topPen lineWidth="0.25" lineStyle="Dashed"/>
+					<leftPen lineWidth="0.25" lineStyle="Dashed"/>
+					<bottomPen lineWidth="0.25" lineStyle="Dashed"/>
+					<rightPen lineWidth="0.25" lineStyle="Dashed"/>
+				</box>
+			</element>
+		</band>
+	</detail>
+	<pageFooter height="46" splitType="Stretch"/>
+</jasperReport>

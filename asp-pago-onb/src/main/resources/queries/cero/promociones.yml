@@ -1,0 +1,10 @@
+promociones:
+  obtenerCodigoIdByCodigoReferencia: "select pr.id from promociones.prcodigo_referencia pr where pr.codigo_referencia = :codigo_referencia and pr.estatus = 'ACTIVO'"
+
+  obtenerCuentaByCuenta: "select pcr.cuenta from promociones.prcuenta_codigo_referencia pcr where pcr.cuenta= :cuenta;"
+
+  registrarCodigoReferencia: "insert into promociones.prcuenta_codigo_referencia 
+                              (cuenta, codigo_referencia_id, usuario_creacion, fecha_creacion) 
+                              values (:cuenta, :idCodigoReferencia, 9, now());"
+
+  actualizarCodigoReferencia: "update promociones.prcuenta_codigo_referencia set codigo_referencia_id = :idCodigoReferencia, usuario_modificacion = :usuario, fecha_modificacion = now() where cuenta = :cuenta"

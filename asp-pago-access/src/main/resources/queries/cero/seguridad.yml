@@ -1,0 +1,134 @@
+sesiones_asppago:
+  obtenerSesionAspPagoByPersonaId: "select sa.estatus, sa.fecha_login from seguridad.sesiones_asppago sa where sa.personaid  = :personaId;"
+
+  guardarSesionAspPago: "insert into seguridad.sesiones_asppago (personaid, fecha_login, estatus) values (:personaId, :fechaLogin, :estatus);"
+
+  actualziarSesionAspPago: "update seguridad.sesiones_asppago set estatus = :estatus, fecha_login = :fechaLogin, fecha_modificacion = now(), 
+                            usuario_modificacion = :usuarioMod where personaid = :personaId;"
+
+  registrarBitacoraSesionesAspPago: "insert into seguridad.sebitacora_sesiones_asppago (personaid, fecha_login, estatus, latitud, longitud) 
+                                     values (:personaId, :fechaLogin, :estatus, :latitud, :longitud);"
+
+sepin_otp:
+  obtenerPinOTPActivos: "select sp.id, sp.personaId, sp.activo, sp.pin_otp, sp.fecha_expira, sp.fecha_creacion 
+                         from seguridad.sepin_otp sp 
+                         where sp.personaId = :personaId and sp.activo = true;"
+
+  desactivarPinOtpById: "update seguridad.sepin_otp set activo = :activo, fecha_modificacion = now(), 
+                         usuario_modificacion = :usuarioModificacion where id = :id;"
+
+  desactivarPinOTPByPersonaId: "update seguridad.sepin_otp set activo = :activo, fecha_modificacion = now(), 
+                                usuario_modificacion = :usuarioModificacion where personaId = :personaId and activo = true;"
+
+  guardarPinOTP: "insert into seguridad.sepin_otp (personaId, pin_otp, activo, fecha_expira, fecha_creacion, usuario_creacion)
+                  values (:personaId, :pinOTP, :activo, :fExpira, :fCreacion, :usuarioCreacion);"
+  
+  obtenerPinOTPActivoByPersonaId: "select so.id, so.personaid, so.pin_otp, so.activo, so.fecha_expira, so.fecha_creacion from seguridad.sepin_otp so
+                    where so.personaid = :personaid and so.activo = true LIMIT 1;"
+
+sepwd_otp:
+  desactivarOTPResetPasswrod: "update seguridad.seotp_pwd set activo = :activo, fecha_modificacion = now(), 
+                               usuario_modificacion = 9 
+                               where id = :id;"
+
+  desactivarOTPActivosResetPasswordByPersonaId: "update seguridad.seotp_pwd set activo = :activo, fecha_modificacion = now(), 
+                                                 usuario_modificacion = 9
+                                                 where persona_id = :persona_id and activo = true;"
+
+  guardaOTPResetPassword: "insert into seguridad.seotp_pwd 
+                           (persona_id, device_id, otp_hash, activo, fecha_expira, fecha_creacion, usuario_creacion)
+                           values (:persona_id, :device_id, :otp_hash, :activo, :fecha_expira, :fecha_creacion, 9) returning id;"
+
+  obtenerOTPResetPassword: "select so.id, so.persona_id, so.device_id, so.otp_hash, so.activo, so.fecha_expira, so.fecha_creacion 
+                            from seguridad.seotp_pwd so
+                            where so.persona_id = :persona_id and so.device_id = :device_id
+                            and so.activo = true and so.otp_hash = :otp_hash;"
+
+sepassword_reset_control:
+  obtenerPwdResetControl: "select prc.id, prc.persona_id, prc.tipo_control, prc.intentos, prc.fecha_inicio_ventana,
+                           prc.fecha_bloqueo, prc.bloqueado
+                           from seguridad.sepassword_reset_control prc
+                           where prc.persona_id = :persona_id and prc.tipo_control = :tipo_control;"
+
+  registraNuevoPwdResetControl: "insert into seguridad.sepassword_reset_control
+                                 (persona_id, tipo_control, intentos, fecha_inicio_ventana, bloqueado, usuario_creacion)
+                                 values (:persona_id, :tipo_control, 1, now(), false, 9) returning id;"
+
+  limpiarPwdResetControl: "update seguridad.sepassword_reset_control
+                           set intentos = 1, bloqueado = false, fecha_modificacion = now(), 
+                           usuario_modificacion = 9, fecha_inicio_ventana = now(), fecha_bloqueo = null
+                           where id = :id;"
+
+  bloquearPwdResetControl: "update seguridad.sepassword_reset_control
+                            set bloqueado = true, fecha_modificacion = now(), usuario_modificacion = 9, 
+                            fecha_bloqueo = now(), intentos = :intentos
+                            where id = :id;"
+
+  incrementarIntentosPwdResetControl: "update seguridad.sepassword_reset_control
+                                       set fecha_modificacion = now(), usuario_modificacion = 9, 
+                                       intentos = :intentos
+                                       where id = :id;"
+
+sepassword_reset_control_historico:
+  insertarHistoricoPwdResetControl: "insert into seguridad.sepassword_reset_control_historico
+                                     (id_control, persona_id, device_id, evento, intentos, observaciones, origen, usuario_creacion)
+                                     values (:id_control, :persona_id, :device_id, :evento, :intentos, :observaciones, :origen, 9);"
+
+sepassword_reset_session:
+  obtenerRessetSesion: "select prs.id, prs.id_session, prs.persona_id, prs.device_id, prs.fecha_expira, prs.activo
+                        from seguridad.sepassword_reset_session prs
+                        where prs.id_session = :id_session and prs.device_id = :device_id 
+                        and prs.activo = true and prs.usada = false;"
+
+  guardarResetSessionCambioPwd: "insert into seguridad.sepassword_reset_session
+                                 (id_session, persona_id, device_id, fecha_expira, activo, usada, 
+                                 usuario_creacion, fecha_creacion)
+                                 values (:id_session, :persona_id, :device_id, :fecha_expira, :activo, false, 
+                                 9, :fecha_creacion);"
+
+  desactivarPasswordResetSession: "update seguridad.sepassword_reset_session
+                                   set fecha_modificacion = now(), usuario_modificacion = 9, 
+                                   usada = :usada, activo = false
+                                   where id = :id;"
+
+  desactivarPasswordResetSessionActivasByPersonaId: "update seguridad.sepassword_reset_session
+                                                     set fecha_modificacion = now(), usuario_modificacion = 9, 
+                                                     activo = false
+                                                     where persona_id = :persona_id and activo = true;"
+
+sebitacora_password_reset:
+  registraBitacoraCambioPassword: "insert into seguridad.sebitacora_password_reset
+                                   (valor_referencia, tipo_referencia, device_id, tipo_evento, resultado, observaciones, uuid_text, usuario_creacion)
+                                   values (:valor_referencia, :tipo_referencia, :device_id, :tipo_evento, :resultado, :observaciones, :uuid_text, 9)
+                                   returning id;"
+
+  actualizaBitacoraCambioPassword: "update seguridad.sebitacora_password_reset
+                                    set resultado = :resultado, observaciones = :observaciones, 
+                                    fecha_modificacion = now(), usuario_modificacion = 9 where id = :id;"
+
+  actualizaBitacoraCambioPasswordValorRef: "update seguridad.sebitacora_password_reset
+                                            set resultado = :resultado, observaciones = :observaciones, 
+                                            valor_referencia = :valor_referencia, tipo_referencia = :tipo_referencia,
+                                            fecha_modificacion = now(), usuario_modificacion = 9 where id = :id;"
+
+seregistro_cod_aut: 
+  obtenerRegistroCodAutByPersonaId: "select sca.id, sca.intentos, sca.bloqueado from seguridad.seregistro_cod_aut sca
+                                    where sca.personaid = :personaid;"
+  
+  insertarRegistroCodAut: "insert into seguridad.seregistro_cod_aut (personaid, intentos, bloqueado, usuario_creacion, fecha_creacion) 
+                          values (:personaid, :intentos, :bloqueado, :usuario_creacion, now());"
+  
+  actualizarRegistroCodAut: "update seguridad.seregistro_cod_aut set intentos = :intentos, bloqueado = :bloqueado, fecha_bloqueo = :fecha_bloqueo, usuario_modificacion = :usuario_modificacion, fecha_modificacion= now()
+                          where personaid = :personaid;"
+
+seuuid_sospechosos:
+  registraUUIDSospechoso: "insert into seguridad.seuuid_sospechosos
+						   (uuid_txt, uuid_signed, ip_cliente, endpoint, observaciones)
+						   values 
+						   (:uuid_txt, :uuid_signed, :ip_cliente, :endpoint, :observaciones);"
+
+documentacion_asppago:
+  consultaDocPendienteAspPago: "select 1
+                                from seguridad.se_documentacion_pendiente
+                                where idpersona = :idpersona
+                                and tiene_documentos = false;"

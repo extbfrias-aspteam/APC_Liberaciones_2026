@@ -1,0 +1,247 @@
+networks:
+  asp-pago-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/27
+
+services:
+  asp-pago-onb:
+    image: asp-pago-onb:latest
+    container_name: asp-pago-onb
+    user: "${UID}:${GID}"
+    restart: always
+    env_file:
+      - .env
+      - ${HOST_CONTAINER}/asp-pago-onb/.env.onb
+    environment:
+      - TZ=${TZ}
+    ports:
+      - "8014:8014"
+    networks:
+      - asp-pago-network
+    volumes:
+      - ${HOST_CONTAINER}/asp-pago-onb/config/:/app/config/
+      - ${HOST_CONTAINER}/asp-pago-onb/logs/:/app/logs/
+    extra_hosts:
+      sr-mule-sti.integraopciones.mx: ${MULE_STI_IP}
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "512M"
+        reservations:
+          cpus: "0.1"
+          memory: "256M"
+
+  asp-pago-access:
+    image: asp-pago-access:latest
+    container_name: asp-pago-access
+    user: "${UID}:${GID}"
+    restart: always
+    env_file:
+      - .env
+      - ${HOST_CONTAINER}/asp-pago-access/.env.access
+    environment:
+      - TZ=${TZ}
+    ports:
+      - "8015:8015"
+    networks:
+      - asp-pago-network
+    volumes:
+      - ${HOST_CONTAINER}/asp-pago-access/config/:/app/config/
+      - ${HOST_CONTAINER}/asp-pago-access/logs/:/app/logs/
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: "1G"
+        reservations:
+          cpus: "0.2"
+          memory: "320M"
+
+  asp-pago-management:
+    image: asp-pago-management:latest
+    container_name: asp-pago-management
+    user: "${UID}:${GID}"
+    restart: always
+    env_file:
+      - .env
+      - ${HOST_CONTAINER}/asp-pago-management/.env.management
+    environment:
+      - TZ=${TZ}
+    ports:
+      - "8016:8016"
+    networks:
+      - asp-pago-network
+    volumes:
+      - ${HOST_CONTAINER}/asp-pago-management/config/:/app/config/
+      - ${HOST_CONTAINER}/asp-pago-management/logs/:/app/logs/
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: "1G"
+        reservations:
+          cpus: "0.1"
+          memory: "256M"
+
+  asp-pago-payments:
+    image: asp-pago-payments:latest
+    container_name: asp-pago-payments
+    user: "${UID}:${GID}"
+    restart: always
+    env_file:
+      - .env
+      - ${HOST_CONTAINER}/asp-pago-payments/.env.payments
+    environment:
+      - TZ=${TZ}
+    ports:
+      - "8017:8017"
+    networks:
+      - asp-pago-network
+    volumes:
+      - ${HOST_CONTAINER}/asp-pago-payments/config/:/app/config/
+      - ${HOST_CONTAINER}/asp-pago-payments/logs/:/app/logs/
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: "1G"
+        reservations:
+          cpus: "0.2"
+          memory: "320M"
+
+  asp-pago-notification:
+    image: asp-pago-notification:latest
+    container_name: asp-pago-notification
+    user: "${UID}:${GID}"
+    restart: always
+    env_file:
+      - .env
+      - ${HOST_CONTAINER}/asp-pago-notification/.env.notification
+    environment:
+      - TZ=${TZ}
+    ports:
+      - "8018:8018"
+    networks:
+      - asp-pago-network
+    volumes:
+      - ${HOST_CONTAINER}/asp-pago-notification/config/:/app/config/
+      - ${HOST_CONTAINER}/asp-pago-notification/logs/:/app/logs/
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "512M"
+        reservations:
+          cpus: "0.1"
+          memory: "256M"
+
+  asp-pago-documents:
+    image: asp-pago-documents:latest
+    container_name: asp-pago-documents
+    user: "${UID}:${GID}"
+    restart: always
+    env_file:
+      - .env
+      - ${HOST_CONTAINER}/asp-pago-documents/.env.documents
+    environment:
+      - TZ=${TZ}
+    ports:
+      - "8019:8019"
+    networks:
+      - asp-pago-network
+    volumes:
+      - ${HOST_CONTAINER}/asp-pago-documents/config/:/app/config/
+      - ${HOST_CONTAINER}/asp-pago-documents/files/:/app/files/
+      - ${HOST_CONTAINER}/asp-pago-documents/logs/:/app/logs/
+    extra_hosts:
+      pg-procrea.integraopciones.mx: ${DB_PROCREA_IP}
+      pg-cero.integraopciones.mx: ${DB_CERO_IP}
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "512M"
+        reservations:
+          cpus: "0.1"
+          memory: "320M"
+
+  asp-pago-services-v2:
+    image: asp-pago-services-v2:latest
+    container_name: asp-pago-services-v2
+    user: "${UID}:${GID}"
+    restart: always
+    env_file:
+      - .env
+      - ${HOST_CONTAINER}/asp-pago-services-v2/.env.servicesV2
+    environment:
+      - TZ=${TZ}
+    ports:
+      - "8021:8021"
+    networks:
+      - asp-pago-network
+    volumes:
+      - ${HOST_CONTAINER}/asp-pago-services-v2/config/:/app/config/
+      - ${HOST_CONTAINER}/asp-pago-services-v2/logs/:/app/logs/
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "512M"
+        reservations:
+          cpus: "0.1"
+          memory: "320M"
+
+  asp-pago-investments:
+    image: asp-pago-investments:latest
+    container_name: asp-pago-investments
+    user: "${UID}:${GID}"
+    restart: always
+    env_file:
+      - .env
+      - ${HOST_CONTAINER}/asp-pago-investments/.env.investments
+    environment:
+      - TZ=${TZ}
+    ports:
+      - "8024:8024"
+    networks:
+      - asp-pago-network
+    volumes:
+      - ${HOST_CONTAINER}/asp-pago-investments/config/:/app/config/
+      - ${HOST_CONTAINER}/asp-pago-investments/logs/:/app/logs/
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "512M"
+        reservations:
+          cpus: "0.1"
+          memory: "320M"
+
+  asp-pago-jwt:
+    image: asp-pago-jwt:latest
+    container_name: asp-pago-jwt
+    user: "${UID}:${GID}"
+    restart: always
+    env_file:
+      - .env
+      - ${HOST_CONTAINER}/asp-pago-jwt/.env.jwt
+    environment:
+      - TZ=${TZ}
+    ports:
+      - "8026:8026"
+    networks:
+      - asp-pago-network
+    volumes:
+      - ${HOST_CONTAINER}/asp-pago-jwt/config/:/app/config/
+      - ${HOST_CONTAINER}/asp-pago-jwt/logs/:/app/logs/
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: "1G"
+        reservations:
+          cpus: "0.2"
+          memory: "320M"
