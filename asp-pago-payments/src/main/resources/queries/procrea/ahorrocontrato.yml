@@ -1,0 +1,61 @@
+ahorro_contrato:
+  obtenerAhorroContratoByCuentaah: "select 
+                                    c.solicitante_id, c.cuenta, c.contrato, c.tipo_ahorro_id, c.rendimiento_id, c.fecha_apertura, c.fecha_deposito, 
+                                    c.solicitante_id, c.titular_id, c.moneda_id, c.sucursal_apertura, c.asociacion_id, c.domicilio, c.numero_casa, 
+                                    c.colonia_id, c.cta_contable, c.estatus, c.saldo, c.referencia, c.oficial_id, c.creado_por, c.fecha_creacion, 
+                                    c.modificado_por, c.fecha_modificacion, c.fecha_cancelacion, c.cuenta_padre, c.cuenta_destino_cap, 
+                                    c.cuenta_destino_ren, c.ahorro_contrato_id, c.pin, c.pin_fecha_cambio, c.pin_usuario_cambio, c.monto_apertura, 
+                                    c.externa_cuenta, c.externa_clabe, c.externa_tarjeta, c.externa_banco, c.meta_monto, c.meta_fecha, 
+                                    c.meta_aportacion, c.meta_periodo, c.meta_destino_id, c.meta_motivo, c.gat, c.correo_edocuenta, c.cuenta_clabe, 
+                                    c.id_como_entero, c.pin_auto, c.centro_trabajo, c.puesto, c.monto_max_ahorro, c.ingresos, c.prov_rec_id, 
+                                    c.prov_rec_rel_id, c.prov_rec_monto_max_ahorro, c.prov_rec_ingresos, c.prov_centro_trabajo, c.prov_puesto, 
+                                    c.actividad_id, c.giro_id, c.ocupacion_id, c.prov_ocupacion_id, c.cve_destino, c.errores, c.status_bloqueo, 
+                                    c.hora_primer_error, c.hora_bloqueo, c.num_bloqueo, c.requiere_identificador, c.respaldo_md5,
+                                    r.clave as sucursal_id, 
+                                    coalesce(s.rfc1 || s.rfc2 || s.rfc3, 'aaaa999999') as rfc,
+                                    s.nombre, 
+                                    coalesce(t.telefono, '') as telefono_codi, 
+                                    solicitante2fechanacompleta(s.numero) as fecha_nacimiento
+                                    from ahorro_contrato c
+                                    join agente a on a.clave = c.sucursal_apertura
+                                    join regiones r on r.clave = a.region_id
+                                    join solicitante s on s.numero = c.solicitante_id
+                                    left join directorio_telefonico t on t.id_solicitante = s.numero and t.id_cat_telefono = 7
+                                    where c.cuenta = :cuentaah;"
+
+  actualizarSaldoAhorroContrato: "update ahorro_contrato set saldo = :saldo where cuenta = :cuentaah;"
+
+  obtenerEstatusCuentaAh: "select ac.estatus from ahorro_contrato ac where ac.cuenta = :cuentaah;"
+
+ahorro_rendimiento_vigente:
+  obtenerRendimientoVigenteByCuentaAh: "select rendimiento_vigente_id, cuenta,tipo_ahorro_id, periodicidad, coalesce(plazo,0) as plazo, tipo_tasa,calculo_iva, 
+                                        tasa_int,tasa_id, base, formula,tipo_corte, deposito, num_dias,dias_gracia, cta_contable, 
+                                        vigencia_desde, vigencia_hasta,condiciones_retiros,condiciones_apertura, creado_por, fecha_creacion, modificado_por, 
+                                        fecha_modificacion, rendimiento_id, gat, tipo_capitalizar_id, no_disposicion, estatus, tipo, capital,
+                                        fecha_inicio, fecha_final, interes, fecha_deposito
+                                        from ahorro_rendimiento_vigente where cuenta = :cuentaah;"
+
+  actualizarRendimientoVigenteById: "update ahorro_rendimiento_vigente  
+                                     set cuenta = :cuenta, tipo_ahorro_id = :tipoAhorroId, periodicidad = :periodicidad, 
+                                     plazo = :plazo, tipo_tasa = :tipoTasa, calculo_iva = :calculoIva, tasa_int = :tasaInt, 
+                                     tasa_id = :tasaId, base = :base, formula = :formula, tipo_corte = :tipoCorte, 
+                                     deposito = :deposito, num_dias = :numDias, dias_gracia = :diasGracia, 
+                                     cta_contable = :ctaContable, vigencia_desde = :vigenciaDesde, vigencia_hasta = :vigenciaHasta, 
+                                     condiciones_retiros = :condicionesRetiros, condiciones_apertura = :condicionesApertura, 
+                                     creado_por = :creadoPor, fecha_creacion = :fechaCreacion, modificado_por = :modificadoPor, 
+                                     fecha_modificacion = :fechaModificacion, rendimiento_id = :rendimientoId, gat = :gat, 
+                                     tipo_capitalizar_id = :tipoCapitalizarId, no_disposicion = :noDisposicion, 
+                                     estatus = :estatus, tipo = :tipo, capital = :capital, fecha_inicio = :fechaInicio, 
+                                     fecha_final = :fechaFinal, interes = :interes, fecha_deposito = :fechaDeposito
+                                     where rendimiento_vigente_id = :rendimientoVigenteId;"
+
+ahorro_pagares:
+  obtenerAhorroPagareByCunetah: "select pagare_id, cuenta, numero, monto, intereses, fecha_inicio, fecha_final, creado_por, 
+                                 fecha_creacion, modificado_por, fecha_modificacion
+                                 from ahorro_pagares where cuenta = :cuentaah;"
+
+  nuevoAhorroPagare: "insert into ahorro_pagares (pagare_id, cuenta, numero, monto, fecha_inicio, fecha_final, creado_por, fecha_creacion, modificado_por, fecha_modificacion)
+					  values (:pagare_id, :cuenta, :numero, :monto, :fecha_inicio, :fecha_final, :creado_por, :fecha_creacion, :modificado_por, fecha_modificacion);"
+
+secuencias:
+  sigSecAhorroPagare: "select nextval('ahorro_pagares_seq');"

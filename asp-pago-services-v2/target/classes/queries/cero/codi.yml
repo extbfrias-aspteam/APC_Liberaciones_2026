@@ -1,0 +1,5 @@
+registro_codi:
+  obtenerRegistroCoDiByCuentaAh: "select rc.id, rc.cuenta, rc.solicitante_id, coalesce(rsd.registro_nueva_app, '1') registro_nueva_app
+                                  from codi.registro_codi rc 
+                                  join codi.registro_servicios_digitales rsd on rsd.cuenta = rc.cuenta 
+                                  where rc.cuenta = :cuentaah and rc.activo = true;"

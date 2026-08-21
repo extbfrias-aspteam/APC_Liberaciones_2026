@@ -1,0 +1,21 @@
+servicios_asppago:
+  obtnerServicioAspPagoById: "select id from public.servicios_asppago where id = :idServicio;"
+
+bitacora_codigo_autorizacion:
+  guardarBitacora: "insert into public.bitacora_codigo_autorizacion (id_servicio, id_usuario, cod_autorizacion, estatus, observaciones) 
+			        values (:id_servicio, :id_usuario, :cod_autorizacion, CASE WHEN :estatus THEN B'1' ELSE B'0' END, :observaciones);"
+reca_ahorro:
+  obtenerRecaByProductoId: "select reca from reca_ahorro ra where ra.tipo_ahorro_id = :productoId;"
+
+cat_relacion:
+  obtenerParentescoById: "select descripcion as parentesco from cat_relacion where id = :id;"
+
+parametros_generales:
+  obtenerValorParamGeneralByClave: "select valor from parametros_generales as pg where pg.clave = :clave;"
+
+creditos:
+  obtenerCreditosActivosByPersonaId: "select c.numero, s.nombre, c.control, c.cuenta_clabe, c.referencia, c.monto::numeric
+                                      from contrato as c
+                                      join solicitante as s on c.numero = s.numero
+                                      join cheques as ch on ch.control = c.control and ch.tipo = 'C' and ch.estatus = 'E' and ch.ministracion = 1
+                                      where s.numero = :personaId and c.estatus != 'P' and c.exclusivo = 'S' and c.campot5 !='T' and c.validado ='S';"

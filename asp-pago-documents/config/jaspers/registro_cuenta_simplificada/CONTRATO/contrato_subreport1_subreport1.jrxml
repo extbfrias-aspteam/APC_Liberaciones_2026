@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="contrato_subreport1_subreport1" pageWidth="572" pageHeight="752" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="32b9c90b-4f73-4a09-a3b4-915ba15b2585">
+	<property name="ireport.zoom" value="1.1"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="P_NUM_SOLICITANTE" class="java.lang.String"/>
+	<parameter name="P_RELACION_ID" class="java.lang.String"/>
+	<parameter name="P_PORCENTAJE" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[select s.nombre,s.domicilio,c.nombre as colonia,c.cp,l.descripcion as localidad,e.nombre as estado,
+case when coalesce(s.telefono,'')='' then coalesce(s.celular,'') else coalesce(s.telefono,'') end as telefono,
+s.correo,(coalesce(s.rfc1,'')||coalesce(s.rfc2,'')||coalesce(s.rfc3,'')) as rfc,
+(select descripcion from cat_relacion where id=$P{P_RELACION_ID}) as relacion
+from solicitante as s
+join colonia as c on s.colonia=c.clave
+join localidades as l on c.localidad_id=l.clave
+join catmpio as m on l.catmpio_id=m.cmpiompio
+join estatal as e on m.estado_id=e.clave
+where s.numero=$P{P_NUM_SOLICITANTE}]]>
+	</queryString>
+	<field name="nombre" class="java.lang.String"/>
+	<field name="domicilio" class="java.lang.String"/>
+	<field name="colonia" class="java.lang.String"/>
+	<field name="cp" class="java.lang.String"/>
+	<field name="localidad" class="java.lang.String"/>
+	<field name="estado" class="java.lang.String"/>
+	<field name="telefono" class="java.lang.String"/>
+	<field name="correo" class="java.lang.String"/>
+	<field name="rfc" class="java.lang.String"/>
+	<field name="relacion" class="java.lang.String"/>
+	<detail>
+		<band height="64" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="109" height="64" uuid="97d0279d-a097-4b91-8245-94a276f319d9"/>
+				<box topPadding="2" leftPadding="2">
+					<topPen lineWidth="1.5"/>
+					<leftPen lineWidth="1.5"/>
+					<bottomPen lineWidth="1.5"/>
+					<rightPen lineWidth="1.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="109" y="0" width="100" height="64" uuid="4d7d03c6-5c76-4a6c-8700-672846b285d1"/>
+				<box topPadding="2" leftPadding="2">
+					<topPen lineWidth="1.5"/>
+					<leftPen lineWidth="1.5"/>
+					<bottomPen lineWidth="1.5"/>
+					<rightPen lineWidth="1.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{domicilio}+", "+$F{colonia}+", C.P."+$F{cp}+", "+$F{localidad}+", "+$F{estado}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="209" y="0" width="65" height="64" uuid="c44a2c4a-16ea-4ac3-95c3-5d131cf9c819"/>
+				<box topPadding="2" leftPadding="2">
+					<topPen lineWidth="1.5"/>
+					<leftPen lineWidth="1.5"/>
+					<bottomPen lineWidth="1.5"/>
+					<rightPen lineWidth="1.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{telefono}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="274" y="0" width="100" height="64" uuid="33a345ab-56a5-43f2-a128-a511e443dd56"/>
+				<box topPadding="2" leftPadding="2">
+					<topPen lineWidth="1.5"/>
+					<leftPen lineWidth="1.5"/>
+					<bottomPen lineWidth="1.5"/>
+					<rightPen lineWidth="1.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{correo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="374" y="0" width="83" height="64" uuid="dce362fc-2858-497a-b22f-83166964bb20"/>
+				<box topPadding="2" leftPadding="2">
+					<topPen lineWidth="1.5"/>
+					<leftPen lineWidth="1.5"/>
+					<bottomPen lineWidth="1.5"/>
+					<rightPen lineWidth="1.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rfc}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="457" y="0" width="71" height="64" uuid="4d939b79-4a00-41ba-aea8-721ac4b7a9f1"/>
+				<box topPadding="2" leftPadding="2">
+					<topPen lineWidth="1.5"/>
+					<leftPen lineWidth="1.5"/>
+					<bottomPen lineWidth="1.5"/>
+					<rightPen lineWidth="1.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{relacion}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="528" y="0" width="44" height="64" uuid="11ddb499-9d3d-4444-82e3-41ac8a0285b9"/>
+				<box topPadding="2" leftPadding="2">
+					<topPen lineWidth="1.5"/>
+					<leftPen lineWidth="1.5"/>
+					<bottomPen lineWidth="1.5"/>
+					<rightPen lineWidth="1.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_PORCENTAJE}+"%"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

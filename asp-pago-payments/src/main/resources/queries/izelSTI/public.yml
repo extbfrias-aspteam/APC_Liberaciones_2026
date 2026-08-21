@@ -1,0 +1,105 @@
+spei_instituciones:
+  obtenerListadoInstituciones: "select si.id_institucion, trim(si.descripcion) as descripcion
+                                from public.spei_instituciones si
+                                where trim(si.descripcion) != '' and trim(si.descripcion) not like '%2' order by si.descripcion;"
+spei_cuentas:
+  buscarCuentaSpeiCompleto: "select cast(SPEI_CUENTAS.aa as VARCHAR) as ID,
+                             cast(SPEI_CUENTAS.ab as VARCHAR) as ESTATUS_ID,
+                             SPEI_CUENTAS.ac as FECHA_BAJA,
+                             cast(SPEI_CUENTAS.ad as VARCHAR) as MOTIVO_BAJA_ID,
+                             SPEI_CUENTAS.ae as FECHA_CREACION,
+                             cast(SPEI_CUENTAS.af as VARCHAR) as EMPRESA_ID,
+                             SPEI_CUENTAS.ag as CUENTA_CLABE,
+                             cast(SPEI_CUENTAS.ah as VARCHAR) as APLICACION_ID,
+                             SPEI_CUENTAS.ai as CLABE2,
+                             SPEI_CUENTAS.aj as TARJETA,
+                             SPEI_CUENTAS.ak as TELEFONO
+                             from F48FC9873893C5C025F655D47EBA6081 as SPEI_CUENTAS
+                             where SPEI_CUENTAS.ab= 100000000004 and SPEI_CUENTAS.ag= :clabe;"
+
+aplicaciones:
+  buscarAplicacionCompleto: "select  cast(aplicaciones.aa as varchar) as id,
+                               cast(aplicaciones.ab as varchar) as estatus_id,
+                               aplicaciones.ac as fecha_baja,
+                               cast(aplicaciones.ad as varchar) as motivo_baja_id,
+                               aplicaciones.ae as fecha_creacion,
+                               cast(aplicaciones.af as varchar) as empresa_id,
+                               aplicaciones.ag as descripcion,
+                               aplicaciones.ah as clave,
+                               aplicaciones.ai as clave_core
+                               from e50fe194635db97778ae7a827ab48b as aplicaciones
+                               join EA044A8A7E2DD9D42CFF3DD9F1718 as valor on valor.aa = aplicaciones.ab
+                               and valor.ad = 'A' and valor.ae = :empresaId
+                               where aplicaciones.aa = :aplicacionId;"
+
+spei_outgoing:
+  buscarSpeiDupliclados: "select id_spei_outgoing, nombre_ordenante, id_tipo_cuenta_ordenante, cuenta_ordenante, rfc_ordenante,
+                          nombre_beneficiario, id_tipo_cuenta_beneficiario, cuenta_beneficiario, rfc_beneficiario, concepto_pago,
+                          monto, iva, referencia_numerica, referencia, id_tipo_pago, id_institucion_ben, status, envio_automatico, 
+                          tipo_operacion, status_operacion, clave_rastreo, id_devolucion, fecha_captura, fh_operacion, id_operacion, 
+                          referencia_cobranza, id_area_emite, topologia, verificado, clave_pago, prioridad, inf_adicional, app, 
+                          modificado_por, fecha_modificacion, usuario_id, sucursal_id, empresa_id, usuario, correo_electronico, 
+                          correo_beneficiario, procesado, core_id, observaciones, firma, llave_aes, cuenta_ordenante_cf, 
+                          nombre_ordenante_cf, cuenta_beneficiario_cf, nombre_beneficiario_cf, monto_cf, iva_cf, concepto_pago_cf, 
+                          movil_ordenante, movil_ordenante_cfr, movil_beneficiario, movil_beneficiario_cfr, num_folio_esquema_codi, 
+                          num_folio_esquema_codi_cfr, pago_comision, pago_comision_cfr, monto_comision, monto_comision_cfr, 
+                          fh_hr_limite_de_pago, num_serie_cert_comercio, num_serie_cert_comercio_cfr, nombre_beneficiario2, 
+                          nombre_beneficiario2_cfr, rfc_beneficiario2, rfc_beneficiario2_cfr, cuenta_beneficiario2, 
+                          cuenta_beneficiario2_cfr, id_tipo_cuenta_beneficiario2, dv_movil_ordenante, dv_movil_ordenante_cfr, 
+                          dv_movil_beneficiario, dv_movil_beneficiario_cfr
+                          from spei_outgoing
+                          where cuenta_ordenante = :cuenta_ordenante and cuenta_beneficiario = :cuenta_beneficiario and concepto_pago = :concepto_pago
+                          and monto = :monto and id_institucion_ben = :id_institucion_ben and CAST(fecha_captura AS DATE) = :fecha_captura
+                          and referencia_numerica = :referencia_numerica and clave_rastreo = :clave_rastreo;"
+
+  registraSpeiOutgoing: "insert into public.spei_outgoing(id_spei_outgoing, nombre_ordenante, id_tipo_cuenta_ordenante, cuenta_ordenante, rfc_ordenante,
+                         nombre_beneficiario, id_tipo_cuenta_beneficiario, cuenta_beneficiario, rfc_beneficiario, concepto_pago, monto, iva, referencia_numerica,
+                         referencia, id_tipo_pago, id_institucion_ben, status, envio_automatico, tipo_operacion, status_operacion, clave_rastreo, id_devolucion,
+                         fecha_captura, fh_operacion, id_operacion, referencia_cobranza, id_area_emite, topologia, verificado, clave_pago, prioridad, inf_adicional,
+                         app, modificado_por, fecha_modificacion, usuario_id, sucursal_id, empresa_id, usuario, correo_electronico, correo_beneficiario, procesado,
+                         core_id, observaciones, firma, llave_aes, cuenta_ordenante_cf, nombre_ordenante_cf, cuenta_beneficiario_cf, nombre_beneficiario_cf,
+                         monto_cf, iva_cf, concepto_pago_cf, movil_ordenante, movil_ordenante_cfr, movil_beneficiario, movil_beneficiario_cfr,
+                         num_folio_esquema_codi, num_folio_esquema_codi_cfr, pago_comision, pago_comision_cfr, monto_comision, monto_comision_cfr,
+                         fh_hr_limite_de_pago, num_serie_cert_comercio, num_serie_cert_comercio_cfr, nombre_beneficiario2, nombre_beneficiario2_cfr,
+                         rfc_beneficiario2, rfc_beneficiario2_cfr, cuenta_beneficiario2, cuenta_beneficiario2_cfr, id_tipo_cuenta_beneficiario2,
+                         dv_movil_ordenante, dv_movil_ordenante_cfr, dv_movil_beneficiario, dv_movil_beneficiario_cfr)
+                         values (:id_spei_outgoing, :nombre_ordenante, :id_tipo_cuenta_ordenante, :cuenta_ordenante, :rfc_ordenante,
+                         :nombre_beneficiario, :id_tipo_cuenta_beneficiario, :cuenta_beneficiario, :rfc_beneficiario, :concepto_pago, :monto, :iva, :referencia_numerica,
+                         :referencia, :id_tipo_pago, :id_institucion_ben, :status, :envio_automatico, :tipo_operacion, :status_operacion, :clave_rastreo, :id_devolucion,
+                         :fecha_captura, :fh_operacion, :id_operacion, :referencia_cobranza, :id_area_emite, :topologia, :verificado, :clave_pago, :prioridad, :inf_adicional,
+                         :app, :modificado_por, :fecha_modificacion, :usuario_id, :sucursal_id, :empresa_id, :usuario, :correo_electronico, :correo_beneficiario, :procesado,
+                         :core_id, :observaciones, :firma, :llave_aes, :cuenta_ordenante_cf, :nombre_ordenante_cf, :cuenta_beneficiario_cf, :nombre_beneficiario_cf,
+                         :monto_cf, :iva_cf, :concepto_pago_cf, :movil_ordenante, :movil_ordenante_cfr, :movil_beneficiario, :movil_beneficiario_cfr,
+                         :num_folio_esquema_codi, :num_folio_esquema_codi_cfr, :pago_comision, :pago_comision_cfr, :monto_comision, :monto_comision_cfr,
+                         :fh_hr_limite_de_pago, :num_serie_cert_comercio, :num_serie_cert_comercio_cfr, :nombre_beneficiario2, :nombre_beneficiario2_cfr,
+                         :rfc_beneficiario2, :rfc_beneficiario2_cfr, :cuenta_beneficiario2, :cuenta_beneficiario2_cfr, :id_tipo_cuenta_beneficiario2,
+                         :dv_movil_ordenante, :dv_movil_ordenante_cfr, :dv_movil_beneficiario, :dv_movil_beneficiario_cfr);"
+
+usuarios_autorizados:
+  buscarUsuariosAutorizados: "select cast(usuarios_autorizados.aa as varchar) as id,
+                              cast(usuarios_autorizados.ab as varchar) as estatus_id,
+                              cast(usuarios_autorizados.ac as date) as fecha_baja,
+                              cast(usuarios_autorizados.ad as varchar) as motivo_bajaId,
+                              cast(usuarios_autorizados.ae as date) as fecha_creacion,
+                              cast(usuarios_autorizados.af as varchar) as empresa_id,
+                              usuarios_autorizados.ag as monto_inferior,
+                              usuarios_autorizados.ah as monto_superior,
+                              cast(usuarios_autorizados.ai as varchar) as modulo,
+                              cast(usuarios_autorizados.aj as varchar) as autorizado,
+                              cast(usuarios_autorizados.ak as date) as fecha_ini,
+                              cast(usuarios_autorizados.al as date) as fecha_fin,
+                              cast(usuarios_autorizados.am as varchar) as codigo,
+                              usuarios_autorizados.an as nombre_usuario
+                              from D21481D25A659AFCDC7B9A04B1E74DF as usuarios_autorizados
+                              join EA044A8A7E2DD9D42CFF3DD9F1718 as valor on valor.aa = usuarios_autorizados.ab 
+                              and valor.ad = 'A' and valor.ae = :empresaId
+                              where usuarios_autorizados.af = :empresaId and usuarios_autorizados.am = :usuario 
+                              and usuarios_autorizados.ai = :modulo;"
+
+
+secuencias:
+  speiReferenciaSti: "select nextval('seq_referencia') as seq;"
+
+  referenciaQR: "select nextval('codi.codi_referencia_qr'::regclass);"
+
+  sigSecSpeiOutgoing: "select nextval('spei_outgoing_id_spei_outgoing_seq'::regclass)"

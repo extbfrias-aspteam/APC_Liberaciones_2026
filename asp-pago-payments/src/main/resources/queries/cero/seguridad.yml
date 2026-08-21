@@ -1,0 +1,14 @@
+sesiones_asppago:
+  esSesionActivaValida: "SELECT 1
+						 FROM seguridad.sesiones_asppago sa
+						 WHERE sa.personaid = :personaId
+						 AND sa.estatus = 'ACTIVA'
+						 AND sa.fecha_login >= now() - (:minutos || ' minutes')::interval;"
+
+  obtenerSesionAspPagoByPersonaId: "select sa.estatus, sa.fecha_login from seguridad.sesiones_asppago sa where sa.personaid  = :personaId;"
+
+seuuid_sospechosos:
+  registraUUIDSospechoso: "insert into seguridad.seuuid_sospechosos
+						   (uuid_txt, uuid_signed, ip_cliente, endpoint, observaciones)
+						   values
+						   (:uuid_txt, :uuid_signed, :ip_cliente, :endpoint, :observaciones);"

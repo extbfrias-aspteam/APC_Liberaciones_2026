@@ -1,0 +1,4 @@
+spei_instituciones:
+  obtenerListadoInstituciones: "select si.id_institucion, trim(si.descripcion) as descripcion
+                                from public.spei_instituciones si
+                                where trim(si.descripcion) != '' and trim(si.descripcion) not like '%2' order by si.descripcion;"

@@ -1,0 +1,297 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="CONSTANCIA" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3daedc94-3e17-444d-98a8-dc17c9ef1714">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="posgtrs  procrea"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="num_cuenta" class="java.lang.String"/>
+	<query language="sql"><![CDATA[SELECT
+    reportes_param."parametro1",
+    reportes_param."parametro2",
+    reportes_param."parametro3",
+    reportes_param."parametro4",
+    reportes_param."parametro13",
+    reportes_param."parametro14",
+    ahorro_contrato."cuenta",
+    ahorro_rendimiento_vigente."rendimiento_vigente_id",
+    ahorro_rendimiento_vigente."plazo",
+    ahorro_rendimiento_vigente."tasa_int",
+    ahorro_rendimiento_vigente."capital",
+    ahorro_rendimiento_vigente."fecha_inicio",
+    ahorro_rendimiento_vigente."fecha_final",
+    agente."nombre"     AS agente_nombre,
+    agente."titulo"     ,
+    solicitante."nombre" AS solicitante_nombre,
+    coalesce(solicitante."credencial_ife", '') as "credencial_ife", 
+    ahorro_capitalizar_rendimientos."descripcion",
+    (
+        SELECT acr2.descripcion
+        FROM ahorro_capitalizar_rendimientos acr2
+        WHERE acr2.tipo_id = 2
+        LIMIT 1
+    ) AS retiroCapital
+FROM "public"."reportes_param" reportes_param
+INNER JOIN "public"."ahorro_rendimiento_vigente" ahorro_rendimiento_vigente
+    ON reportes_param."llave" = ahorro_rendimiento_vigente."cuenta"
+AND ahorro_rendimiento_vigente."estatus" = 'A'
+LEFT JOIN "public"."ahorro_contrato" ahorro_contrato
+    ON reportes_param."llave" = ahorro_contrato."cuenta"
+LEFT JOIN "public"."solicitante" solicitante
+    ON ahorro_contrato."solicitante_id" = solicitante."numero"
+INNER JOIN "public"."ahorro_capitalizar_rendimientos" ahorro_capitalizar_rendimientos
+    ON ahorro_rendimiento_vigente."tipo_capitalizar_id" = ahorro_capitalizar_rendimientos."tipo_id"
+LEFT JOIN "public"."agente" agente
+    ON ahorro_contrato."sucursal_apertura" = agente."clave"
+    where ahorro_contrato.cuenta=$P{num_cuenta}
+ORDER BY ahorro_contrato."cuenta" asc limit 1;]]></query>
+	<field name="parametro1" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="parametro1"/>
+		<property name="com.jaspersoft.studio.field.label" value="parametro1"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="reportes_param"/>
+	</field>
+	<field name="parametro2" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="parametro2"/>
+		<property name="com.jaspersoft.studio.field.label" value="parametro2"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="reportes_param"/>
+	</field>
+	<field name="parametro3" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="parametro3"/>
+		<property name="com.jaspersoft.studio.field.label" value="parametro3"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="reportes_param"/>
+	</field>
+	<field name="parametro4" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="parametro4"/>
+		<property name="com.jaspersoft.studio.field.label" value="parametro4"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="reportes_param"/>
+	</field>
+	<field name="cuenta" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="cuenta"/>
+		<property name="com.jaspersoft.studio.field.label" value="cuenta"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ahorro_contrato"/>
+	</field>
+	<field name="rendimiento_vigente_id" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="rendimiento_vigente_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="rendimiento_vigente_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ahorro_rendimiento_vigente"/>
+	</field>
+	<field name="plazo" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="plazo"/>
+		<property name="com.jaspersoft.studio.field.label" value="plazo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ahorro_rendimiento_vigente"/>
+	</field>
+	<field name="tasa_int" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.name" value="tasa_int"/>
+		<property name="com.jaspersoft.studio.field.label" value="tasa_int"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ahorro_rendimiento_vigente"/>
+	</field>
+	<field name="capital" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.name" value="capital"/>
+		<property name="com.jaspersoft.studio.field.label" value="capital"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ahorro_rendimiento_vigente"/>
+	</field>
+	<field name="fecha_inicio" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="fecha_inicio"/>
+		<property name="com.jaspersoft.studio.field.label" value="fecha_inicio"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ahorro_rendimiento_vigente"/>
+	</field>
+	<field name="fecha_final" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="fecha_final"/>
+		<property name="com.jaspersoft.studio.field.label" value="fecha_final"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ahorro_rendimiento_vigente"/>
+	</field>
+	<field name="agente_nombre" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="agente_nombre"/>
+		<property name="com.jaspersoft.studio.field.label" value="agente_nombre"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="agente"/>
+	</field>
+	<field name="titulo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="titulo"/>
+		<property name="com.jaspersoft.studio.field.label" value="titulo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="agente"/>
+	</field>
+	<field name="solicitante_nombre" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="solicitante_nombre"/>
+		<property name="com.jaspersoft.studio.field.label" value="solicitante_nombre"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="solicitante"/>
+	</field>
+	<field name="credencial_ife" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="credencial_ife"/>
+		<property name="com.jaspersoft.studio.field.label" value="credencial_ife"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="solicitante"/>
+	</field>
+	<field name="descripcion" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="descripcion"/>
+		<property name="com.jaspersoft.studio.field.label" value="descripcion"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ahorro_capitalizar_rendimientos"/>
+	</field>
+	<field name="retiroCapital" class="java.lang.String"/>
+	<field name="parametro13" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="parametro13"/>
+		<property name="com.jaspersoft.studio.field.name" value="parametro13"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="reportes_param"/>
+	</field>
+	<field name="parametro14" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.tree.path" value="reportes_param"/>
+		<property name="com.jaspersoft.studio.field.name" value="parametro14"/>
+		<property name="com.jaspersoft.studio.field.label" value="parametro14"/>
+	</field>
+	<variable name="fecha_dep" class="java.lang.String">
+		<expression><![CDATA[ $F{fecha_inicio} == null 
+        ? "" 
+        : new java.text.SimpleDateFormat("d 'DE' MMMM 'DEL' yyyy", new java.util.Locale("es","ES"))
+            .format($F{fecha_inicio})
+            .toUpperCase()]]></expression>
+	</variable>
+	<variable name="fecha_operacion" class="java.lang.String">
+		<expression><![CDATA[   $F{fecha_inicio} == null 
+        ? "" 
+        : new java.text.SimpleDateFormat("d-MMM-yyyy", new java.util.Locale("es","ES"))
+            .format($F{fecha_inicio})
+            .toUpperCase()]]></expression>
+	</variable>
+	<variable name="cuenta" class="java.lang.String">
+		<expression><![CDATA[$F{cuenta} == null 
+        ? "" 
+        : $F{cuenta}.substring(0, Math.min($F{cuenta}.length(), 8))]]></expression>
+	</variable>
+	<variable name="subcuenta" class="java.lang.String">
+		<expression><![CDATA[$F{cuenta} == null 
+        ? "" 
+        : $F{cuenta}.substring(8, Math.min($F{cuenta}.length(), 10))]]></expression>
+	</variable>
+	<variable name="fecha_ven" class="java.lang.String">
+		<expression><![CDATA[$F{fecha_final} == null 
+        ? "" 
+        : new java.text.SimpleDateFormat("d 'DE' MMMM 'DEL' yyyy", new java.util.Locale("es","ES"))
+            .format($F{fecha_final})
+            .toUpperCase()]]></expression>
+	</variable>
+	<variable name="folio" class="java.lang.String">
+		<expression><![CDATA[$F{rendimiento_vigente_id} == null 
+        ? "" 
+        : String.format("%010d", $F{rendimiento_vigente_id})]]></expression>
+	</variable>
+	<background splitType="Stretch"/>
+	<summary height="802">
+		<element kind="rectangle" uuid="f6173ec7-6fc3-49a8-a49d-4f66ae512d6a" x="6" y="5" width="530" height="785" radius="58"/>
+		<element kind="staticText" uuid="b723f26b-99ad-4a54-8ad3-d3e8f621d89c" x="5" y="74" width="530" height="30" fontName="Arial" fontSize="17.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[CONSTANCIA DE DEPOSITO A PLAZO FIJO]]></text>
+		</element>
+		<element kind="staticText" uuid="bc6ac5fa-711c-499c-a2a7-b0654174a7c7" x="21" y="133" width="89" height="30" fontName="Arial" fontSize="10.0">
+			<text><![CDATA[Sucursal de Origen:]]></text>
+		</element>
+		<element kind="rectangle" uuid="163eaf9b-1945-4f1d-9adb-7136aea3e910" x="312" y="133" width="219" height="341" radius="20"/>
+		<element kind="staticText" uuid="a1a57c67-e2c9-4859-9c07-a5e9df27c75d" x="322" y="139" width="38" height="30" fontName="Arial" fontSize="10.0">
+			<text><![CDATA[Cuenta:]]></text>
+		</element>
+		<element kind="staticText" uuid="140b7300-2e29-4f2c-9822-65b0e09c2a2e" x="322" y="169" width="58" height="30" fontName="Arial" fontSize="10.0">
+			<text><![CDATA[Subcuenta:]]></text>
+		</element>
+		<element kind="staticText" uuid="41ff17b9-360b-48b7-8469-30a576635e04" x="322" y="199" width="88" height="30" fontName="Arial" fontSize="10.0">
+			<text><![CDATA[Capital depositado:]]></text>
+		</element>
+		<element kind="staticText" uuid="ea9d5388-00bc-4eb9-8a9b-0f7930cee949" x="322" y="229" width="78" height="30" fontName="Arial" fontSize="10.0">
+			<text><![CDATA[Tasa de interés:]]></text>
+		</element>
+		<element kind="staticText" uuid="000cc1ac-36d1-428e-810b-6ae9302d7496" x="322" y="259" width="28" height="30" fontName="Arial" fontSize="10.0">
+			<text><![CDATA[Plazo:]]></text>
+		</element>
+		<element kind="staticText" uuid="726bdab3-6319-44f7-9cf3-1bd46b1d726f" x="322" y="409" width="78" height="30" fontName="Arial" fontSize="10.0">
+			<text><![CDATA[Numero de Folio: ]]></text>
+		</element>
+		<element kind="staticText" uuid="1110592b-c22a-43f8-a128-dc84f10e591c" x="322" y="440" width="48" height="30" fontName="Arial" fontSize="10.0">
+			<text><![CDATA[Moneda:]]></text>
+		</element>
+		<element kind="rectangle" uuid="3138c69c-e51c-46dd-9202-07ceb0b50083" x="39" y="520" width="211" height="244" radius="20"/>
+		<element kind="staticText" uuid="13dd9da8-0043-41fc-8b14-00cdcd20243e" x="50" y="537" width="190" height="130" fontName="Arial" fontSize="11.0" hTextAlign="Justified">
+			<text><![CDATA[LOS RENDIMIENTOS GENERADOS AL VENCIMIENTO SERAN PAGADOS MEDIANTE ABONO A LA CUENTA DE DEPOSITO DE "EL CLIENTE", NO PODRAN SER PAGADOS ANTICIPADAMENTE.]]></text>
+		</element>
+		<element kind="rectangle" uuid="5134b9e3-6c27-46d7-97cc-c97d0cf69399" x="319" y="490" width="211" height="275" radius="20"/>
+		<element kind="line" uuid="0e9689e9-b47c-4a39-9536-90926939d380" x="50" y="410" width="164" height="1">
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<element kind="textField" uuid="771aad09-e58b-402e-bd51-b198e03530b8" x="21" y="196" width="283" height="14" fontName="Arial" fontSize="10.0">
+			<expression><![CDATA["Fecha de operación: "
+]]></expression>
+		</element>
+		<element kind="textField" uuid="b28f4aea-ac11-4dc3-b1da-01133dab40e3" x="322" y="289" width="208" height="30" fontName="Arial">
+			<expression><![CDATA["Fecha de vencimiento: "+$V{fecha_ven}]]></expression>
+		</element>
+		<element kind="textField" uuid="a5266ebf-0e8f-4b90-ad4b-7e2bcf601eb2" x="322" y="319" width="206" height="30" fontName="Arial">
+			<expression><![CDATA["Interés total a percibir antes de impuestos: " + $F{parametro13}]]></expression>
+		</element>
+		<element kind="textField" uuid="2319cecc-0cb7-4337-a0d7-0b83a09f8cb6" x="322" y="349" width="206" height="30" fontName="Arial">
+			<expression><![CDATA["Forma de pago de intereses: "+$F{descripcion}]]></expression>
+		</element>
+		<element kind="textField" uuid="c18b8d3a-aeaa-4aaa-9e21-303582201706" x="322" y="503" width="204" height="31" fontName="Arial">
+			<expression><![CDATA["Páguese a la orden de: "+$F{solicitante_nombre}]]></expression>
+		</element>
+		<element kind="textField" uuid="1f696315-5cb7-499a-8e94-0156f88f6bc1" x="322" y="534" width="204" height="30" fontName="Arial">
+			<expression><![CDATA["IFE: "+$F{credencial_ife}]]></expression>
+		</element>
+		<element kind="staticText" uuid="749697b0-6eda-4284-b2c4-79a23cfc149d" x="325" y="564" width="204" height="196" fontName="Arial">
+			<text><![CDATA[Endosado por: ..........................................................
+..........................................................
+IFE..............................................................................................................
+Firma:.........................................................................................................
+
+Páguese a la orden de:
+..........................................................
+..........................................................
+IFE....................................................
+..........................................................
+Endosado
+]]></text>
+		</element>
+		<element kind="staticText" uuid="fff0d759-78ef-4c1b-b81c-c3b79d18fa09" x="34" y="494" width="221" height="30" fontName="Arial" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[REGLAMENTO DE DEPÓSITO A PLAZO FIJO]]></text>
+		</element>
+		<element kind="staticText" uuid="0961871a-02a0-4555-b690-daac521bae89" x="51" y="411" width="163" height="28" fontName="Arial" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Firma Gerente Virtual]]></text>
+		</element>
+		<element kind="textField" uuid="84e4fbdd-ecfc-4ebd-bf8b-389f4c966834" x="110" y="133" width="194" height="30" fontName="Arial" fontSize="10.0">
+			<expression><![CDATA["Sucursal virtual"]]></expression>
+		</element>
+		<element kind="image" uuid="2de9899c-61e4-446c-9f2a-03d66ea31e3b" x="30" y="21" width="130" height="53">
+			<expression><![CDATA["/app/config/img/Logo.png"]]></expression>
+		</element>
+		<element kind="staticText" uuid="6313d68b-1f68-45b6-b1a3-5b6d0b753f64" x="20" y="163" width="130" height="16" fontName="Arial" fontSize="10.0">
+			<text><![CDATA[Lugar y fecha de emisión:]]></text>
+		</element>
+		<element kind="textField" uuid="771df700-3bf7-44ee-b3f0-334d36e6cf7a" x="20" y="176" width="230" height="16" fontName="Arial" fontSize="10.0">
+			<expression><![CDATA["Sucursal Virtual A "+$V{fecha_dep}
+]]></expression>
+		</element>
+		<element kind="textField" uuid="9c60bce7-f865-47f2-a80b-e12eeabe8d85" x="21" y="210" width="180" height="18">
+			<expression><![CDATA[$V{fecha_operacion}]]></expression>
+		</element>
+		<element kind="textField" uuid="b9f94657-9406-4dcd-ba44-d53c2249279c" x="360" y="139" width="160" height="30" fontName="Arial">
+			<expression><![CDATA[$V{cuenta}]]></expression>
+		</element>
+		<element kind="textField" uuid="6799632c-6a34-422b-893d-0f288da57070" x="374" y="169" width="140" height="30" fontName="Arial">
+			<expression><![CDATA[$V{subcuenta}]]></expression>
+		</element>
+		<element kind="textField" uuid="bd9ff6df-10d1-4012-8a83-4d17f5ba9b90" x="410" y="199" width="110" height="30" fontName="Arial" fontSize="10.0">
+			<expression><![CDATA[$F{capital}]]></expression>
+		</element>
+		<element kind="textField" uuid="00d3b50b-a8ca-40c4-8770-4eb1909c478e" x="400" y="229" width="120" height="30" fontName="Arial" fontSize="10.0">
+			<expression><![CDATA[$F{tasa_int}]]></expression>
+		</element>
+		<element kind="textField" uuid="3ab65e72-cbb4-471d-9d62-9cd01aa76eda" x="351" y="259" width="170" height="30">
+			<expression><![CDATA[$F{plazo}+" días"]]></expression>
+		</element>
+		<element kind="textField" uuid="0a8fd154-bcb1-46d3-b5f5-31e35fd63bc1" x="322" y="379" width="206" height="30" fontName="Arial">
+			<expression><![CDATA["Forma de retiro de capital:"+$F{retiroCapital}]]></expression>
+		</element>
+		<element kind="textField" uuid="370acead-a279-446d-ab68-9acebbc5022e" x="400" y="409" width="128" height="30" fontName="Arial">
+			<expression><![CDATA[$V{folio}]]></expression>
+		</element>
+		<element kind="textField" uuid="7041e1e0-8f9e-4878-a980-cd0e88ad5ff4" x="364" y="440" width="96" height="30" fontName="Arial">
+			<expression><![CDATA[$F{parametro14}]]></expression>
+		</element>
+		<element kind="textField" uuid="47ce5a1e-f794-47c2-9821-7cc8d56d528a" x="20" y="238" width="284" height="70" fontName="Arial" bold="false" vTextAlign="Middle">
+			<expression><![CDATA[$F{agente_nombre}+"\nPagará a la orden de: \n"+$F{solicitante_nombre}]]></expression>
+		</element>
+	</summary>
+</jasperReport>

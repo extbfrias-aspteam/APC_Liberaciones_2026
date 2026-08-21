@@ -1,0 +1,61 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="Anexo_a_subreport" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="080540b6-4bec-43f7-8bee-397c5e9b53c1">
+	<query language="sql"><![CDATA[select * from (select s.numero, s.nombre_p as nombre, s.apellidos as apellido_p, s.apellido_m, solicitante2fechanacompleta(S.NUMERO) AS FECHA_NACIMIENTO, '100%' as porcentaje,
+    (COALESCE(S.RFC1,'')||COALESCE(S.RFC2,'')||COALESCE(S.RFC3,'')) AS RFC, COALESCE(S.CURP,'') AS CURP,
+    s.descripcion_domicilio1 as calle, s.descripcion_domicilio4 as numero_ext, s.descripcion_domicilio5 as num_interior,
+    c.nombre as colonia, m.nombre as municipio, e.descripcion as entidad_federativa,
+    c.codigo_postal as cp,dt.telefono, s.correo, coalesce(s.t_persona, 'F') as tipo,ss.id_socio
+    from solicitante as s
+    left join directorio_telefonico dt on dt.id_solicitante = s.numero
+    left join prcolonia c on c.codigo_postal = s.colonia
+    left join prlocalidad l on l.prlocalidad_localidad_ix = c.localidad_id
+    left join prmunicipio m on m.prmunicipio_municipio_ix = l.municipio_id
+    left join prestado e on e.estado_id = m.estado_id
+    left join solicitante_socios ss on ss.id_solicitante = s.numero
+    where numero = '' and dt.id_cat_telefono = 7) as cliente
+    left join  (select s.numero as numero_s, s.nombre_p as nombre_s, s.apellidos as apellido_p_s, s.apellido_m as apellido_m_s, solicitante2fechanacompleta(S.NUMERO) AS FECHA_NACIMIENTO_s, '100%' as porcentaje_s,
+    (COALESCE(S.RFC1,'')||COALESCE(S.RFC2,'')||COALESCE(S.RFC3,'')) AS RFC_s, COALESCE(S.CURP,'') AS CURP_s,
+    s.descripcion_domicilio1 as calle_s, s.descripcion_domicilio4 as numero_ext_s, s.descripcion_domicilio5 as num_interior_s,
+    c.nombre as colonia_s, m.nombre as municipio_s, e.descripcion as entidad_federativa_s,
+    c.codigo_postal as cp_s,dt.telefono as telefono_s, s.correo as correo_s
+    from solicitante as s
+    left join directorio_telefonico dt on dt.id_solicitante = s.numero
+    left join prcolonia c on c.codigo_postal = s.colonia
+    left join prlocalidad l on l.prlocalidad_localidad_ix = c.localidad_id
+    left join prmunicipio m on m.prmunicipio_municipio_ix = l.municipio_id
+    left join prestado e on e.estado_id = m.estado_id
+    left join solicitante_socios ss on ss.id_solicitante = s.numero
+    where s.numero = '' and dt.id_cat_telefono = 7) as socio on socio.numero_s = cliente.id_socio]]></query>
+	<field name="nombre" class="java.lang.String"/>
+	<field name="apellido_p" class="java.lang.String"/>
+	<field name="apellido_m" class="java.lang.String"/>
+	<field name="fecha_nacimiento" class="java.lang.String"/>
+	<field name="porcentaje" class="java.lang.String"/>
+	<field name="rfc" class="java.lang.String"/>
+	<field name="curp" class="java.lang.String"/>
+	<field name="calle" class="java.lang.String"/>
+	<field name="numero_ext" class="java.lang.String"/>
+	<field name="num_interior" class="java.lang.String"/>
+	<field name="colonia" class="java.lang.String"/>
+	<field name="municipio" class="java.lang.String"/>
+	<field name="entidad_federativa" class="java.lang.String"/>
+	<field name="cp" class="java.lang.String"/>
+	<field name="telefono" class="java.lang.String"/>
+	<field name="correo" class="java.lang.String"/>
+	<field name="nombre_s" class="java.lang.String"/>
+	<field name="apellido_p_s" class="java.lang.String"/>
+	<field name="apellido_m_s" class="java.lang.String"/>
+	<field name="fecha_nacimiento_s" class="java.lang.String"/>
+	<field name="porcentaje_s" class="java.lang.String"/>
+	<field name="rfc_s" class="java.lang.String"/>
+	<field name="curp_s" class="java.lang.String"/>
+	<field name="calle_s" class="java.lang.String"/>
+	<field name="numero_ext_s" class="java.lang.String"/>
+	<field name="num_interior_s" class="java.lang.String"/>
+	<field name="colonia_s" class="java.lang.String"/>
+	<field name="municipio_s" class="java.lang.String"/>
+	<field name="entidad_federativa_s" class="java.lang.String"/>
+	<field name="cp_s" class="java.lang.String"/>
+	<field name="telefono_s" class="java.lang.String"/>
+	<field name="correo_s" class="java.lang.String"/>
+</jasperReport>

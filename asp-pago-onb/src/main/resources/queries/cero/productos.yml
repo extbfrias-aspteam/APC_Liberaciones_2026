@@ -1,0 +1,19 @@
+productos:
+  obtenerConceptoProductoByClave: "select pr.id as productoId, pr.clave, nc.clave, nc.descripcion, prd.valor
+                                   from productos.prproductos_ahorro pr
+                                   join productos.prproductos_ahorro_datos prd on pr.id = prd.producto_id
+                                   join nucleocentral.ncconceptos nc on nc.id = prd.concepto_id
+                                   where nc.clave = :clave and pr.id = :productoId;"
+
+  obtenerDatosProductoByProductoId: "select pr.id, pr.clave, pr.descripcion, pr.monto_minimo, pr.monto_maximo, pr.estatus_id, pr.clave_cnbv 
+                                     from productos.prproductos_ahorro pr where pr.id = :productoId;"
+
+  obtenerRendimientoByProductoId: "select rr.porcentaje, ra.periodicidad
+                                   from productos.prrangos_rendimiento as rr
+                                   join productos.prrendimiento_ahorro as ra on rr.rendimiento_id = ra.id
+                                   where ra.producto_id = :productoId and :montoMin between rr.monto_min and rr.monto_max;"
+
+  obtenerListadoDatosProductoByProductoId: "select pr.concepto_id, n.clave, pr.estatus_id, pr.id, pr.valor 
+                                            from productos.prproductos_ahorro_datos pr
+                                            join nucleocentral.ncconceptos n on n.id = pr.concepto_id
+                                            where pr.producto_id = :productoId;"
