@@ -9,3 +9,15 @@ C:\PROYECTOS GIT\Git_asp_api_azul\hotfix_retornos_abonos\asp_api_azul\Asp.Api.Az
 C:\PROYECTOS GIT\Git_asp_api_azul\hotfix_retornos_abonos\asp_api_azul\Asp.Api.Azul.Core\obj\Debug\net7.0\refint\Asp.Api.Azul.Core.dll
 C:\PROYECTOS GIT\Git_asp_api_azul\hotfix_retornos_abonos\asp_api_azul\Asp.Api.Azul.Core\obj\Debug\net7.0\Asp.Api.Azul.Core.pdb
 C:\PROYECTOS GIT\Git_asp_api_azul\hotfix_retornos_abonos\asp_api_azul\Asp.Api.Azul.Core\obj\Debug\net7.0\ref\Asp.Api.Azul.Core.dll
+C:\Users\LATITUDE\Documents\Liberaciones\Julio\21-07-26\azure_asp_api_azul\Asp.Api.Azul.Core\bin\Debug\net7.0\Asp.Api.Azul.Core.deps.json
+C:\Users\LATITUDE\Documents\Liberaciones\Julio\21-07-26\azure_asp_api_azul\Asp.Api.Azul.Core\bin\Debug\net7.0\Asp.Api.Azul.Core.dll
+C:\Users\LATITUDE\Documents\Liberaciones\Julio\21-07-26\azure_asp_api_azul\Asp.Api.Azul.Core\bin\Debug\net7.0\Asp.Api.Azul.Core.pdb
+C:\Users\LATITUDE\Documents\Liberaciones\Julio\21-07-26\azure_asp_api_azul\Asp.Api.Azul.Core\obj\Debug\net7.0\Asp.Api.Azul.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\LATITUDE\Documents\Liberaciones\Julio\21-07-26\azure_asp_api_azul\Asp.Api.Azul.Core\obj\Debug\net7.0\Asp.Api.Azul.Core.AssemblyInfoInputs.cache
+C:\Users\LATITUDE\Documents\Liberaciones\Julio\21-07-26\azure_asp_api_azul\Asp.Api.Azul.Core\obj\Debug\net7.0\Asp.Api.Azul.Core.AssemblyInfo.cs
+C:\Users\LATITUDE\Documents\Liberaciones\Julio\21-07-26\azure_asp_api_azul\Asp.Api.Azul.Core\obj\Debug\net7.0\Asp.Api.Azul.Core.csproj.CoreCompileInputs.cache
+C:\Users\LATITUDE\Documents\Liberaciones\Julio\21-07-26\azure_asp_api_azul\Asp.Api.Azul.Core\obj\Debug\net7.0\Asp.Api.Azul.Core.sourcelink.json
+C:\Users\LATITUDE\Documents\Liberaciones\Julio\21-07-26\azure_asp_api_azul\Asp.Api.Azul.Core\obj\Debug\net7.0\Asp.Api.Azul.Core.dll
+C:\Users\LATITUDE\Documents\Liberaciones\Julio\21-07-26\azure_asp_api_azul\Asp.Api.Azul.Core\obj\Debug\net7.0\refint\Asp.Api.Azul.Core.dll
+C:\Users\LATITUDE\Documents\Liberaciones\Julio\21-07-26\azure_asp_api_azul\Asp.Api.Azul.Core\obj\Debug\net7.0\Asp.Api.Azul.Core.pdb
+C:\Users\LATITUDE\Documents\Liberaciones\Julio\21-07-26\azure_asp_api_azul\Asp.Api.Azul.Core\obj\Debug\net7.0\ref\Asp.Api.Azul.Core.dll

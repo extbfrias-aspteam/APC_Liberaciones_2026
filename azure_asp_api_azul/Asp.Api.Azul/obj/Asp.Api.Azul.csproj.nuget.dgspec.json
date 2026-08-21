@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\PROYECTOS GIT\\Git_asp_api_azul\\hotfix_retornos_abonos\\asp_api_azul\\Asp.Api.Azul\\Asp.Api.Azul.csproj": {}
+    "C:\\Users\\LATITUDE\\Documents\\Liberaciones\\Julio\\21-07-26\\azure_asp_api_azul\\Asp.Api.Azul\\Asp.Api.Azul.csproj": {}
   },
   "projects": {
-    "C:\\PROYECTOS GIT\\Git_asp_api_azul\\hotfix_retornos_abonos\\asp_api_azul\\Asp.Api.Azul.Core\\Asp.Api.Azul.Core.csproj": {
+    "C:\\Users\\LATITUDE\\Documents\\Liberaciones\\Julio\\21-07-26\\azure_asp_api_azul\\Asp.Api.Azul.Core\\Asp.Api.Azul.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\PROYECTOS GIT\\Git_asp_api_azul\\hotfix_retornos_abonos\\asp_api_azul\\Asp.Api.Azul.Core\\Asp.Api.Azul.Core.csproj",
+        "projectUniqueName": "C:\\Users\\LATITUDE\\Documents\\Liberaciones\\Julio\\21-07-26\\azure_asp_api_azul\\Asp.Api.Azul.Core\\Asp.Api.Azul.Core.csproj",
         "projectName": "Asp.Api.Azul.Core",
-        "projectPath": "C:\\PROYECTOS GIT\\Git_asp_api_azul\\hotfix_retornos_abonos\\asp_api_azul\\Asp.Api.Azul.Core\\Asp.Api.Azul.Core.csproj",
-        "packagesPath": "C:\\Users\\ACARRIZALEZ\\.nuget\\packages\\",
-        "outputPath": "C:\\PROYECTOS GIT\\Git_asp_api_azul\\hotfix_retornos_abonos\\asp_api_azul\\Asp.Api.Azul.Core\\obj\\",
+        "projectPath": "C:\\Users\\LATITUDE\\Documents\\Liberaciones\\Julio\\21-07-26\\azure_asp_api_azul\\Asp.Api.Azul.Core\\Asp.Api.Azul.Core.csproj",
+        "packagesPath": "C:\\Users\\LATITUDE\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\LATITUDE\\Documents\\Liberaciones\\Julio\\21-07-26\\azure_asp_api_azul\\Asp.Api.Azul.Core\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\ACARRIZALEZ\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\LATITUDE\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -30,6 +30,7 @@
         },
         "frameworks": {
           "net7.0": {
+            "framework": "net7.0",
             "targetAlias": "net7.0",
             "projectReferences": {}
           }
@@ -44,10 +45,11 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "10.0.300"
       },
       "frameworks": {
         "net7.0": {
+          "framework": "net7.0",
           "targetAlias": "net7.0",
           "imports": [
             "net461",
@@ -60,35 +62,29 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.Net.Sdk.Compilers.Toolset",
-              "version": "[9.0.301, 9.0.301]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\PROYECTOS GIT\\Git_asp_api_azul\\hotfix_retornos_abonos\\asp_api_azul\\Asp.Api.Azul.Infrastructure\\Asp.Api.Azul.Infrastructure.csproj": {
+    "C:\\Users\\LATITUDE\\Documents\\Liberaciones\\Julio\\21-07-26\\azure_asp_api_azul\\Asp.Api.Azul.Infrastructure\\Asp.Api.Azul.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\PROYECTOS GIT\\Git_asp_api_azul\\hotfix_retornos_abonos\\asp_api_azul\\Asp.Api.Azul.Infrastructure\\Asp.Api.Azul.Infrastructure.csproj",
+        "projectUniqueName": "C:\\Users\\LATITUDE\\Documents\\Liberaciones\\Julio\\21-07-26\\azure_asp_api_azul\\Asp.Api.Azul.Infrastructure\\Asp.Api.Azul.Infrastructure.csproj",
         "projectName": "Asp.Api.Azul.Infrastructure",
-        "projectPath": "C:\\PROYECTOS GIT\\Git_asp_api_azul\\hotfix_retornos_abonos\\asp_api_azul\\Asp.Api.Azul.Infrastructure\\Asp.Api.Azul.Infrastructure.csproj",
-        "packagesPath": "C:\\Users\\ACARRIZALEZ\\.nuget\\packages\\",
-        "outputPath": "C:\\PROYECTOS GIT\\Git_asp_api_azul\\hotfix_retornos_abonos\\asp_api_azul\\Asp.Api.Azul.Infrastructure\\obj\\",
+        "projectPath": "C:\\Users\\LATITUDE\\Documents\\Liberaciones\\Julio\\21-07-26\\azure_asp_api_azul\\Asp.Api.Azul.Infrastructure\\Asp.Api.Azul.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\LATITUDE\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\LATITUDE\\Documents\\Liberaciones\\Julio\\21-07-26\\azure_asp_api_azul\\Asp.Api.Azul.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\ACARRIZALEZ\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\LATITUDE\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -101,10 +97,11 @@
         },
         "frameworks": {
           "net7.0": {
+            "framework": "net7.0",
             "targetAlias": "net7.0",
             "projectReferences": {
-              "C:\\PROYECTOS GIT\\Git_asp_api_azul\\hotfix_retornos_abonos\\asp_api_azul\\Asp.Api.Azul.Core\\Asp.Api.Azul.Core.csproj": {
-                "projectPath": "C:\\PROYECTOS GIT\\Git_asp_api_azul\\hotfix_retornos_abonos\\asp_api_azul\\Asp.Api.Azul.Core\\Asp.Api.Azul.Core.csproj"
+              "C:\\Users\\LATITUDE\\Documents\\Liberaciones\\Julio\\21-07-26\\azure_asp_api_azul\\Asp.Api.Azul.Core\\Asp.Api.Azul.Core.csproj": {
+                "projectPath": "C:\\Users\\LATITUDE\\Documents\\Liberaciones\\Julio\\21-07-26\\azure_asp_api_azul\\Asp.Api.Azul.Core\\Asp.Api.Azul.Core.csproj"
               }
             }
           }
@@ -119,10 +116,11 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "10.0.300"
       },
       "frameworks": {
         "net7.0": {
+          "framework": "net7.0",
           "targetAlias": "net7.0",
           "dependencies": {
             "Confluent.Kafka": {
@@ -177,35 +175,29 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.Net.Sdk.Compilers.Toolset",
-              "version": "[9.0.301, 9.0.301]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\PROYECTOS GIT\\Git_asp_api_azul\\hotfix_retornos_abonos\\asp_api_azul\\Asp.Api.Azul\\Asp.Api.Azul.csproj": {
+    "C:\\Users\\LATITUDE\\Documents\\Liberaciones\\Julio\\21-07-26\\azure_asp_api_azul\\Asp.Api.Azul\\Asp.Api.Azul.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\PROYECTOS GIT\\Git_asp_api_azul\\hotfix_retornos_abonos\\asp_api_azul\\Asp.Api.Azul\\Asp.Api.Azul.csproj",
+        "projectUniqueName": "C:\\Users\\LATITUDE\\Documents\\Liberaciones\\Julio\\21-07-26\\azure_asp_api_azul\\Asp.Api.Azul\\Asp.Api.Azul.csproj",
         "projectName": "Asp.Api.Azul",
-        "projectPath": "C:\\PROYECTOS GIT\\Git_asp_api_azul\\hotfix_retornos_abonos\\asp_api_azul\\Asp.Api.Azul\\Asp.Api.Azul.csproj",
-        "packagesPath": "C:\\Users\\ACARRIZALEZ\\.nuget\\packages\\",
-        "outputPath": "C:\\PROYECTOS GIT\\Git_asp_api_azul\\hotfix_retornos_abonos\\asp_api_azul\\Asp.Api.Azul\\obj\\",
+        "projectPath": "C:\\Users\\LATITUDE\\Documents\\Liberaciones\\Julio\\21-07-26\\azure_asp_api_azul\\Asp.Api.Azul\\Asp.Api.Azul.csproj",
+        "packagesPath": "C:\\Users\\LATITUDE\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\LATITUDE\\Documents\\Liberaciones\\Julio\\21-07-26\\azure_asp_api_azul\\Asp.Api.Azul\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\ACARRIZALEZ\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\LATITUDE\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -218,13 +210,14 @@
         },
         "frameworks": {
           "net7.0": {
+            "framework": "net7.0",
             "targetAlias": "net7.0",
             "projectReferences": {
-              "C:\\PROYECTOS GIT\\Git_asp_api_azul\\hotfix_retornos_abonos\\asp_api_azul\\Asp.Api.Azul.Core\\Asp.Api.Azul.Core.csproj": {
-                "projectPath": "C:\\PROYECTOS GIT\\Git_asp_api_azul\\hotfix_retornos_abonos\\asp_api_azul\\Asp.Api.Azul.Core\\Asp.Api.Azul.Core.csproj"
+              "C:\\Users\\LATITUDE\\Documents\\Liberaciones\\Julio\\21-07-26\\azure_asp_api_azul\\Asp.Api.Azul.Core\\Asp.Api.Azul.Core.csproj": {
+                "projectPath": "C:\\Users\\LATITUDE\\Documents\\Liberaciones\\Julio\\21-07-26\\azure_asp_api_azul\\Asp.Api.Azul.Core\\Asp.Api.Azul.Core.csproj"
               },
-              "C:\\PROYECTOS GIT\\Git_asp_api_azul\\hotfix_retornos_abonos\\asp_api_azul\\Asp.Api.Azul.Infrastructure\\Asp.Api.Azul.Infrastructure.csproj": {
-                "projectPath": "C:\\PROYECTOS GIT\\Git_asp_api_azul\\hotfix_retornos_abonos\\asp_api_azul\\Asp.Api.Azul.Infrastructure\\Asp.Api.Azul.Infrastructure.csproj"
+              "C:\\Users\\LATITUDE\\Documents\\Liberaciones\\Julio\\21-07-26\\azure_asp_api_azul\\Asp.Api.Azul.Infrastructure\\Asp.Api.Azul.Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\LATITUDE\\Documents\\Liberaciones\\Julio\\21-07-26\\azure_asp_api_azul\\Asp.Api.Azul.Infrastructure\\Asp.Api.Azul.Infrastructure.csproj"
               }
             }
           }
@@ -239,10 +232,11 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "10.0.300"
       },
       "frameworks": {
         "net7.0": {
+          "framework": "net7.0",
           "targetAlias": "net7.0",
           "dependencies": {
             "Autofac.Extensions.DependencyInjection": {
@@ -325,12 +319,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.Net.Sdk.Compilers.Toolset",
-              "version": "[9.0.301, 9.0.301]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -339,7 +327,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300\\RuntimeIdentifierGraph.json"
         }
       }
     }

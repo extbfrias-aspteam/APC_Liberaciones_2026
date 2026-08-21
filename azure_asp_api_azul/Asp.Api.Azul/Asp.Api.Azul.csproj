@@ -416,6 +416,12 @@
     <None Update="Cerificados\Asp\zion1.key">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Certificados\agilepaymentsPRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Certificados\alternativamexicanaPRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Certificados\aluminotechPRODE.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -461,7 +467,16 @@
     <None Update="Certificados\azul.key">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Certificados\belvoPRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Certificados\binacionalPRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Certificados\came2_intPRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Certificados\capitalafavor_V2PRODE.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Certificados\centromediaPRODE.cer">
@@ -473,16 +488,37 @@
     <None Update="Certificados\clipboardPRODE.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Certificados\comerciala47PRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Certificados\divierteteyganaPRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Certificados\espiralPRODE.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Certificados\everyonesingingPRODE.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Certificados\financieramasPRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Certificados\fintopiaPRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Certificados\forawayPRODE.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Certificados\greenbondsusrPRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Certificados\hermePRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Certificados\hpayPRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Certificados\impulsaturendimientoPRODE.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Certificados\intelchPRODE.cer">
@@ -494,10 +530,19 @@
     <None Update="Certificados\KAPITALPRODE.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Certificados\kollekciyaPRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Certificados\LABORASPRODE.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Certificados\levaxaPRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Certificados\MANGOCASHPRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Certificados\meefiPRODE.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Certificados\mutualwealthPRODE.cer">
@@ -542,25 +587,76 @@
     <None Update="Certificados\orderexpressPRODE.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Certificados\paywayPRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Certificados\payway_v2PRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Certificados\pialfaomegaPRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Certificados\polipayPRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Certificados\Privadaasp.key">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Certificados\privada_phrase.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Certificados\publicaSIES.crt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Certificados\Publicsies.crt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Certificados\redtalentoempresarialV2PRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Certificados\SiEs210223.crt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Certificados\SiEs210223.key">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Certificados\SiEs210224.crt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Certificados\SiEs210224.key">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Certificados\sitesPRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Certificados\sr-srv-siespdriver.integraopciones.mx.crt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Certificados\supefinaPRODE.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Certificados\swalletcallPRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Certificados\talentoempresarialPRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Certificados\talentoempresarial_V2PRODE.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Certificados\taxdownPRODE.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Certificados\todomundo2PRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Certificados\todomundo3PRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Certificados\tukashPRODE.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Certificados\tukashv3PRODE.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Certificados\unalanapayPRODE.cer">
