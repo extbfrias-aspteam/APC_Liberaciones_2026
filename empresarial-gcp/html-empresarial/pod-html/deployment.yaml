@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: angular-frontend
+  namespace: apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: angular-frontend
+  template:
+    metadata:
+      labels:
+        app: angular-frontend
+    spec:
+      containers:
+      - name: angular
+        image: northamerica-south1-docker.pkg.dev/prj-hypertech-prod/docker-repo-asp-prod/html-empresarial:prod
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80

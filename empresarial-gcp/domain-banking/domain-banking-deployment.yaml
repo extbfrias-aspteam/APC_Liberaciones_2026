@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: domain-banking
+  namespace: apps
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: domain-banking
+  template:
+    metadata:
+      labels:
+        app: domain-banking
+    spec:
+      containers:
+        - name: domain-banking
+          image: northamerica-south1-docker.pkg.dev/prj-hypertech-prod/docker-repo-asp-prod/domain-banking:prod
+          imagePullPolicy: Always
+          envFrom:
+          - configMapRef:
+              name: domain-banking-config
+          - secretRef:
+              name: domain-banking-secret
+          ports:
+            - containerPort: 8081
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+
+
+

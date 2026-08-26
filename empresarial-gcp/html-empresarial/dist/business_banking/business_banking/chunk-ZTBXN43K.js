@@ -1,0 +1,1 @@
+import{ab as i}from"./chunk-NFNG7QSL.js";var s=class n{transform(t,r=4,a="\u2022",m=1){if(!t)return"";let e=t.toString();return m?(a.repeat(Math.max(e.length-r,0))+e.slice(-r)).replace(/(.{4})/g,"$1 ").trim():e.replace(/(.{4})/g,"$1 ").trim()}static \u0275fac=function(r){return new(r||n)};static \u0275pipe=i({name:"maskAccount",type:n,pure:!0})};export{s as a};

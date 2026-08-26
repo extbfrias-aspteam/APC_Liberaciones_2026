@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: domain-banking-config
+  namespace: apps
+data:
+  SPRING_PROFILES_ACTIVE: prod
+  DB_NAME: db_asp_banca_empresarial
+  DB_HOST: postgres.database.svc.cluster.local
+  DB_PORT: "5432"

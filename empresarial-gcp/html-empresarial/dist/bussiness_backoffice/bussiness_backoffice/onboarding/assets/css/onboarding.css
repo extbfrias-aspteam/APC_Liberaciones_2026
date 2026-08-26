@@ -1,0 +1,1327 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  font-family: 'Manrope-Regular', 'Inter', sans-serif;
+  font-size: var(--text-sm);
+  font-weight: lighter;
+  line-height: 1.5;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+*::-webkit-scrollbar {
+  width: 4px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #b7b7b7;
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #b7b7b7;
+}
+
+.bg_login {
+  background-image: url(../img/bg_image.jpg);
+  background-size: cover;
+  background-repeat: space;
+  background-clip: content-box;
+  width: 100%;
+  max-width: 100%;
+}
+
+.bg_login::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #0062eb, #00317c);
+  opacity: 0.6;
+  /* ajusta intensidad */
+  pointer-events: none;
+}
+
+/* =====================================================
+   3. ELEMENTOS TIPOGRÁFICOS
+===================================================== */
+h1 {
+  font-family: 'Manrope-SemiBold', 'Inter', sans-serif;
+  font-size: var(--text-xl);
+  font-weight: bolder;
+  line-height: 1.3;
+}
+
+h2 {
+  font-family: 'Manrope-Regular', 'Inter', sans-serif;
+  font-size: var(--text-xl);
+  font-weight: bolder;
+  line-height: 1.3;
+}
+
+h3 {
+  font-family: 'Manrope-SemiBold', 'Inter', sans-serif;
+  font-size: var(--text-lg);
+  font-weight: bolder;
+  line-height: 1.3;
+}
+
+h4 {
+  font-family: 'Manrope-Regular', 'Inter', sans-serif;
+  font-size: var(--text-lg);
+  font-weight: bolder;
+  line-height: 1.3;
+}
+
+h4 {
+    font-family: 'Manrope-SemiBold', 'Inter', sans-serif;
+    font-size: var(--text-md);
+    color: var(--primary-900);
+    font-weight: bolder;
+    line-height: 1.3;
+    margin: 0;
+}
+
+h5 {
+  font-family: 'Manrope-SemiBold', 'Inter', sans-serif;
+  font-size: var(--text-sm);
+  font-weight: bolder;
+  line-height: 1.3;
+}
+
+h6 {
+  font-family: 'Manrope-Regular', 'Inter', sans-serif;
+  font-size: var(--text-sm);
+  font-weight: bold;
+  line-height: 1.3;
+}
+
+p {
+  font-size: var(--font-size-md);
+  color: var(--color-text-muted);
+}
+
+hr {
+    border: none;
+    border-top: 1px solid var(--color-neutro-80);
+    margin: 24px 0;
+}
+
+/* =====================================================
+   4. FORMULARIOS (CRÍTICO EN BANCA)
+===================================================== */
+
+/* =====================================================
+   INPUTS BASE
+===================================================== */
+
+input,
+select,
+textarea {
+  width: 100%;
+  height: 40px;
+  padding: 0rem var(--space-2);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 0 var(--color-neutro-0) inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+input.with-ico {
+  padding: 0em var(--space-6) 0 var(--space-2);
+}
+
+/* Textarea */
+textarea {
+  height: auto;
+  padding: 10px 12px;
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Placeholder */
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-neutro-100);
+}
+
+/* =====================================================
+   FOCUS (CLAVE PARA SENSACIÓN DE SEGURIDAD)
+===================================================== */
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--color-primary);
+  background-color: #ffffff;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  border-color: var(--color-primary);
+  background-color: #ffffff;
+}
+
+/* =====================================================
+   HOVER (MUY SUTIL)
+===================================================== */
+
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: var(--color-border);
+}
+
+/* =====================================================
+   ESTADOS
+===================================================== */
+
+/* Disabled */
+input:disabled,
+select:disabled,
+textarea:disabled {
+  background-color: #f1f5f9;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+input:disabled + label,
+select:disabled + label,
+textarea:disabled + label {
+  background-color: #f6f8fb;
+}
+
+.form-field {
+  position: relative;
+}
+
+.form-field .input-ico {
+  position: absolute;
+  right: 8px;
+  top: 14px;
+}
+
+.form-field label {
+  position: absolute;
+  left: 8px;
+  top: 9px;
+  background: white;
+  color: #777;
+  font-size: 1em;
+  transition: 0.2s ease all;
+  pointer-events: none;
+  padding: 0 0.5em;
+  width: 85%;
+}
+
+.form-field select {
+  appearance: none;
+}
+
+/* cuando tiene contenido */
+.form-field input:focus + label,
+.form-field select:focus + label,
+.form-field textarea:focus + label,
+.form-field input.ng-dirty + label,
+.form-field select.ng-dirty + label,
+.form-field textarea.ng-dirty + label,
+.form-field input.ng-touched + label,
+.form-field select.ng-touched + label,
+.form-field textarea.ng-touched + label {
+  top: -10px;
+  font-size: 1em;
+  width: fit-content;
+  white-space: nowrap;
+}
+
+/* Error */
+.form-field.error input,
+.form-field.error select,
+.form-field.error textarea {
+  border-color: var(--color-error);
+}
+
+/* Success */
+.form-field.success input,
+.form-field.success select,
+.form-field.success textarea {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 0;
+}
+
+.group-field {
+  position: relative;
+}
+
+.group-field label {
+  position: absolute;
+  left: 4px;
+  top: 10px;
+  background: white;
+  color: #777;
+  font-size: 1em;
+  transition: 0.2s ease all;
+  pointer-events: none;
+  padding: 0 0.5em;
+}
+
+.group-field select {
+  appearance: none;
+}
+
+.group-field input:focus + label,
+.group-field input:not(:placeholder-shown) + label,
+.group-field select:focus + label,
+.group-field select:valid + label,
+.group-field select:disabled + label {
+  top: -8px;
+  font-size: 1em;
+}
+
+/* =====================================================
+   INPUT CON ICONO
+===================================================== */
+
+.input-with-icon {
+  position: relative;
+}
+
+.input-with-icon svg {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  color: #64748b;
+  width: 18px;
+  height: 18px;
+}
+
+.input-with-icon input {
+  padding-left: 40px;
+}
+
+/* =====================================================
+   CHECKBOX Y RADIO (MINIMALISTAS)
+===================================================== */
+
+input[type='checkbox'],
+input[type='radio'] {
+  width: 16px;
+  height: 16px;
+  accent-color: #1e3a8a;
+  cursor: pointer;
+}
+
+/* =====================================================
+   DARK MODE
+===================================================== */
+
+[data-theme='dark'] input,
+[data-theme='dark'] select,
+[data-theme='dark'] textarea {
+  background-color: #020617;
+  border-color: #1e293b;
+  color: #e5e7eb;
+}
+
+[data-theme='dark'] input:focus,
+[data-theme='dark'] select:focus,
+[data-theme='dark'] textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
+  background-color: #020617;
+}
+
+[data-theme='dark'] input::placeholder {
+  color: #94a3b8;
+}
+
+/* =====================================================
+   5. BOTONES
+===================================================== */
+
+button {
+  width: 100%;
+  height: var(--h-btn-md);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+.btn-primary {
+  background-color: var(--primary-600);
+  color: var(--color-neutro-0);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-950);
+}
+
+.btn-primary:disabled {
+  background-color: var(--color-neutro-80);
+  color: var(--color-neutro-100);
+}
+
+.btn-primary:disabled:hover {
+  background-color: var(--color-neutro-80);
+  color: var(--color-neutro-100);
+}
+
+.btn-secondary {
+  background-color: var(--color-neutro-60);
+  color: var(--primary-950);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-neutro-80);
+  color: var(--color-neutro-140);
+}
+
+.btn-secondary:disabled {
+  background-color: var(--color-neutro-80);
+  color: var(--color-neutro-100);
+}
+
+.btn-secondary:disabled:hover {
+  background-color: var(--color-neutro-80);
+  color: var(--color-neutro-100);
+}
+
+.btn-tertiary {
+  background-color: var(--color-neutro-0);
+  color: var(--primary-500);
+  border: 1px solid var(--color-neutro-60);
+}
+
+.btn-tertiary:hover {
+  background-color: var(--color-neutro-60);
+  color: var(--primary-500);
+  border: 1px solid var(--color-neutro-80);
+}
+
+.btn-tertiary:disabled {
+  background-color: var(--color-neutro-60);
+  color: var(--color-neutro-100);
+  border: 1px solid var(--color-neutro-60);
+}
+
+.btn-tertiary:disabled:hover {
+  background-color: var(--color-neutro-60);
+  color: var(--color-neutro-100);
+  border: 1px solid var(--color-neutro-60);
+}
+
+.btn-ghost-1 {
+  background-color: var(--color-neutro-0);
+  color: var(--color-neutro-160);
+  border: 1px solid var(--color-neutro-160);
+}
+
+.btn-ghost-1:hover {
+  background-color: var(--color-neutro-40);
+  color: var(--color-neutro-120);
+  border: 1px solid var(--color-neutro-120);
+}
+
+.btn-ghost-1:disabled {
+  background-color: var(--color-neutro-60);
+  color: var(--color-neutro-100);
+  border: 1px solid var(--color-neutro-100);
+}
+
+.btn-ghost-1:disabled:hover {
+  background-color: var(--color-neutro-60);
+  color: var(--color-neutro-100);
+  border: 1px solid var(--color-neutro-100);
+}
+
+.btn-ghost-2 {
+  background-color: var(--color-neutro-0);
+  border: 1px solid var(--primary-300);
+  color: var(--primary-500);
+}
+
+.btn-ghost-2:hover {
+  background-color: var(--primary-520);
+  border: 1px solid var(--primary-500);
+  color: var(--primary-500);
+}
+
+.btn-ghost-2:disabled {
+  background-color: var(--color-neutro-60);
+  border: 1px solid var(--color-neutro-100);
+  color: var(--color-neutro-100);
+}
+
+.btn-ghost-2:disabled:hover {
+  background-color: var(--color-neutro-60);
+  border: 1px solid var(--color-neutro-100);
+  color: var(--color-neutro-100);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.btn-no-border {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-no-border span {
+  font-size: 1.6em;
+}
+
+.btn-no-border:hover {
+  color: #111827;
+}
+
+/* =====================================================
+   PASO 1 — layout en tarjetas (compartido por persona física y moral)
+===================================================== */
+/* Fila de teléfonos: 5 campos + botón de eliminar (en filas agregadas) */
+.phone-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr) auto;
+  gap: var(--space-3);
+  align-items: start;
+  margin-bottom: var(--space-4);
+}
+
+.phone-row--cell {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.phone-row__remove {
+  width: 40px;
+  height: var(--h-input-lg);
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--color-neutro-80);
+  border-radius: var(--radius-md);
+  color: var(--color-error);
+  cursor: pointer;
+  transition:
+    border-color var(--anim-fast) var(--ease-standard),
+    background-color var(--anim-fast) var(--ease-standard);
+}
+
+.phone-row__remove:hover {
+  border-color: var(--color-error);
+  background: var(--color-error-light);
+}
+
+@media (max-width: 900px) {
+  .phone-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .phone-row--cell {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .phone-row__remove {
+    width: 100%;
+  }
+}
+
+.pf {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* Cada grupo es una tarjeta con acento azul superior (estilo Figma) */
+.pf-section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-neutro-80);
+  border-top: 3px solid var(--primary-500);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5);
+}
+
+.pf-section__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.pf-section__title {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.pf-section__desc {
+  margin: 4px 0 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.pf-section__req {
+  flex-shrink: 0;
+  font-size: var(--text-xs);
+  color: var(--color-error);
+  white-space: nowrap;
+}
+
+.pf-relacion {
+  border: 1px solid var(--color-neutro-80);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  background: var(--color-neutro-95, #fafafa);
+}
+
+.pf-relacion + .pf-relacion {
+  margin-top: var(--space-5);
+}
+
+.pf-relacion__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.pf-relacion__title {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.pf-relacion__subtitle {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.pf-relacion__phones {
+  margin-top: var(--space-4);
+}
+
+.pf-relacion__summary {
+  border: 1px solid var(--color-neutro-80);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-bg-white, #fff);
+}
+
+.pf-relacion__summary small {
+  color: var(--color-text-muted);
+}
+
+.pf-relacion__summary p {
+  margin: 0;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.pf-relacion__section {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-neutro-80);
+}
+
+.pf input,
+.pf select {
+  height: var(--h-input-lg);
+}
+
+.pf .form-field label {
+  top: 13px;
+}
+
+/* El label flota al enfocar/llenar (más específico que la regla de reposo). */
+.pf .form-field input:focus + label,
+.pf .form-field select:focus + label,
+.pf .form-field input.ng-dirty + label,
+.pf .form-field select.ng-dirty + label,
+.pf .form-field input.ng-touched + label,
+.pf .form-field select.ng-touched + label {
+  top: -10px;
+  width: fit-content;
+  white-space: nowrap;
+}
+
+/* Los inputs de fecha siempre muestran contenido, su etiqueta va flotada. */
+.form-field input[type='date'] + label {
+  top: -10px;
+  width: fit-content;
+}
+
+/* Chevron en los selects */
+.pf select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%237B7872' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 34px;
+}
+
+.pf-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-5);
+}
+
+.pf-actions button {
+  width: auto;
+  min-width: 200px;
+}
+
+@media (max-width: 768px) {
+  .pf-section__head {
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .pf-actions button {
+    width: 100%;
+  }
+}
+
+/* =====================================================
+   6. TABLAS
+===================================================== */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  background-color: var(--color-primary);
+  color: #fff;
+  padding: 12px;
+  font-size: 14px;
+}
+
+td {
+  padding: 12px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 14px;
+}
+
+td.auto-width {
+  width: 1%;
+  white-space: nowrap;
+}
+
+span.size-2 {
+  font-size: 1.5rem;
+}
+
+tr:hover {
+  background-color: #f0f4f8;
+  cursor: pointer;
+}
+
+/* =====================================================
+   7. CARDS / CONTENEDORES
+===================================================== */
+
+.card {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 16px;
+}
+
+/* =====================================================
+   8. UTILIDADES
+===================================================== */
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.text-undeline {
+  text-decoration: underline;
+}
+
+.text-success {
+  color: var(--color-success);
+}
+
+.text-info {
+  color: var(--color-info);
+}
+
+.text-error {
+  color: var(--color-error);
+}
+
+.mt-1 {
+  margin-top: 4px;
+}
+
+.mt-2 {
+  margin-top: 8px;
+}
+
+.mt-3 {
+  margin-top: 16px;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+/* =====================================================
+   10. DARK MODE (LISTO PARA ACTIVAR)
+===================================================== */
+
+[data-theme='dark'] {
+  --color-bg: #020617;
+  --color-surface: #020617;
+  --color-border: #1e293b;
+  --color-text: #e5e7eb;
+  --color-text-muted: #94a3b8;
+}
+
+/* =====================================================
+   CONTENEDORES BASE
+===================================================== */
+
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding: 1em;
+}
+
+.container-content {
+  width: 100%;
+}
+
+.w-100 {
+    width: 100%;
+}
+
+.container-sm {
+  max-width: 640px;
+}
+
+.container-md {
+  max-width: 960px;
+}
+
+.container-lg {
+  max-width: 1440px;
+}
+
+.max-content {
+  width: max-content;
+}
+
+.vh-100 {
+  height: 100vh;
+}
+
+.vh-80 {
+  height: 80vh;
+}
+
+.container-login {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-form {
+  width: 98%;
+  max-width: 420px;
+  height: 80vh;
+  border-radius: 16px;
+  padding: 20px;
+  background-color: var(--color-neutro-0);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+.container-content {
+  width: 100%;
+  /* max-width: var(--container-xxl); */
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container-main {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* =====================================================
+   SECCIONES DE PÁGINA
+===================================================== */
+
+.page {
+  min-height: 100vh;
+  background-color: var(--color-bg);
+  padding-block: 32px;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  margin-bottom: 4px;
+}
+
+.page-header p {
+  font-size: var(--font-size-sm);
+}
+
+.title-notification {
+  font-size: var(--text-lg);
+  color: var(--color-primary);
+  text-align: center;
+}
+
+/* =====================================================
+   CONTENEDORES VISUALES
+===================================================== */
+
+.surface {
+  background-color: var(--color-bg-white);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  padding: 20px;
+}
+
+.surface-elevated {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-5);
+  border-top: 4px solid var(--primary-500);
+}
+
+.surface-muted {
+  background-color: #f1f5f9;
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.tag-ico {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: rgba(30, 58, 138, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+}
+
+/* =====================================================
+   GRID Y LAYOUT
+===================================================== */
+
+.grid {
+  display: grid;
+  gap: 16px;
+}
+
+/* minmax(0, 1fr) evita que el contenido largo (ej. una opción de dropdown con
+   texto enorme) desborde y estire la columna; en su lugar se recorta/ellipsis. */
+.grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.grid-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* Campos cuyo label/contenido es largo: ocupan 2 columnas para no apretarse. */
+.col-span-2 {
+  grid-column: span 2;
+}
+
+/* Campos de notas/descripción: ocupan la fila completa. */
+.col-span-full {
+  grid-column: 1 / -1;
+}
+
+/* Offset (corre el item N columnas a la derecha dentro del grid)
+   Uso: <div class="col-offset-1"></div>  -> empieza en la columna 2 */
+.col-offset-1 {
+    grid-column-start: 2;
+}
+
+.col-offset-2 {
+    grid-column-start: 3;
+}
+
+.col-offset-3 {
+    grid-column-start: 4;
+}
+
+/* Span (cuántas columnas ocupa el item) */
+.col-span-2 {
+    grid-column-end: span 2;
+}
+
+.col-span-3 {
+    grid-column-end: span 3;
+}
+
+.col-span-4 {
+    grid-column-end: span 4;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .grid-2,
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =====================================================
+   CONTENEDORES FLEX
+===================================================== */
+
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flex-end {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+
+.flex-gap-sm {
+  gap: 8px;
+}
+
+.flex-gap-em {
+  gap: 1em;
+}
+
+.flex-gap-md {
+  gap: 16px;
+}
+
+.flex-gap-lg {
+    gap: 24px;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.flex-align-center {
+  align-items: center;
+}
+
+/* ---------------------------------------------------------------------- */
+/* UTILIDADES DE ESPACIADO estilo Tailwind                                */
+/* ---------------------------------------------------------------------- */
+.m-1 {
+  margin: var(--space-1);
+}
+
+.m-2 {
+  margin: var(--space-2);
+}
+
+.m-3 {
+  margin: var(--space-3);
+}
+
+.m-4 {
+  margin: var(--space-4);
+}
+
+.m-5 {
+  margin: var(--space-5);
+}
+
+.my-1 {
+  margin: var(--space-1) 0;
+}
+
+.my-2 {
+  margin: var(--space-2) 0;
+}
+
+.my-3 {
+  margin: var(--space-3) 0;
+}
+
+.my-4 {
+  margin: var(--space-4) 0;
+}
+
+.my-5 {
+  margin: var(--space-5) 0;
+}
+
+.mx-1 {
+  margin: 0 var(--space-1);
+}
+
+.mx-2 {
+  margin: 0 var(--space-2);
+}
+
+.mx-3 {
+  margin: 0 var(--space-3);
+}
+
+.mx-4 {
+  margin: 0 var(--space-4);
+}
+
+.mx-5 {
+  margin: 0 var(--space-50);
+}
+
+.mt-1 {
+  margin-top: var(--space-1);
+}
+
+.mt-3 {
+  margin-top: var(--space-3);
+}
+
+.mt-5 {
+  margin-top: var(--space-5);
+}
+
+.mb-2 {
+  margin-bottom: var(--space-2);
+}
+
+.mb-3 {
+  margin-bottom: var(--space-3);
+}
+
+.mb-5 {
+  margin-bottom: var(--space-5);
+}
+
+.mb-6 {
+  margin-bottom: var(--space-6);
+}
+
+.pt-1 {
+  padding: var(--space-1);
+}
+
+.pt-2 {
+  padding: var(--space-2);
+}
+
+.p-0 {
+  padding: 0;
+}
+
+.p-1 {
+  padding: var(--space-1);
+}
+
+.p-2 {
+  padding: var(--space-2);
+}
+
+.p-3 {
+  padding: var(--space-3);
+}
+
+.p-4 {
+  padding: var(--space-4);
+}
+
+.p-5 {
+  padding: var(--space-5);
+}
+
+.py-1 {
+  padding: var(--space-1) 0;
+}
+
+.py-2 {
+  padding: var(--space-2) 0;
+}
+
+.py-3 {
+  padding: var(--space-3) 0;
+}
+
+.py-4 {
+  padding: var(--space-4) 0;
+}
+
+.py-5 {
+  padding: var(--space-5) 0;
+}
+
+.px-1 {
+  padding: 0 var(--space-1);
+}
+
+.px-2 {
+  padding: 0 var(--space-2);
+}
+
+.px-3 {
+  padding: 0 var(--space-3);
+}
+
+.px-4 {
+  padding: 0 var(--space-4);
+}
+
+.px-5 {
+  padding: 0 var(--space-5);
+}
+
+small {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+.text-xs {
+  font-size: var(--text-xs);
+}
+
+.text-sm {
+  font-size: var(--text-sm);
+}
+
+.text-md {
+  font-size: var(--text-md);
+}
+
+.text-lg {
+  font-size: var(--text-lg);
+}
+
+.text-xl {
+  font-size: var(--text-xl);
+}
+
+.text-xxl {
+  font-size: var(--text-xxl);
+}
+
+.fade-in {
+  animation: fade 0.4s ease-in;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

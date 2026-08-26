@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: banking-business-config
+  namespace: apps
+data:
+  SPRING_PROFILES_ACTIVE: prod
+  BASE_EXTERNAL_SERVICE: http://localhost:8080
+  DOMINIO_SERVICE_URL: http://domain-banking:8081
+  DOMINIO_SERVICE_CORE_URL: http://domain-banking-core:8081
+  TIME_TOKEN: "5"
+  SPEI_OUT_NOTIFICATION_TOKEN_TIME: "30"

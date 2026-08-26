@@ -1,0 +1,1 @@
+import{$a as n,Qb as t,Rb as i}from"./chunk-AHARJ6CT.js";import"./chunk-TSRGIXR5.js";var s="1.0.0_202603311454";var r=class o{version=s;static \u0275fac=function(e){return new(e||o)};static \u0275cmp=n({type:o,selectors:[["back-office-version"]],decls:1,vars:1,template:function(e,a){e&1&&t(0),e&2&&i(a.version)},encapsulation:2})};export{r as VersionComponent};

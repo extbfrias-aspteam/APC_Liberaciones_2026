@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: domain-banking-core
+  namespace: apps
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: domain-banking-core
+  template:
+    metadata:
+      labels:
+        app: domain-banking-core
+    spec:
+      containers:
+        - name: domain-banking-core
+          image: northamerica-south1-docker.pkg.dev/prj-hypertech-prod/docker-repo-asp-prod/domain-banking-core:prod
+          imagePullPolicy: Always
+          envFrom:
+          - configMapRef:
+              name: domain-banking-core-config
+          - secretRef:
+              name: domain-core-banking-secret
+          env:
+            - name: EIYU_PRIVATE_KEY_PATH
+              value: /etc/eiyu/certs/bancaaspPRODE.key
+            - name: EIYU_PRIVATE_KEY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: eiyu-crypto-certs
+                  key: EIYU_PRIVATE_KEY_PASSWORD
+            - name: EIYU_PUBLIC_CERTIFICATE_PATH
+              value: /etc/eiyu/certs/eiyu-public.crt
+          volumeMounts:
+            - name: eiyu-crypto-certs
+              mountPath: /etc/eiyu/certs
+              readOnly: true
+          ports:
+            - containerPort: 8081
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+      volumes:
+        - name: eiyu-crypto-certs
+          secret:
+            secretName: eiyu-crypto-certs

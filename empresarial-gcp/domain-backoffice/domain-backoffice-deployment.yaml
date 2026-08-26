@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: domain-backoffice
+  namespace: apps
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: domain-backoffice
+  template:
+    metadata:
+      labels:
+        app: domain-backoffice
+    spec:
+      containers:
+        - name: domain-backoffice
+          image: northamerica-south1-docker.pkg.dev/prj-hypertech-prod/docker-repo-asp-prod/domain-backoffice:prod
+          imagePullPolicy: Always
+          envFrom:
+          - configMapRef:
+              name: backoffice-domain-config
+          - secretRef:
+              name: backoffice-domain-secret
+          ports:
+            - containerPort: 8081
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
