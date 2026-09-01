@@ -1,1 +1,0 @@
-var o="2025-07-01";var r=(l="es-MX")=>Array.from({length:12},(t,e)=>{let a=new Date(2024,e,1);return{value:String(e+1).padStart(2,"0"),label:a.toLocaleString(l,{month:"long"})}});export{o as a,r as b};

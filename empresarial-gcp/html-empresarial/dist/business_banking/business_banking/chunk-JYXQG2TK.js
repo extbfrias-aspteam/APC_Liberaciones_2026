@@ -1,1 +1,0 @@
-import{Rb as t,Sb as s,Za as o}from"./chunk-NFNG7QSL.js";import"./chunk-TSRGIXR5.js";var i="1.0.0_202604142202";var r=class n{version=i;static \u0275fac=function(e){return new(e||n)};static \u0275cmp=o({type:n,selectors:[["bss-bnk-version"]],decls:1,vars:1,template:function(e,a){e&1&&t(0),e&2&&s(a.version)},encapsulation:2})};export{r as VersionComponent};
