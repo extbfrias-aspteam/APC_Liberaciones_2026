@@ -1,0 +1,1070 @@
+﻿@using iRisModel
+
+@{
+    ViewData["Title"] = "Gestión de Referidos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Estilos {
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="~/css/select2.min.css" rel="stylesheet" />
+
+}
+<h5>Creación de Refrenciado / Código</h5>
+<div id="emailHelp" class="form-text">Gestión de Referidos.</div>
+
+<div class="card-box">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-lg-6">
+                <div class="row align-items-center mb-3">
+                    <div class="col-lg-6">
+                        <p class="mb-0">Alta Referenciador </p>
+                    </div>
+                    <div class="col-lg-6">
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAltaReferenciador">
+                            Ejecutar Operación
+                        </button>
+                    </div>
+                </div>
+      
+                <div class="row align-items-center mb-3">
+                    <div class="col-lg-6">
+                        <p class="mb-0">Alta Código</p>
+                    </div>
+                    <div class="col-lg-6">
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAltaCodigo">Ejecutar Operación</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="row align-items-center mb-3">
+                    <div class="col-lg-6">
+                        <p class="mb-0">Activar/Desactivar Referenciador</p>
+                    </div>
+                    <div class="col-lg-6">
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalActDesRefe">Ejecutar Operación</button>
+                    </div>
+                </div>
+
+                <div class="row align-items-center mb-3">
+                    <div class="col-lg-6">
+                        <p class="mb-0">Cancelar Código</p>
+                    </div>
+                    <div class="col-lg-6">
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalActDesCodigo">Ejecutar Operación</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal: Alta Referenciador -->
+<div class="modal fade" id="modalAltaReferenciador" tabindex="-1" aria-labelledby="altaReferenciadorLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="altaReferenciadorLabel">Alta Referenciador</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="buscarSolicitor" class="form-label">Buscar Cuenta</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="buscarSolicitor" placeholder="Buscar...">
+                        <button class="btn btn-primary">Buscar</button>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="nombreReferenciador" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" id="nombreReferenciador" placeholder="Nombre" disabled>
+                </div>
+                <div class="mb-3">
+                    <label for="direccionReferenciador" class="form-label">Dirección</label>
+                    <input type="text" class="form-control" id="direccionReferenciador" placeholder="Dirección" disabled>
+                </div>
+                <div class="mb-3">
+                    <label for="curpReferenciador" class="form-label">CURP</label>
+                    <input type="text" class="form-control" id="curpReferenciador" placeholder="CURP" disabled>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-success" type="button">Guardar</button>
+              
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Alta  -->
+<div class="modal fade" id="modalAltaCodigo" tabindex="-1" aria-labelledby="modalAltaCodigoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalAltaCodigoLabel">Alta Código</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formAltaCodigo">
+                    <div class="mb-3">
+                        <label for="descripcionCampaña" class="form-label">Descripción </label>
+                        <input type="text" class="form-control" id="descripcionCampaña" name="descripcionCampaña" placeholder="Descripción">
+                        <span id="errorDescripcionCampaña" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="productoCampaña" class="form-label">Producto - Servicio</label>
+                        <select id="productoCampaña" name="productoCampaña" class="form-select">
+                            <option value="">Seleccione un Producto</option>
+                            @if (Model != null && Model.Campana != null && Model.Campana.Productos != null)
+                            {
+                                @foreach (var product in Model.Campana.Productos)
+                                {
+                                    <option value="@product.Id">@product.Nombre</option>
+                                }
+                            }
+                        </select>
+                        <span id="errorProductoCampaña" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="fechaInicioCampaña" class="form-label">Fecha Inicial</label>
+                        <input type="date" class="form-control" id="fechaInicioCampaña" name="fechaInicioCampaña">
+                        <span id="errorFechaInicioCampaña" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="fechaFinCampaña" class="form-label">Fecha Final</label>
+                        <input type="date" class="form-control" id="fechaFinCampaña" name="fechaFinCampaña">
+                        <span id="errorFechaFinCampaña" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="referenciador" class="form-label">Referenciador</label>
+                        <select id="referenciador" name="referenciador" class="form-select">
+                            <option value="">Seleccione un Referenciador</option>
+                            @if (Model != null && Model.Referenciadores != null) // Assuming Referenciadores is a list in your ViewModel
+                            {
+                                @foreach (var refItem in Model.Referenciadores)
+                                {
+                                    <option value="@refItem.Id">@refItem.Nombre</option>
+                                }
+                            }
+                        </select>
+                        <span id="errorReferenciador" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="codigo" class="form-label">Ingrese Código</label>
+                        <input type="text" class="form-control" id="codigo" name="codigo" placeholder="Ingrese Código" pattern="[A-Z0-9]*" title="Solo letras mayúsculas y números" maxlength="10">
+                        <span id="errorCodigo" class="text-danger small"></span>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" id="GuardarCodigo">
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" id="spin" style="display:none;"></span>
+                    Guardar
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="modalActDesRefe" tabindex="-1" aria-labelledby="modalActDesRefe" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="altaCampañaLabel">Activar y desactivar Referenciador </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="nombreCampaña" class="form-label">Cuenta</label>
+                    <select id="referenciadorEstatus" name="referenciador" class="form-select">
+                        <option value="">Seleccione un Referenciador</option>
+                       
+                    </select>
+                   
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Estatus</label>
+                    <div>
+                        <input type="radio" id="activoRadio" name="estatusReferenciador" value="Activo" checked>
+                        <label for="activoRadio" style="margin-right: 15px;">Activo</label>
+                        <input type="radio" id="inactivoRadio" name="estatusReferenciador" value="Inactivo">
+                        <label for="inactivoRadio">Inactivo</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" id="GuardarActDesRefe">
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" id="spin" style="display:none;"></span>
+                    Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalActDesCodigo" tabindex="-1" aria-labelledby="modalActDesCodigo" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="altaCampañaLabel">Cancelar Código </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="nombreCampaña" class="form-label">Código</label>
+                    <select id="miCodigoSelect" class="form-select">
+                   
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"></label>
+                    <div>
+                        
+                        <input type="radio" id="codigoCancelado" name="estatusCodigo" value="CANCELADO" checked style="display:none;">
+                        <label for="codigoCancelado"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" id="GuardarActDeCogigo">
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" id="spin" style="display:none;"></span>
+                    Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="~/js/select2.min.js"></script>
+
+    <script>
+        $('#modalActDesRefe').on('shown.bs.modal', function () {
+            if ($('#miProductoSelect').data('select2')) {
+                $('#miProductoSelect').select2('destroy');
+            }
+            $('#miProductoSelect').select2({
+                placeholder: 'Seleccione un Producto',
+                allowClear: true,
+                dropdownParent: $('#modalActDesRefe') // Importante para modales
+            });
+            if ($('.js-example-basic-single').data('select2')) {
+                $('.js-example-basic-single').select2('destroy');
+            }
+            $('.js-example-basic-single').select2({
+                // No se usa placeholder en este caso por ser un ejemplo genérico de Alabama
+                dropdownParent: $('#modalActDesRefe') // Importante para modales
+            });
+        });
+        $('#modalActDesCodigo').on('shown.bs.modal', function () {
+            if ($('#miCodigoSelect').data('select2')) {
+                $('#miCodigoSelect').select2('destroy');
+            }
+            $('#miCodigoSelect').select2({
+                placeholder: 'Seleccione un Código',
+                allowClear: true,
+                dropdownParent: $('#modalActDesCodigo') // Importante para modales
+            });
+            if ($('.js-example-basic-single').data('select2')) {
+                $('.js-example-basic-single').select2('destroy');
+            }
+            $('.js-example-basic-single').select2({
+                // No se usa placeholder en este caso por ser un ejemplo genérico de Alabama
+                dropdownParent: $('#modalActDesCodigo') // Importante para modales
+            });
+        });
+
+        $(document).ready(function () {
+            // Function to get today's date in YYYY-MM-DD format
+            function getTodayDateString() {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+                const day = String(today.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            // --- Validation Functions (return true/false and display message) ---
+            function validateDescripcionCampaña() {
+                const input = $('#descripcionCampaña');
+                const errorSpan = $('#errorDescripcionCampaña');
+                if (input.val().trim() === '') {
+                    errorSpan.text('Este campo es obligatorio.');
+                    return false;
+                }
+                errorSpan.text('');
+                return true;
+            }
+
+            function validateProductoCampaña() {
+                const select = $('#productoCampaña');
+                const errorSpan = $('#errorProductoCampaña');
+                if (select.val() === '' || select.val() === null) {
+                    errorSpan.text('Seleccione una opción.');
+                    return false;
+                }
+                errorSpan.text('');
+                return true;
+            }
+
+            function validateFechaInicioCampaña() {
+                const input = $('#fechaInicioCampaña');
+                const errorSpan = $('#errorFechaInicioCampaña');
+                const selectedDate = new Date(input.val());
+                const today = new Date(getTodayDateString());
+
+                if (input.val().trim() === '') {
+                    errorSpan.text('Este campo es obligatorio.');
+                    return false;
+                }
+                // Reset time to 00:00:00 for accurate date comparison without time issues
+                selectedDate.setHours(0, 0, 0, 0);
+                today.setHours(0, 0, 0, 0);
+
+                if (selectedDate < today) {
+                    errorSpan.text('La fecha debe ser igual o posterior a hoy.');
+                    return false;
+                }
+                errorSpan.text('');
+                return true;
+            }
+
+            function validateFechaFinCampaña() {
+                const input = $('#fechaFinCampaña');
+                const errorSpan = $('#errorFechaFinCampaña');
+                const selectedDate = new Date(input.val());
+                const startDate = new Date($('#fechaInicioCampaña').val());
+
+                if (input.val().trim() === '') {
+                    errorSpan.text('Este campo es obligatorio.');
+                    return false;
+                }
+
+                // Reset time to 00:00:00 for accurate date comparison without time issues
+                selectedDate.setHours(0, 0, 0, 0);
+                startDate.setHours(0, 0, 0, 0);
+
+                // Validation: End date cannot be before start date
+                if (selectedDate < startDate) {
+                    errorSpan.text('La fecha final debe ser igual o posterior a la fecha inicial.');
+                    return false;
+                }
+                errorSpan.text('');
+                return true;
+            }
+
+            function validateReferenciador() {
+                const select = $('#referenciador');
+                const errorSpan = $('#errorReferenciador');
+                if (select.val() === '' || select.val() === null) {
+                    errorSpan.text('Seleccione una opción.');
+                    return false;
+                }
+                errorSpan.text('');
+                return true;
+            }
+
+            function validateCodigo() {
+                const input = $('#codigo');
+                const errorSpan = $('#errorCodigo');
+                const value = input.val().trim();
+                const alphanumericRegex = /^[A-Z0-9]*$/; // Regex for uppercase letters and numbers
+
+                if (value === '') {
+                    errorSpan.text('Este campo es obligatorio.');
+                    return false;
+                }
+
+                if (value.length > 10) {
+                    errorSpan.text('El código no debe superar los 10 caracteres.');
+                    return false;
+                }
+
+                if (!alphanumericRegex.test(value)) {
+                    errorSpan.text('Solo se permiten letras mayúsculas y números.');
+                    return false;
+                }
+
+                errorSpan.text('');
+                return true;
+            }
+
+
+            $('#GuardarCodigo').on('click', function () {
+                const isValidDescripcion = validateDescripcionCampaña();
+                const isValidProducto = validateProductoCampaña();
+                const isValidFechaInicio = validateFechaInicioCampaña();
+                const isValidFechaFin = validateFechaFinCampaña();
+                const isValidReferenciador = validateReferenciador();
+                const isValidCodigoInput = validateCodigo();
+                const formIsValid = isValidDescripcion && isValidProducto && isValidFechaInicio && isValidFechaFin && isValidReferenciador && isValidCodigoInput;
+
+                if (formIsValid) {
+                    const saveButton = $(this);
+                    const spinner = $('#spin');
+                    spinner.show();
+                    saveButton.prop('disabled', true);
+
+                    const descripcion = $('#descripcionCampaña').val().trim();
+                    const productId = $('#productoCampaña').val();
+                    const fechaInicial = $('#fechaInicioCampaña').val();
+                    const fechaFinal = $('#fechaFinCampaña').val();
+                    const referenciadorId = $('#referenciador').val();
+                    const codigo = $('#codigo').val().trim();
+                    const formattedFechaInicial = fechaInicial + " 00:00:00";
+                    const formattedFechaFinal = fechaFinal + " 00:00:00";
+
+                    setTimeout(function () {
+                        const requestData = {
+                            codigo: codigo,
+                            descripcion: descripcion,
+                            estatus: "ACTIVO",
+                            productId: parseInt(productId),
+                            fechaInicial: formattedFechaInicial,
+                            fechaFinal: formattedFechaFinal,
+                            referenciadorId: parseInt(referenciadorId)
+                        };
+
+                        $.ajax({
+                            url: '/GestionReferidos/CrearCodigo',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify(requestData),
+                            dataType: 'json',
+                            success: function (response) {
+                                spinner.hide();
+                                saveButton.prop('disabled', false);
+
+                                if (response && response.codigo === 0) {
+                                    swal('Éxito', response.mensaje || 'Código creado exitosamente!', 'success');
+                                    $('#modalAltaCodigo').modal('hide');
+                                } else if (response && response.codigo === 1) {
+                                    swal('Advertencia', response.mensaje || 'Acción no realizada.', 'info');
+                                } else if (response && response.mensaje) {
+                                    swal('Error', response.mensaje, 'error');
+                                } else {
+                                    swal('Error', 'Ocurrió un error inesperado en la respuesta del servidor.', 'error');
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                spinner.hide();
+                                saveButton.prop('disabled', false);
+                                let mensaje = 'Error en la solicitud AJAX.';
+                                if (xhr && xhr.responseJSON && xhr.responseJSON.mensaje) {
+                                    mensaje += ' ' + xhr.responseJSON.mensaje;
+                                } else if (xhr.responseText) {
+                                    mensaje += ' ' + xhr.responseText;
+                                }
+                                swal('Error', mensaje, 'error');
+                            }
+                        });
+
+                    }, 2000);
+                } else {
+                    $('#spin').hide();
+                    $('#GuardarCodigo').prop('disabled', false);
+                    swal("Error", "Por favor, corrija los errores en el formulario.", "warning");
+                }
+            });
+
+           
+            $('#modalAltaCodigo').on('hidden.bs.modal', function () {
+                $('#formAltaCodigo')[0].reset(); 
+                $('.text-danger').text(''); 
+                $('#spin').hide(); 
+               
+                if ($('#productoCampaña').data('select2')) { $('#productoCampaña').select2('destroy'); }
+                $('#productoCampaña').select2({
+                    dropdownParent: $('#modalAltaCodigo'),
+                    placeholder: 'Seleccione un Producto',
+                    allowClear: true
+                });
+                if ($('#referenciador').data('select2')) { $('#referenciador').select2('destroy'); }
+                $('#referenciador').select2({
+                    dropdownParent: $('#modalAltaCodigo'),
+                    placeholder: 'Seleccione un Referenciador',
+                    allowClear: true
+                });
+            });
+
+          
+            $('#modalAltaCodigo').on('shown.bs.modal', function () {
+               
+                if ($('#productoCampaña').data('select2')) { $('#productoCampaña').select2('destroy'); }
+                $('#productoCampaña').select2({
+                    dropdownParent: $('#modalAltaCodigo'),
+                    placeholder: 'Seleccione un Producto',
+                    allowClear: true
+                });
+
+                if ($('#referenciador').data('select2')) { $('#referenciador').select2('destroy'); }
+                $('#referenciador').select2({
+                    dropdownParent: $('#modalAltaCodigo'),
+                    placeholder: 'Seleccione un Referenciador',
+                    allowClear: true
+                });
+
+               
+                const today = getTodayDateString();
+                $('#fechaInicioCampaña').attr('min', today);
+               
+                $('#fechaFinCampaña').attr('min', today);
+
+             
+                $('.text-danger').text('');
+            });
+
+           
+            $('#fechaInicioCampaña').on('change', function () {
+                const startDate = $('#fechaInicioCampaña').val();
+                if (startDate) {
+                   
+                    $('#fechaFinCampaña').attr('min', startDate);
+                  
+                    validateFechaFinCampaña();
+                } else {
+                   
+                    $('#fechaFinCampaña').attr('min', getTodayDateString());
+                }
+            });
+        });
+
+        $(document).ready(function () {
+
+            // Búsqueda de cuenta
+            $('#modalAltaReferenciador #buscarSolicitor').closest('.input-group').find('.btn-primary').on('click', function () {
+                const cuenta = $('#buscarSolicitor').val().trim();
+
+                if (cuenta === '') {
+                    swal('Atención', 'Por favor, ingrese un número de cuenta para buscar.', 'warning');
+                    return;
+                }
+                const requestData = {
+                    header: {
+                  
+                    },
+                    cuenta: $('#buscarSolicitor').val().trim()
+                };
+               
+                $.ajax({
+                    url: '/GestionReferidos/GestionReferidosConsultaCuenta', // La URL ya no lleva la cuenta en la query string
+                    type: 'POST', // ¡Cambiar a POST!
+                    contentType: 'application/json', // Indicar que el contenido es JSON
+                    data: JSON.stringify(requestData), // Convertir el objeto JavaScript a cadena JSON
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data && (data.success || data.codigo === 0)) {
+                            // Aquí, 'data' ya contendrá las propiedades 'nombre', 'direccion', 'curp'
+                            // porque así lo estás construyendo en el retorno de tu controller.
+                            $('#nombreReferenciador').val(data.nombre || '').prop('disabled', true);
+                            $('#direccionReferenciador').val(data.direccion || '').prop('disabled', true);
+                            $('#curpReferenciador').val(data.curp || '').prop('disabled', true);
+                            $('#modalAltaReferenciador').find('button.btn-success').prop('disabled', false);
+
+
+                            // swal('Éxito', (data.mensaje || 'Cuenta encontrada y datos cargados.'), 'success');
+                        } else if (data && (data.success || data.codigo === 1)) {
+                            swal('Atención', (data.mensaje || data.message || 'El referenciador ya se encuentra registrado.'), 'info');
+                            $('#nombreReferenciador').val('').prop('disabled', true);
+                            $('#direccionReferenciador').val('').prop('disabled', true);
+                            $('#curpReferenciador').val('').prop('disabled', true);
+                            $('#modalAltaReferenciador').find('button.btn-success').prop('disabled', true);
+                        } else {
+                            swal('No encontrado', (data.mensaje || data.message || 'No se encontró información para la cuenta proporcionada.'), 'error');
+                $('#nombreReferenciador').val('').prop('disabled', true);
+                $('#direccionReferenciador').val('').prop('disabled', true);
+                $('#curpReferenciador').val('').prop('disabled', true);
+                $('#modalAltaReferenciador').find('button.btn-success').prop('disabled', true);
+            }
+                    },
+                    error: function (xhr, status, error) {
+                        swal('Error', 'Error al buscar la cuenta: ' + xhr.responseText, 'error');
+                        console.error('Error AJAX al buscar cuenta:', status, error, xhr);
+                        $('#nombreReferenciador').val('').prop('disabled', true);
+                        $('#direccionReferenciador').val('').prop('disabled', true);
+                        $('#curpReferenciador').val('').prop('disabled', true);
+                        $('#modalAltaReferenciador').find('button.btn-success').prop('disabled', true);
+                    }
+                });
+            });
+
+            // Guardar
+            $('#modalAltaReferenciador').find('button.btn-success').on('click', function () {
+                const cuenta = $('#buscarSolicitor').val().trim();
+                const nombre = $('#nombreReferenciador').val().trim();
+                const direccion = $('#direccionReferenciador').val().trim();
+                const curp = $('#curpReferenciador').val().trim();
+
+                if (cuenta === '' || nombre === '') {
+                    swal('Atención', 'Por favor, busque una cuenta y asegúrese de que todos los campos estén llenos.', 'warning');
+                    return;
+                }
+
+                const compensacionValor = "SI";
+
+                const requestData = {
+                    cuenta: cuenta,
+                    compensacion: compensacionValor
+                };
+
+                $.ajax({
+                    url: '/GestionReferidos/Agregar',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(requestData),
+                    dataType: 'json',
+                    success: function (response) {
+                        // Soporta respuesta tipo: {codigo, mensaje, ...}
+                        if (response && (response.success || response.codigo === 0)) {
+                            swal('Éxito', (response.mensaje || 'Referenciador agregado exitosamente!'), 'success');
+                            $('#modalAltaReferenciador').modal('hide');
+                            $('#modalAltaReferenciador input').val('');
+                            $('#modalAltaReferenciador').find('input[disabled]').prop('disabled', true);
+                        } else if (response && response.codigo === 1) {
+                            swal('Atención', (response.mensaje || 'El referenciador ya se encuentra dado de alta.'), 'info');
+                        } else {
+                            swal('Error', (response.mensaje || response.message || 'Error desconocido al agregar referenciador.'), 'error');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        swal('Error', 'Error en la solicitud AJAX: ' + xhr.responseText, 'error');
+                    }
+                });
+            });
+
+            $('#modalAltaReferenciador').on('hidden.bs.modal', function () {
+                $('#modalAltaReferenciador input').val('');
+                $('#modalAltaReferenciador').find('input[disabled]').prop('disabled', true);
+            });
+
+            $('#modalAltaReferenciador').on('shown.bs.modal', function () {
+                if ($('#nombreReferenciador').val() === '' || $('#nombreReferenciador').prop('disabled')) {
+                    $('#modalAltaReferenciador').find('button.btn-success').prop('disabled', true);
+                } else {
+                    $('#modalAltaReferenciador').find('button.btn-success').prop('disabled', false);
+                }
+            });
+
+        });
+
+
+
+        //actualizar  referenciador
+      
+        $(document).ready(function () {
+            $('#modalAltaCodigo').on('shown.bs.modal', function () {
+                // ... (Tu código de inicialización de Select2 para productoCampaña y referenciador) ...
+                // ... (Tu código de validación de fechas) ...
+
+                // Función para cargar los datos en los selects
+                function cargarDatosSelects() {
+                    $.ajax({
+                        url: '/GestionReferidos/ObtenerListasAltaCodigo', // URL de tu controlador
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data && data.productos && data.referenciadores) {
+                                // Llenar select de Productos
+                                const productoSelect = $('#productoCampaña');
+                                productoSelect.empty();
+                                productoSelect.append('<option value="">Seleccione un Producto</option>');
+                                $.each(data.productos, function (index, producto) {
+                                    productoSelect.append('<option value="' + producto.id + '">' + producto.nombre + '</option>');
+                                });
+                                // Si usas Select2, recarga las opciones
+                                if (productoSelect.data('select2')) {
+                                    productoSelect.select2('destroy'); // Destruir si ya existe
+                                }
+                                productoSelect.select2({
+                                    dropdownParent: $('#modalAltaCodigo'),
+                                    placeholder: 'Seleccione un Producto',
+                                    allowClear: true
+                                });
+
+                                // Llenar select de Referenciadores SOLO si estatus es ACTIVO
+                                const referenciadorSelect = $('#referenciador');
+                                referenciadorSelect.empty();
+                                referenciadorSelect.append('<option value="">Seleccione un Referenciador</option>');
+                                $.each(data.referenciadores, function (index, referenciador) {
+                                    if (referenciador.estatus && referenciador.estatus.toUpperCase() === "ACTIVO") {
+                                        referenciadorSelect.append('<option value="' + referenciador.id + '">' + referenciador.cuenta + '-' + referenciador.nombre + '</option>');
+                                    }
+                                });
+                                // Si usas Select2, recarga las opciones
+                                if (referenciadorSelect.data('select2')) {
+                                    referenciadorSelect.select2('destroy'); // Destruir si ya existe
+                                }
+                                referenciadorSelect.select2({
+                                    dropdownParent: $('#modalAltaCodigo'),
+                                    placeholder: 'Seleccione un Referenciador',
+                                    allowClear: true
+                                });
+
+
+                            } else {
+                                swal('Error', 'No se pudieron cargar las listas de productos y referenciadores.', 'error');
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            swal('Error', 'Error al cargar los datos para los select: ' + xhr.responseText, 'error');
+                        }
+                    });
+                }
+
+                // Llama a la función para cargar datos cuando el modal se muestra
+                cargarDatosSelects();
+            });
+        });
+
+        $('#GuardarCodigo1').on('click', function () {
+            
+
+            
+           
+                const requestData = {
+                    codigo: codigo,
+                    descripcion: descripcion,
+                    estatus: "ACTIVO", // El estatus por defecto es ACTIVO al dar de alta
+                    productId: parseInt(productId), // Asegurarse de que sea un entero
+                    fechaInicial: formattedFechaInicial,
+                    fechaFinal: formattedFechaFinal,
+                    referenciadorId: parseInt(referenciadorId) // Asegurarse de que sea un entero
+                };
+                // 3. Enviar solicitud AJAX al controlador
+                $.ajax({
+                    url: '/GestionReferidos/CrearCodigo', // Endpoint de tu controlador
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(requestData),
+                    dataType: 'json',
+                    success: function (response) {
+                        spinner.hide();
+                        saveButton.prop('disabled', false);
+                        if (response && response.codigo === 0) {
+                            swal('Éxito', response.mensaje || 'Código creado exitosamente!', 'success');
+                            $('#modalAltaCodigo').modal('hide'); // Cerrar modal al éxito
+                        } else {
+                            swal('Error', response.mensaje || 'Error al crear el código.', 'error');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        spinner.hide();
+                        saveButton.prop('disabled', false);
+                        swal('Error', 'Error en la solicitud AJAX: ' + xhr.responseText, 'error');
+                        console.error('Error AJAX al crear código:', status, error, xhr);
+                    }
+                });
+           
+        });
+
+
+
+        $(document).ready(function () {
+            $('#modalActDesRefe').on('shown.bs.modal', function () {
+                const referenciadorEstatusSelect = $('#referenciadorEstatus');
+
+                function cargarReferenciadoresParaEstatus() {
+                    $.ajax({
+                        url: '/GestionReferidos/ObtenerListasAltaCodigo',
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data && data.referenciadores) {
+                                referenciadorEstatusSelect.empty();
+                                referenciadorEstatusSelect.append('<option value="">Seleccione un Referenciador1</option>');
+                                $.each(data.referenciadores, function (index, referenciador) {
+                                    referenciadorEstatusSelect.append('<option value="' + referenciador.id + '" data-estatus="' + referenciador.estatus + '" data-cuenta="' + referenciador.cuenta + '">' + referenciador.cuenta + '-' + referenciador.nombre + '</option>');
+                                });
+
+                                if (referenciadorEstatusSelect.data('select2')) {
+                                    referenciadorEstatusSelect.select2('destroy');
+                                }
+
+                                referenciadorEstatusSelect.select2({
+                                    dropdownParent: $('#modalActDesRefe'),
+                                    placeholder: 'Seleccione un Referenciador',
+                                    allowClear: true
+                                });
+
+                                // Los radios siempre inician en Activo seleccionado
+                                $('#activoRadio').prop('checked', true);
+                                $('#inactivoRadio').prop('checked', false);
+
+                            } else {
+                                swal('Error', 'No se pudieron cargar los referenciadores para el estatus.', 'error');
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            swal('Error', 'Error al cargar los referenciadores: ' + xhr.responseText, 'error');
+                        }
+                    });
+                }
+
+                // Evento Change para el Select de Referenciadores
+                referenciadorEstatusSelect.off('change').on('change', function () {
+                    const selectedOption = $(this).find('option:selected');
+                    const estatus = (selectedOption.data('estatus') + '').toUpperCase(); // Asegurate que sea string mayúsculas
+
+                    if (estatus === 'ACTIVO') {
+                        $('#activoRadio').prop('checked', true);
+                        $('#inactivoRadio').prop('checked', false);
+                    } else if (estatus === 'INACTIVO') {
+                        $('#activoRadio').prop('checked', false);
+                        $('#inactivoRadio').prop('checked', true);
+                    } else {
+                        // Por si llegara 'nulo' o diferente, ninguno seleccionado o default a 'inactivo'
+                        $('#activoRadio').prop('checked', false);
+                        $('#inactivoRadio').prop('checked', true);
+                    }
+                });
+
+                // Llama a la función para cargar datos cuando el modal se muestra
+                cargarReferenciadoresParaEstatus();
+
+                // Al abrir modal, marca Activo por default
+                $('#activoRadio').prop('checked', true);
+                $('#inactivoRadio').prop('checked', false);
+            });
+
+            // Limpia radios y select al cerrar modal
+            $('#modalActDesRefe').on('hidden.bs.modal', function () {
+                $('#referenciadorEstatus')[0].selectedIndex = 0;
+                if ($('#referenciadorEstatus').data('select2')) {
+                    $('#referenciadorEstatus').select2('destroy');
+                }
+                $('#activoRadio').prop('checked', true);
+                $('#inactivoRadio').prop('checked', false);
+            });
+        });
+
+
+
+        $(document).ready(function () {
+            $('#GuardarActDesRefe').on('click', function () {
+                // Extraer la cuenta del option seleccionado
+                var selectedOption = $('#referenciadorEstatus option:selected');
+                var cuenta = selectedOption.data('cuenta'); // <-- Asegúrate que este atributo existe
+
+                // Tomar el valor del radio
+                var estatus = $('input[name="estatusReferenciador"]:checked').val(); // "ACTIVO" o "INACTIVO"
+                console.log("[DEBUG] Opción seleccionada:", selectedOption);
+                console.log("[DEBUG] Cuenta detectada:", cuenta);
+                console.log("[DEBUG] Estatus del radio seleccionado:", estatus);
+                // Validar selección de referenciador
+                if (!cuenta || cuenta === "" || cuenta === undefined) {
+                    swal('Atención', 'Seleccione un referenciador.', 'warning');
+                    console.warn("[DEBUG] Falta seleccionar referenciador. Abandonando guardado.");
+                    return;
+                }
+
+                // Validar selección de estatus (por si acaso)
+                if (!estatus) {
+                    swal('Atención', 'Seleccione el estatus (Activo o Inactivo).', 'warning');
+                    console.warn("[DEBUG] Falta seleccionar estatus. Abandonando guardado.");
+                    return;
+                }
+
+                $('#spin').show();
+                $('#GuardarActDesRefe').prop('disabled', true);
+
+                var requestData = {
+                    cuenta: String(cuenta),
+                    estatus: estatus
+                };
+                console.log("[DEBUG] requestData a enviar:", requestData);
+                console.log("[DEBUG] requestData serializado:", JSON.stringify(requestData));
+
+                $.ajax({
+                    url: '/GestionReferidos/DesactivarReferenciador', // Tu controlador interno
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(requestData),
+                    success: function (response) {
+                        $('#spin').hide();
+                        $('#GuardarActDesRefe').prop('disabled', false);
+                        console.log("[DEBUG] Respuesta de backend:", response);
+                        if (response && response.codigo === 0) {
+                            swal('Éxito', response.mensaje || 'Operación exitosa.', 'success');
+                            $('#modalActDesRefe').modal('hide');
+                        } else {
+                            swal('Error', response.mensaje || 'No se pudo actualizar el estatus del referenciador.', 'error');
+                        }
+                    },
+                    error: function (xhr) {
+                        $('#spin').hide();
+                        $('#GuardarActDesRefe').prop('disabled', false);
+                        console.error("[DEBUG] Error AJAX:", xhr.responseText, xhr);
+
+                        swal('Error', 'Error en la solicitud AJAX: ' + xhr.responseText, 'error');
+                    }
+                });
+            });
+
+            $('#modalActDesRefe').on('hidden.bs.modal', function () {
+                $('#spin').hide();
+                $('#GuardarActDesRefe').prop('disabled', false);
+            });
+        });
+
+        
+
+    
+
+        $(document).ready(function () {
+            $('#modalActDesCodigo').on('shown.bs.modal', function () {
+                const codigoSelect = $('#miCodigoSelect');
+                function cargarCodigos() {
+                    $.ajax({
+                        url: '/GestionReferidos/ObtenerCodigos',
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data && data.success && data.codigos) {
+                                if (codigoSelect.data('select2')) {
+                                    codigoSelect.select2('destroy');
+                                }
+                                codigoSelect.empty();
+                                codigoSelect.append('<option value="">Seleccione un Código</option>');
+                                $.each(data.codigos, function (index, codigo) {
+                                    var estatus = (codigo.estatus || '').toUpperCase();
+                                    codigoSelect.append('<option value="' + codigo.id + '" data-estatus="' + estatus + '">' + codigo.codigoReferencia + ' - ' + codigo.descripcion + '</option>');
+                                });
+                                codigoSelect.select2({
+                                    dropdownParent: $('#modalActDesCodigo'),
+                                    placeholder: 'Seleccione un Código',
+                                    allowClear: true
+                                });
+                                // ... Radios por default ...
+                            } else {
+                                swal('Error', data.message || 'No se pudieron cargar los códigos.', 'error');
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            swal('Error', 'Error al cargar los códigos: ' + xhr.responseText, 'error');
+                        }
+                    });
+                }
+                // Siempre desuscribe y vuelve a asignar el evento change
+                function setRadiosPorDefault() {
+                    $('#codigoActivo').prop('checked', true);
+                    $('#codigoInactivo').prop('checked', false);
+                    $('#codigoCancelado').prop('checked', true);
+                }
+               
+                cargarCodigos();
+              
+            });
+            $('#modalActDesCodigo').on('hidden.bs.modal', function () {
+                const codigoSelect = $('#miCodigoSelect');
+                if (codigoSelect.data('select2')) {
+                    codigoSelect.select2('destroy');
+                }
+                codigoSelect.empty().append('<option value="">Seleccione un Código</option>');
+                // ... radios por default ...
+            });
+
+
+            // ---  de cómo enviar el estatus desde los radios ---
+            $(document).ready(function () {
+                $('#GuardarActDeCogigo').on('click', function () {
+                    var codigoId = $('#miCodigoSelect').val();
+                    var estatus = $('input[name="estatusCodigo"]:checked').val(); // ACTIVO, INACTIVO, CANCELADO
+
+                    if (!codigoId) {
+                        swal('Atención', 'Seleccione un código.', 'warning');
+                        return;
+                    }
+
+                    if (!estatus) {
+                        swal('Atención', 'Seleccione un estatus.', 'warning');
+                        return;
+                    }
+
+                    // La función que realmente guarda
+                    function guardarEstatusCodigo() {
+                        $('#spin').show();
+                        $('#GuardarActDeCogigo').prop('disabled', true);
+
+                        var requestData = {
+                            codigoId: parseInt(codigoId),
+                            estatus: estatus
+                        };
+
+                        $.ajax({
+                            url: '/GestionReferidos/ModificarEstatusCodigo',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify(requestData),
+                            success: function (response) {
+                                $('#spin').hide();
+                                $('#GuardarActDeCogigo').prop('disabled', false);
+
+                                if (response && response.codigo === 0) {
+                                    swal('Éxito', response.mensaje || 'Estatus actualizado correctamente.', 'success');
+                                    $('#modalActDesCodigo').modal('hide');
+                                } else {
+                                    swal('Error', response.mensaje || 'No se pudo actualizar el estatus del código.', 'error');
+                                }
+                            },
+                            error: function (xhr) {
+                                $('#spin').hide();
+                                $('#GuardarActDeCogigo').prop('disabled', false);
+                                swal('Error', 'Error en la solicitud AJAX: ' + xhr.responseText, 'error');
+                            }
+                        });
+                    }
+
+                    // Si seleccionan "CANCELADO", pide confirmación antes de guardar
+                    if (estatus === 'CANCELADO') {
+                        // Para SweetAlert clásico
+                        if (typeof swal === "function" && !window.Swal) {
+                            swal({
+                                title: "Confirmar cancelación",
+                                text: "Este código se marcará como CANCELADO y ya no podrá activarse nuevamente. ¿Desea continuar?",
+                                type: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#d33",
+                                confirmButtonText: "Sí, cancelar",
+                                cancelButtonText: "No"
+                            }, function (isConfirm) {
+                                if (isConfirm) {
+                                    guardarEstatusCodigo();
+                                }
+                            });
+                        }
+                        // Para SweetAlert2 (`Swal.fire`)
+                        else if (typeof Swal !== "undefined") {
+                            Swal.fire({
+                                title: "Confirmar cancelación",
+                                text: "Este código se marcará como CANCELADO y ya no podrá activarse nuevamente. ¿Desea continuar?",
+                                icon: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#d33",
+                                confirmButtonText: "Sí, cancelar",
+                                cancelButtonText: "No"
+                            }).then(function (result) {
+                                // Compatible con ambas versiones de SweetAlert2
+                                if (result.isConfirmed || result === true) {
+                                    guardarEstatusCodigo();
+                                }
+                            });
+                        }
+                    } else {
+                        guardarEstatusCodigo();
+                    }
+                });
+            });
+        });
+    </script>
+}

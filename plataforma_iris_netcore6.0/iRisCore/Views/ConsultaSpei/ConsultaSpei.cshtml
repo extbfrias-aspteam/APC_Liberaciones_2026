@@ -1,0 +1,209 @@
+﻿
+@{
+    ViewData["Title"] = "ConsultaSpei";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Estilos {
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+}
+
+<h5>Consulta de Operación Spei (IN/OUT)</h5>
+<div id="emailHelp" class="form-text">Visualización de la Información de la Operación Spei.</div>
+<div class="card-box">
+    <div class="card-body">
+        <form>  
+            <div class="row g-4">
+                <div class="col-sm-3">
+                    <select class="form-select" name="tipoSpei" id="tipoSpei" aria-label="Default select example">
+                        <option selected>Seleccione Operación</option>
+                        <option value="IN">IN</option>
+                        <option value="OUT"> OUT</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <input name="fecha" id="fecha" class="form-control" type="date" />
+                </div>
+                <div class="col-sm-3">
+                    <input class="form-control" type="text" name="claveRastreo" id="claveRastreo" placeholder="Clave de Rastreo" aria-label="default input example">
+                </div>
+                <div class="col-sm-3">
+                    <button type="submit" id="ExecuteRequest" class="btn btn-success">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Operación
+                        </button>                  
+                </div>
+            </div>           
+           
+        </form>
+    </div>
+</div>
+
+<br />
+
+<div class="row gx-5 visually-hidden" id="tabla">
+
+    <table id="example" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>Fecha Operación</th>
+                <th>Fecha Aplicación</th>
+                <th>Clave Rastreo</th>
+                <th>Banco Origen</th>
+                <th>Clabe Origen</th>
+                <th>Nombre Emisor</th>
+                <th>Banco Destino</th>               
+                <th>Clabe Destino</th>
+                <th>Nombre Beneficiario</th>
+                <th>Monto</th>
+                <th>Concepto Pago</th>
+                <th>Referencia</th>
+                <th>Estatus Operación</th>
+                <th>Motivo de Estatus</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js"></script>
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+    js(document).ready(function () {
+        var table = js('#example').DataTable({
+            language: {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+            }
+        });
+
+        js("#tipoSpei").on("change", function () {
+            table
+                .clear()
+                .draw();
+            js("#tabla").addClass("visually-hidden");
+            js("#claveRastreo").val("");
+            js("#fecha").val("");
+
+        });
+
+
+        js('#ExecuteRequest').on("click", function (event) {
+            event.preventDefault();
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+
+            var url = "@Url.Action("ConsultaSpei","ConsultaSpei")";
+            var info = new Object();
+            info.tipoSpei = js("#tipoSpei").val();
+            info.fecha = js("#fecha").val();
+            info.cveRastreo = js("#claveRastreo").val();
+
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: { model: info},
+                success: function (data) {                   
+
+                    if (data.codigo != 200) {
+                        table
+                            .clear()
+                            .draw();
+
+                        swal({
+                            title: "Error",
+                            text: data.mensaje,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                       
+                    } else {
+                        js("#tabla").removeClass("visually-hidden");
+                        js('#example').dataTable({
+                            destroy: true,
+                            responsive: true,
+                            scrollX: true,
+                            ordering: true,
+                            paging: true,
+                            language: {
+                                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+                            },
+                            data: data.data,
+
+
+                            columns: [
+                                { 'data': 'fechaOperacion' },
+                                { 'data': 'fechaAplicacion' },
+                                { 'data': 'claveRastreo' },
+                                { 'data': 'bancoEmisor' },
+                                { 'data': 'cuentaClabeOrigen' },
+                                { 'data': 'nombreOrigen' },
+                                { 'data': 'bancoDestino' },
+                                { 'data': 'cuentaClabeDestino' },
+                                { 'data': 'nombreDestino' },
+                                { 'data': 'monto' },
+                                { 'data': 'conceptoPago' },
+                                { 'data': 'referenciaCobranza' },
+                                { 'data': 'descripcionEstatus' },
+                                { 'data': 'descripcionDetallada' }
+                            ],
+                            columnDefs:
+                                [
+                                    {
+                                        targets: 9,
+                                        render: js.fn.dataTable.render.number(',', '.', 2, '')
+                                    },
+                                    {
+                                        targets: '_all',
+                                        render: function (data, type, row) {
+                                            if (type === 'display') {
+                                                if (isNaN(data) && moment(data, 'YYYY-MM-DD', true).isValid()) {
+                                                    return moment(data).format('DD-MM-YYYY');
+                                                }
+                                            }
+                                            return data;
+                                        }
+                                    }
+                                ]
+                        });
+                    }
+                    js("#ExecuteRequest").attr('disabled', false);
+                    js("#spin").addClass("visually-hidden");
+                },
+                error: function (jqXHR, exception) {
+                    var msg = '';
+                    if (jqXHR.status === 0) {
+                        msg = 'Not connect.\n Verify Network.';
+                    } else if (jqXHR.status == 404) {
+                        msg = 'Requested page not found. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msg = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msg = 'Requested JSON parse failed.';
+                    } else if (exception === 'timeout') {
+                        msg = 'Time out error.';
+                    } else if (exception === 'abort') {
+                        msg = 'Ajax request aborted.';
+                    } else {
+                        msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                    }
+                    swal({
+                        title: "Error",
+                        text: msg,
+                        type: "warning",
+                        showCancelButton: false,
+                        confirmButtonColor: "#DD6B55",
+                        closeOnConfirm: false
+                    });
+                }
+
+            });
+        });
+    });
+</script>

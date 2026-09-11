@@ -1,0 +1,786 @@
+﻿@using iRisModel;
+
+@{
+    ViewData["Title"] = "DashboardTarjetasSucursal";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@section Estilos {
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+}
+
+
+<!--Inicio Modal pre-Asignar Tarjeta a sucursales -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Pre-Asignar Tarjetas a Sucursal</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="field-1" class="control-label"><strong>Sucursal</strong></label>
+                            <select class="form-select" name="items" id="sucursalModal" aria-label="Default select example">
+                                <option selected>Seleccione la sucursal</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="field-1" class="control-label"><strong>Cantidad a distribuir</strong></label>
+                            <input type="text" class="form-control" name="cantidadAsignar" id="cantidadAsignar" placeholder="Cantidad" maxlength="8">
+                        </div>
+                    </div>
+               </div>
+               <br />
+               <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="field-1" class="control-label"><strong>Nombre del personal que recibirá el paquete de tarjetas</strong></label>
+                            <input type="text" class="form-control" name="quienRecibe" id="quienRecibe" placeholder="Nombre de la persona que recibirá el paquete" maxlength="100">
+                        </div>
+                    </div>                   
+                </div>
+                <br />
+                <div class="row">                   
+                    <div class="col-md-12 text-center">
+                        <div class="form-group">
+                            <button type="button" id="ExecuteAssignCard" class="btn btn-primary waves-effect waves-light">Pre-asignar Tarjetas</button>
+                        </div>
+                    </div>
+                </div>
+
+               
+                <hr />
+                <br />
+                <table id="example2" class="display" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Sucursal</th>
+                            <th>Tarjetas Pre-Asignadas</th>
+                            <th>Opciones</th>
+                        </tr>
+                    </thead>
+                   
+                </table>
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" id="btnArchivoDistribucion" class="btn btn-success">Confirmar archivo de distribución</button>
+                <button type="button" id="btnCerrarModal" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>           
+            </div>
+        </div>
+    </div>
+</div>   
+<!--Fin Modal pre-asignar Tarjetas a sucursales-->
+
+<!--Inicio Modal Asignar Tarjetas al CEDIS -->
+<!--Inicio Modal pre-Asignar Tarjeta a sucursales -->
+<div class="modal fade" id="staticBackdropCedis" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Asignar Tarjetas a CEDIS</h5>
+            </div>
+            <div class="modal-body">                
+                
+                <table id="example2" class="display" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Sucursal</th>
+                            <th>Tarjetas Pre-Asignadas</th>
+                            <th>Opciones</th>
+                        </tr>
+                    </thead>
+
+                </table>
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" id="btnArchivoDistribucion" class="btn btn-success">Confirmar archivo de distribución</button>
+                <button type="button" id="btnCerrarModal" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Fin Modal Asignar Tarjetas-->
+<!--Fin Modal asignar tarjetas al CEDIS-->
+
+
+
+
+
+<!--Inicio Modal Cargar Tarjetas-->
+<div class="modal fade" id="staticBackdropCarga" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Inventario de Tarjetas</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                   
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <input class="form-control" type="file" name="fileUpload" id="fileUpload">
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <button type="button" id="ExecuteLoadCard" class="btn btn-primary waves-effect waves-light">Cargar Inventario</button>
+                        </div>
+                    </div>
+
+                </div>
+              
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="btnCerrarModalCarga" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Fin Modal cargar Tarjetas-->
+
+@* <!--Inicio Modal Cargar Tarjetas-->
+<div class="modal fade" id="staticBackdropRpt" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Reporte de Inventario de Tarjeta</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <a href="@Url.Action("DownloadExcel","DashboardTarjetasSucursal")">Reportes</a>
+                            @* <button type="button" class="btn btn-primary waves-effect waves-light"></button> 
+                            
+                        </div>
+                    </div>                  
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="btnCerrarModalRpt" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Fin Modal cargar Tarjetas--> *@
+
+
+
+
+<h5>Tarjeta en Sucursal / CEDIS</h5>
+<div id="emailHelp" class="form-text"> Módulo de administración de inventarios de tarjetas físicas</div>
+<div class="card-box">
+    <div class="card-body">
+        <form class="form-horizontal" role="form">
+            <div class="row g-1">
+                <div class="col-sm-3">
+                    <select class="form-select" name="marcaId" id="marcaId" aria-label="Default select example">
+                        <option selected>Seleccione la marca</option>
+                        @if (ViewBag.Marcas != null)
+                        {
+                            List<MarcaModel> oMarcas = (List<MarcaModel>)ViewBag.Marcas;
+                            foreach (MarcaModel item in oMarcas)
+                            {
+                                <option value=@item.idMarca>@item.Marca</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <select class="form-select" name="sucursalId" id="sucursalId" aria-label="Default select example">
+                        <option value="-1" selected>Seleccione la sucursal</option>
+                        @if (ViewBag.Sucursales != null)
+                        {
+                            List<SucursalModel> oSucursal = (List<SucursalModel>)ViewBag.Sucursales;
+                            foreach (SucursalModel item in oSucursal)
+                            {
+                                <option value=@item.idSucursal>@item.Sucursal</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <select class="form-select" name="estatusId" id="estatusId" aria-label="Default select example">
+                        <option selected>Seleccione el estatus</option>
+                        @if (ViewBag.Estatus != null)
+                        {
+                            List<EstatusModel> oEstatus = (List<EstatusModel>)ViewBag.Estatus;
+                            foreach (EstatusModel item in oEstatus)
+                            {
+                                <option value=@item.idEstatus>@item.Estatus</option>
+                            }
+                        }
+                        
+                    </select>
+                </div>
+
+                <div class="col-sm-3">
+                    <button type="submit" id="ExecuteRequest" class="btn btn-success">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Consulta
+                    </button>
+                    <a class="visually-hidden" id="urlExcel" href="@Url.Action("GenerateExcel","DashBoardTarjetas")">Download Excel</a>
+                </div>
+            </div>            
+             <div class="row g-1" style="margin-top:5px;">
+                <div class="form-group">
+                    <div class="col-sm-offset-3 col-sm-9">
+                        <div class="checkbox checkbox-primary">
+                            <input id="firstStock" type="checkbox" name="firstStock">
+                            <small style="color:red;"><label for="checkbox2">
+                               Primer Lote de Tarjetas
+                                </label>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                
+             </div>
+
+        </form>
+    </div>
+</div>
+    
+<div style="text-align:right;">
+    
+    <button id="AsignarCardCedis" class="btn btn-info waves-effect waves-light">Asignar Tarjetas CEDIS</button>
+    <button type="button" id="ExecuteCargarTarjetas" data-bs-toggle="modal" data-bs-target="#staticBackdropCarga" class="btn btn-warning waves-effect waves-light">Cargar Inventario</button>
+    <button type="button" id="ExecuteAsignarTarjeta" data-bs-toggle="modal" data-bs-target="#staticBackdrop" class="btn btn-danger waves-effect waves-light">Pre-Asignar Tarjetas</button>
+
+    <button type="button" id="ExecuteRpt" class="btn btn-danger waves-effect waves-light">Generar Reporte</button>
+
+
+ @*    <button type="button" id="ExecuteAsignarTarjetaRpt" data-bs-toggle="modal" data-bs-target="#staticBackdropRpt" class="btn btn-danger waves-effect waves-light">Reportería</button>
+  *@   
+    @* <a href="@Url.Action("DownloadExcel","DashboardTarjetasSucursal")">
+        <button type="button" class="btn btn-primary waves-effect waves-light">Reportes</button>
+    </a>  *@
+
+</div>
+@* <button class="btn btn-info waves-effect waves-light btn-sm" id="sa-warning">Click me</button> *@
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <table id="example" class="display" style="width:100%">
+                <thead>
+                    <tr>                        
+                        <th>Sucursal</th>                       
+                        <th>Folio</th>
+                        <th>PAN</th>
+                        <th>GUIA</th>
+                        <th>Estatus</th>
+                        <th>Cuenta ASP</th>
+                        <th>Fecha Solicitud</th>
+                        <th>Fecha Transito</th>
+                        <th>Fecha Entrega</th>
+                        <th></th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+ </div>
+
+
+<!-- Modal para aplicar la devolucion -->
+<div class="modal fade" id="myModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Información para aplicar la devolución</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">                        
+                        <div class="form-group">
+                            <label for="field-1" class="control-label"><strong><h2><span id="tarjetaDev" style="color:darkblue;"></span></h2></strong></label>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="guiaDev" id="guiaDev" placeholder="Número de guía" maxlength="50" />
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <textarea class="form-control" name="observaciones" id="observaciones" placeholder="Observaciones de la devolución"  rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">             
+                <button type="button" id="executeDevolucion" class="btn btn-primary">Aplicar devolución</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/plug-ins/1.13.6/api/sum().js"></script>
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+
+    js(document).ready(function () {
+        js("#ExecuteAsignarTarjeta").prop('disabled',true);
+        js("#AsignarCardCedis").prop('disabled', true);
+
+        js('#example').dataTable({
+            language: {
+                "url": "../lib/Spanish.json"
+            }
+        });
+
+        var table = js('#example2').DataTable({
+            language: {
+                "url": "../lib/Spanish.json"
+            }
+        });
+
+
+        // $('#ExecuteRequest').click(function () {
+        //     $('<iframe />', {
+        //         name: 'frame1',
+        //         src: '/DashboardTarjetasSucursal/DownloadExcel'
+        //     }
+        //     ).appendTo('#downloadframes');
+        // });
+
+        var table = js('#example2').DataTable();
+
+        js("#ExecuteRpt").on('click', function () {           
+
+            var url = "@Url.Action("DownloadExcel", "DashboardTarjetasSucursal")";
+
+           
+            var primerLote;
+
+            if ($('#firstStock').prop('checked')) {               
+                primerLote = true;
+            } else {
+                primerLote = false;
+            }
+            
+
+            js.ajax({
+                type: "GET",
+                url: url,
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                data: { marcaId: js("#marcaId").val(), sucursalId: js("#sucursalId").val(), estatusId: js("#estatusId").val(), firstStock: primerLote, sucursalNombre: js("#sucursalId option:selected").text() },
+                success: function (result) {
+                    console.log(result)
+                    //alert("sfa");
+                    var blob = result;
+                    var downloadUrl = URL.createObjectURL(blob);
+                    var a = document.createElement("a");
+                    a.href = downloadUrl;
+                    a.download = "downloadFile.xls";
+                    document.body.appendChild(a);
+                    a.click();
+                }
+               
+            });           
+        });
+
+
+        js('#ExecuteAssignCard').on('click', function () {           
+
+            
+            var url = "@Url.Action("PreAsignarTarjetasSucursal","DashboardTarjetasSucursal")";
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: { cantidadAsignar: js("#cantidadAsignar").val(), sucursalId: js("#sucursalModal").val(), marcaId: js("#marcaId").val(), quienRecibe: js("#quienRecibe").val() },
+                success: function (data) {
+                    console.log(data);
+                    if(data.codigo == "0") {
+                        table.row
+                            .add([
+                                js('#sucursalModal option:selected').html(),
+                                js("#cantidadAsignar").val(),                               
+                                '<i  class="fa fa-trash idsucursal" style="cursor: pointer" data-toggle="tooltip" data-placement="left" title="Eliminar"><span class="visually-hidden"> ' + js("#sucursalModal").val() + '|' +  js("#cantidadAsignar").val() + '</span></i >'
+                             ])
+                            .draw(false);
+                    } else {
+                        swal({
+                            title: "Error",
+                            text: data.mensaje,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+                }
+            });
+        });
+
+        //-- icon para borrar un item del datatable
+        js('#example2 tbody').on('click', '.idsucursal', function () {
+
+            var id = js(this).parent().text().trim();
+            console.log(id);
+
+            table
+                .row(js(this).parents('tr'))
+                .remove()
+                .draw();
+
+            var url = "@Url.Action("DesasignarTarjetasSucursal","DashboardTarjetasSucursal")";
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: { valorId: id, marcaId: js("#marcaId").val() },
+                success: function (data) {
+                    console.log(data);
+                    console.log(data.codigo);
+
+                    if (data.codigo == 0) {
+                        console.log("aqui se elimina el renglon");
+
+                        
+                    } 
+                }
+            });           
+        });
+
+
+        js("#btnCerrarModal").on('click', function(){           
+            var table = js('#example').DataTable();
+            table
+                .clear()
+                .draw();
+            js("#ExecuteAsignarTarjeta").prop('disabled', true);
+            js("#AsignarCardCedis").prop('disabled', true);
+           
+        });
+
+
+        js("#ExecuteAsignarTarjeta").on("click",function(){
+            table
+                .clear()
+                .draw();
+
+
+            js("#staticBackdrop").find("input,select").val("");
+
+            var url = "@Url.Action("GetSucursales","DashboardTarjetasSucursal")";
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: { pMarca: js("#marcaId").val() },
+                success: function (data) {      
+                    console.log(data);
+                    js.each(data.sucursales, function (key, value) {
+                        js("#sucursalModal").append('<option value=' + value.idSucursal + '>' + value.sucursal + '</option>');
+                    });
+
+                    // console.log(data.tarjetaPreAsignadas.length);
+
+                    if (data.tarjetaPreAsignadas.length >= 0) {
+                        js.each(data.tarjetaPreAsignadas, function (key, value) {
+                            table.row
+                                .add([
+                                    value.sucursal,
+                                    value.cantidad,
+                                    '<i  class="fa fa-trash idsucursal" style="cursor: pointer" data-toggle="tooltip" data-placement="left" title="Eliminar"><span class="visually-hidden"> ' + value.sucursalId + '|' + value.cantidad + '</span></i >'
+                                ])
+                                .draw(false);
+                        });
+                     }
+                }
+            });
+        });
+
+        /******* Boton generar arhivo de distribución ***********/
+        js("#btnArchivoDistribucion").on("click", function () {
+            if (!table.rows().count()) {
+                swal({
+                    title: "Error",
+                    text: "No existen tarjetas pre-asignadas a las sucursales",
+                    type: "error",
+                    showCancelButton: false,
+                    confirmButtonColor: "#DD6B55",
+                    closeOnConfirm: false
+                });
+            } else {
+
+                var url = "@Url.Action("SetArchivoDistribucion","DashboardTarjetasSucursal")";
+
+                js.ajax({
+                    type: "POST",
+                    url: url,
+                    dataType: "json",
+                    data: null,
+                    success: function (data) {
+                        console.log(data);
+
+                        swal({
+                            title: "Exito",
+                            text: data.mensaje,
+                            type: "success",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                       
+                    }
+                });
+            }
+
+
+        });
+
+        /*-------Fin boton archivo de distribucion ----------------*/
+
+
+        /******* Boton de Carga archivo *********/
+        js("#ExecuteLoadCard").on("click", function () {
+           
+            var input = document.getElementById("fileUpload"); //get file input id
+            var files = input.files; //get files
+            var formData = new FormData(); //create form
+
+            for (var i = 0; i != files.length; i++) {
+                formData.append("files", files[i]); //loop through all files and append
+            }
+
+            var url = "@Url.Action("CargarArchivoTarjetas","DashboardTarjetasSucursal")";
+            $.ajax(
+                {
+                    url: url,
+                    data: formData, // send it as formData
+                    processData: false,
+                    contentType: false,
+                    type: "POST", //type is post as we will need to post files
+                    success: function (data) {  
+                        if (data.codigo == 0) {
+                            swal({
+                                title: "Exito",
+                                text: data.mensaje,
+                                type: "success",
+                                showCancelButton: false,
+                                confirmButtonColor: "#DD6B55",
+                                closeOnConfirm: false
+                            });
+                        }
+                        else { 
+                            swal({
+                                title: "Error",
+                                text: data.mensaje,
+                                type: "warning",
+                                showCancelButton: false,
+                                confirmButtonColor: "#DD6B55",
+                                closeOnConfirm: false
+                            });
+                        }
+                    }
+                }
+            );
+        });
+
+
+        /*****Boton de consulta *****/
+
+        js('#ExecuteRequest').on("click", function (event) {
+            event.preventDefault();
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+
+            var info = new Object();
+            info.marca = js("#marcaId").val();
+            info.sucursal = js("#sucursalId").val();
+            info.estatus = js("#estatusId").val();           
+
+            if ($('#firstStock').prop('checked')) {
+               // alert('Seleccionado');
+                info.firstStock = true;
+            } else { 
+                info.firstStock = false;
+            }
+            
+
+            // console.log(info);
+
+            var url = "@Url.Action("TarjetasSucursal","DashboardTarjetasSucursal")";
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: { model: info },
+                success: function (data) {
+
+                    if (js("#estatusId").val() == "SINASIG" && js("#sucursalId").val() == "-1" && $('#firstStock').prop('checked') == false) {
+                        js("#ExecuteAsignarTarjeta").prop('disabled',false);
+                        js("#AsignarCardCedis").prop('disabled', false);
+
+                    } else {
+                        js("#ExecuteAsignarTarjeta").prop('disabled', true);
+                        js("#AsignarCardCedis").prop('disabled', true);
+                    } 
+
+                    js("#tabla").removeClass("visually-hidden");
+                    js('#example').dataTable({
+                        destroy: true,
+                        responsive: true,
+                        scrollX: true,
+                        ordering: true,
+                        paging: true,
+                        language: {
+                            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+                        },
+                        data: data,
+                        columns: [                         
+                            { 'data': 'sucursal' },                                                   
+                            { 'data': 'id' },
+                            { 'data': 'pan' },
+                            { 'data' : 'guia' },
+                            { 'data': 'estatus' },
+                            { 'data' : 'cuentaASP' },
+                            { 'data': 'fechaSolicitud' },
+                            { 'data': 'fechaTransito' },
+                            { 'data': 'fechaEntrega' },
+                            {
+                                'data': null, title: '', wrap: true, "render": function (item) {
+                                    if (item.estatus == 'EN TRANSITO') {
+                                        return '<i  class="fa fa-history devTar" style="cursor: pointer" data-toggle="tooltip" data-placement="left" title="Aplicar devolución"><span class="visually-hidden"> ' + item.id + '|' + item.pan + '|' + item.guia + '</span> </i>';
+                                    }
+                                    else {
+                                        return "";
+                                    }
+                                }
+                            }
+                        ]
+                    });
+                    js("#ExecuteRequest").attr('disabled', false);
+                    js("#spin").addClass("visually-hidden");
+
+                }
+            });
+
+        });
+
+
+        js('#example tbody').on('click', '.devTar', function () {
+           
+            var id = js(this).parent().text().trim();
+            console.log(id);
+            var res = id.split('|')[1];
+            js("#tarjetaDev").text(res);
+
+                $("#myModal").modal('show');          
+
+        });
+
+        
+            $('#AsignarCardCedis').click(function () {
+                var table = js("#example").dataTable();
+                var total = table.fnGetData().length;
+                swal({
+                    title: "Estás seguro?",
+                    text: "Asignarás un total de " + total + " al CEDIS para la entrega a Domicilio!",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Si, asignarlas!",
+                    closeOnConfirm: false
+                }, function () {
+
+                    var url = "@Url.Action("SetAsignarCEDIS", "DashboardTarjetasSucursal")";
+
+                    js.ajax({
+                        type: "POST",
+                        url: url,
+                        dataType: "json",
+                        data: { marcaId: js("#marcaId").val() },
+                        success: function (data) {
+                            //console.log(data);
+                            if (data.codigo == 0) {
+                                swal("Tarjetas Asignadas!", "Ya cuentas con tarjetas en el CEDIS para su entrega a domicilio.", "success");
+                            }
+                        }
+                    });                    
+                });
+            });
+
+
+        js("#executeDevolucion").on('click', function () {
+            swal({
+                title: "Estás seguro?",
+                text: "La devolución restaurará el estatus de la tarjeta física en la ASP Pago!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Si, Confirmo la devolución!",
+                closeOnConfirm: false
+            }, function () {               
+
+                var info = new Object();   
+                info.marcaId = js("#marcaId").val();
+                info.estatusId = js("#estatusId").val();
+                info.guiaDev = js("#guiaDev").val();
+                info.observaciones = js("#observaciones").val();                
+
+                var url = "@Url.Action("DevolucionCEDIS", "DashboardTarjetasSucursal")";
+                js.ajax({
+                    type: "POST",
+                    url: url,
+                    dataType: "json",
+                    data: { model: info, numTarjeta : js("#tarjetaDev").text() },
+                    success: function (data) {
+                        console.log(data);
+                        if (data.codigo != 0) {
+                            swal({
+                                title: "Error",
+                                text: data.mensaje,
+                                type: "warning",
+                                showCancelButton: false,
+                                confirmButtonColor: "#DD6B55",
+                                closeOnConfirm: false
+                            });
+                        }
+                        else {
+                            swal("¡Tarjeta Devuelta!", "Ha concluido la devolución de la tarjeta.", "success");
+                        }
+                    }
+                });
+            });
+        });
+
+        js(document).on('click', '.confirm', function () {
+            
+            location.reload();
+        });
+
+    });
+</script>

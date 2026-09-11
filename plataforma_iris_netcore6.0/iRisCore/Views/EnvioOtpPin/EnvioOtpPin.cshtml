@@ -1,0 +1,163 @@
+﻿@using iRisModel
+@{
+    ViewData["Title"] = "EnvioOtpPin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Estilos {
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+}
+
+<h5>Enviar OTP para cambiar de PIN</h5>
+<div id="emailHelp" class="form-text">Vista que perminte enviar un OTP temporal al cuentahabiente de manera individual para cambio y desbloqueo de PIN.</div>
+<div class="card-box">
+    <div class="card-body">
+        <form>
+            <div class="row g-3">
+
+                <div class="col-sm-4">
+                    <select class="form-select" name="tipoBusqueda" id="tipoBusqueda" aria-label="Default select example">
+                        <option value=""  selected>Seleccione el medio...</option>
+                        <option value="TEL">Teléfono</option>
+                        <option value="CTA">Cuenta ASP</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <input class="form-control" type="text" name="valorBusqueda" id="valorBusqueda" placeholder="Valor..." aria-label="default input example">
+                </div>
+                <div class="col-sm-4">
+                    <button type="submit" class="btn btn-success" id="ExecuteRequest" disabled>
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Operación
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+
+
+<script>
+    $(document).ready(function () {
+        function checkForm() {
+            const tipoBusquedaValido = $('#tipoBusqueda').val() !== '';
+            const valorBusqueda = $('#valorBusqueda').val().trim();
+            const valorBusquedaValido = /^[0-9]{1,10}$/.test(valorBusqueda);
+            $('#ExecuteRequest').prop('disabled', !(tipoBusquedaValido && valorBusquedaValido));
+        }
+
+        // Limpiar el input cuando cambie el select
+        $('#tipoBusqueda').on('change', function () {
+            $('#valorBusqueda').val('');
+            checkForm();
+        });
+
+        // Validar máximo 10 dígitos numéricos en tiempo real
+        $('#valorBusqueda').on('input', function () {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10); // solo números y máximo 10 dígitos
+            checkForm();
+        });
+
+        // Función para mostrar mensajes con SweetAlert v1
+        function showAlert(title, message, isSuccess) {
+            swal({
+                title: title,
+                text: message,
+                type: isSuccess ? "success" : "error",
+                showCancelButton: false,
+                confirmButtonColor: "#28a745",
+                closeOnConfirm: true
+            });
+        }
+
+        function showWarning(title, message) {
+            swal({
+                title: title,
+                text: message,
+                type: "warning",
+                showCancelButton: false,
+                confirmButtonColor: "#ffc107",
+                closeOnConfirm: true
+            });
+        }
+
+        // Manejar envío del formulario
+        $('form').submit(function (e) {
+            e.preventDefault();
+
+            var tipoBusqueda = $('#tipoBusqueda').val();
+            var valorBusqueda = $('#valorBusqueda').val().trim();
+
+            if (valorBusqueda === '') {
+                showWarning('Validación', 'Por favor ingrese un valor');
+                return;
+            }
+
+            $('#spin').removeClass('visually-hidden');
+            $('#ExecuteRequest').prop('disabled', true);
+
+            var requestData = {
+                clave: tipoBusqueda,
+                valor: valorBusqueda,
+                usuarioId: 1
+            };
+
+            $.ajax({
+                url: '/EnviarOtpPin/GeneraPinOTP',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(requestData),
+                success: function (response) {
+                    $('#spin').addClass('visually-hidden');
+                    $('#ExecuteRequest').prop('disabled', false);
+
+                    if (response.result.codigo === 0) {
+                        swal({
+                            title: "Éxito",
+                            text: response.result.mensaje,
+                            type: "success",
+                            showCancelButton: false,
+                            confirmButtonColor: "#28a745",
+                            closeOnConfirm: true
+                        }, function () {
+                            $('#valorBusqueda').val("");
+                            $('#tipoBusqueda').val("");
+                            $('#ExecuteRequest').prop('disabled', true);
+                        });
+                    } else if (response.result.codigo === -100 || response.result.codigo === -104) {
+                        const message = response.result.mensaje.replace('%s', valorBusqueda);
+                        showWarning('Atención', message);
+                    } else if (response.result.codigo < 0) {
+                        showAlert('Error', response.result.mensaje, false);
+                    } else {
+                        swal({
+                            title: "Información",
+                            text: response.result.mensaje,
+                            type: "info",
+                            showCancelButton: false,
+                            confirmButtonColor: "#17a2b8",
+                            closeOnConfirm: true
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $('#spin').addClass('visually-hidden');
+                    $('#ExecuteRequest').prop('disabled', false);
+
+                    let errorMsg = 'Error en la comunicación con el servidor';
+                    if (xhr.responseJSON && xhr.responseJSON.result) {
+                        errorMsg = xhr.responseJSON.result.mensaje || errorMsg;
+                    }
+
+                    showAlert('Error de conexión', errorMsg, false);
+                }
+            });
+        });
+    });
+
+</script>
+
+

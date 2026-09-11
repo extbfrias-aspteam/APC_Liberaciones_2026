@@ -1,0 +1,192 @@
+﻿@using iRisModel
+
+@{
+    ViewData["Title"] = "RecargaMovil";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Estilos {
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+}
+
+<h5>Recarga Móvil</h5>
+<div id="emailHelp" class="form-text">WS que permite consultar las recargas telefónicas realizadas en una fecha</div>
+<div class="card-box">
+    <div class="card-body">
+        <form>
+
+            <div class="row g-1">
+                <div class="col-sm-12">
+                    <select class="form-select" name="companiaTel" id="companiaTel" aria-label="Default select example" required>
+                        <option selected>Seleccione la compañía</option>
+                        @if (ViewBag.Companias != null)
+                        {
+                            List<ListadoCompanias> oCompania = (List<ListadoCompanias>)ViewBag.Companias;
+                            foreach (ListadoCompanias item in oCompania)
+                            {
+                                <option value=@item.compania>@item.compania</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div id="salto1">
+                <br />
+            </div>
+            <div class="row g-1">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="numeroReferencia" id="numeroReferencia" placeholder="Número de Referencia" maxlength="10" required>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="numeroCelular" id="numeroCelular" placeholder="Número celular" maxlength="10" required>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <input name="fechaOperacion" id="fechaOperacion" class="form-control" type="date" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <button type="submit" id="ExecuteRequest" class="btn btn-block btn-success">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Operación
+                    </button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<br />
+
+<div class="row gx-5" id="tabla">
+
+    <table id="example" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>Fecha Operación</th>
+                <th>Fecha Aplicación</th>
+                <th>Cuenta ASP</th>
+                <th>Compañia</th>
+                <th>Num. Celular</th>
+                <th>Monto</th>
+                <th># Autorización</th>
+                <th>Tipo Recarga</th>               
+                <th>Estatus</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/plug-ins/1.13.6/api/sum().js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js"></script>
+
+
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+
+    js(document).ready(function () {
+
+        var table = js('#example').DataTable({
+            language: {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+            }
+        });
+
+        js('#ExecuteRequest').on('click', function () {
+            event.preventDefault();
+
+            js("#spin").removeClass("visually-hidden");           
+
+            var url = "@Url.Action("RecargaMovil","RecargaMovil")";
+            var info = new Object();
+            info.fechaOperacion = js("#fechaOperacion").val();
+            info.companiaTel = js("#companiaTel").val();
+            info.numeroCelular = js("#numeroCelular").val();
+            info.numeroReferecia = js("#numeroReferencia").val();
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: { model: info },
+                success: function (data) {   
+                    
+                    console.log(data.detalle.length);
+
+                    if (data.detalle.length > 0 ) {
+
+                        js('#example').dataTable({
+                            destroy: true,
+                            responsive: true,
+                            scrollX: true,
+                            ordering: true,
+                            paging: true,
+                            language: {
+                                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+                            },
+                            data: data.detalle,
+                            columns: [
+                                { 'data': 'fechaOperacion' },
+                                { 'data': 'fechaAplicacion' },
+                                { 'data': 'cuentaAsp' },
+                                { 'data': 'companiaTel' },
+                                { 'data': 'numeroCelular' },
+                                { 'data': 'monto' },
+                                { 'data': 'numeroAutorizacion' },
+                                { 'data': 'tipoRecarga' },
+                                { 'data': 'descripcionEstatus' }
+                            ],
+                            columnDefs:
+                                [
+                                    {
+                                        targets: '_all',
+                                        render: function (data, type, row) {
+                                            if (type === 'display') {
+                                                if (isNaN(data) && moment(data, 'YYYY-MM-DD', true).isValid()) {
+                                                    return moment(data).format('DD-MM-YYYY');
+                                                }
+                                            }
+                                            return data;
+                                        }
+                                    }
+                                ]
+                        });
+                    } else {
+                        swal({
+                            title: "Error",
+                            text: data.result.mensaje,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+
+                        table
+                            .clear()
+                            .draw();
+                    }
+
+                    js("#ExecuteRequest").attr('disabled', false);
+                    js("#spin").addClass("visually-hidden");                  
+                                   
+                }
+                
+            });
+        });
+
+    });
+</script>
+
+

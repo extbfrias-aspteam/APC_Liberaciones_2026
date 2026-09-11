@@ -1,0 +1,342 @@
+﻿
+@{
+    ViewData["Title"] = "Reporte Spei";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Estilos {
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css" rel="stylesheet" />
+}
+
+<h5>B2B - Reporte SPEI</h5>
+<div id="emailHelp" class="form-text">Visualización de la Información de la Operación Spei.</div>
+<div class="card-box">
+    <div class="card-body">
+        <form>
+            <div class="row g-4">
+                <div class="col-sm-3">
+                    <select class="form-select" name="tipoSpei" id="tipoSpei" aria-label="Default select example">
+                        <option selected>Seleccione Operación</option>
+                        <option value="IN">IN</option>
+                        <option value="OUT"> OUT</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <input name="fecha" id="fecha" class="form-control" type="date" />
+                </div>
+                <div class="col-sm-3">
+                    <input class="form-control" type="text" name="claveRastreo" id="claveRastreo" placeholder="Clave de Rastreo" aria-label="default input example">
+                </div>
+                <div class="col-sm-3">
+                    <button type="submit" id="ExecuteRequest" class="btn btn-success">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Operación
+                    </button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<br />
+
+<div class="row gx-5 visually-hidden" id="tabla">
+
+    <table id="example" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>Fecha Operación</th>
+                <th>Fecha Aplicación</th>
+                <th>Clave Rastreo</th>
+                <th>Banco Origen</th>
+                <th>Clabe Origen</th>
+                <th>Nombre Emisor</th>
+                <th>Banco Destino</th>
+                <th>Clabe Destino</th>
+                <th>Nombre Beneficiario</th>
+                <th>Monto</th>
+                <th>Concepto Pago</th>
+                <th>Referencia</th>
+                <th>Estatus Operación</th>
+                <th>Motivo de Estatus</th>
+                <th>UDN</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<!--h5>B2B - Consulta Saldo</!--h5>
+<div id="emailHelp" class="form-text">Visualización del Saldo B2B.</div>
+<div-- class="card-box">
+    <div class="card-body">
+        <form>
+            <div class="row g-4">                
+                <div class="col-sm-3">
+                    <input name="udn" id="udn" class="form-control" type="text" placeholder="ID Unidad de Negocio" />
+                </div>
+                
+                <div class="col-sm-3">
+                    <button type="submit" id="ExecuteRequestBalance" class="btn btn-warning">
+                        <span id="spinBalance" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Consultar Saldo
+                    </button>
+                </div>
+
+                <div class="col-sm-2">
+                    <h3>Saldo</h3>
+                </div>
+                <div class="col-sm-2">
+                    <h3 id="txtBalance"></h3>
+                </div>
+
+            </div>
+        </form>
+
+    </div>
+</div-->
+<br />
+<h5>Consulta de saldos</h5>
+<div id="emailHelp" class="form-text"></div>
+
+<div class="card">
+    <div class="card-body">
+
+
+       <button id="loadDataButton" class="btn btn-primary">Consulta</button>
+        <br />  <br />  <br />
+        <table id="dataTable" class="display">
+            <thead>
+                <tr>
+                    <th>Id_Participante</th>
+                    <th>Participante</th>
+                    <th>Saldo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Los datos se cargarán aquí -->
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="2" style="text-align:right">Total:</th>
+                    <th></th>
+                </tr>
+            </tfoot>
+        </table>
+
+
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js"></script>
+
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+    js(document).ready(function () {
+        var table = js('#example').DataTable({
+            language: {
+                "url": "../lib/Spanish.json"
+            }
+        });
+
+        js("#tipoSpei").on("change", function () {
+            table
+                .clear()
+                .draw();
+            js("#tabla").addClass("visually-hidden");
+            js("#claveRastreo").val("");
+            js("#fecha").val("");
+
+        });
+
+
+        js('#ExecuteRequest').on("click", function (event) {
+            event.preventDefault();
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+
+            var url = "@Url.Action("ReporteSpei", "ReporteSpei")";
+            var info = new Object();
+            info.tipoSpei = js("#tipoSpei").val();
+            info.fecha = js("#fecha").val();
+            info.cveRastreo = js("#claveRastreo").val();
+
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: { model: info },
+                success: function (data) {
+
+                    if (data.codigo != 200) {
+                        table
+                            .clear()
+                            .draw();
+
+                        swal({
+                            title: "Error",
+                            text: data.mensaje,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+
+                    } else {
+                        js("#tabla").removeClass("visually-hidden");
+                        js('#example').dataTable({
+                            destroy: true,
+                            responsive: true,
+                            scrollX: true,
+                            ordering: true,
+                            paging: true,
+                            language: {
+                                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+                            },
+                            data: data.data,
+
+
+                            columns: [
+                                { 'data': 'fechaOperacion' },
+                                { 'data': 'fechaAplicacion' },
+                                { 'data': 'claveRastreo' },
+                                { 'data': 'bancoEmisor' },
+                                { 'data': 'cuentaClabeOrigen' },
+                                { 'data': 'nombreOrigen' },
+                                { 'data': 'bancoDestino' },
+                                { 'data': 'cuentaClabeDestino' },
+                                { 'data': 'nombreDestino' },
+                                { 'data': 'monto' },
+                                { 'data': 'conceptoPago' },
+                                { 'data': 'referenciaCobranza' },
+                                { 'data': 'descripcionEstatus' },
+                                { 'data': 'descripcionDetallada' },
+                                { 'data': 'nombreUdn' }
+                            ],
+                            columnDefs:
+                                [
+                                    {
+                                        targets: 9,
+                                        render: js.fn.dataTable.render.number(',', '.', 2, '')
+                                    },
+                                    {
+                                        targets: '_all',
+                                        render: function (data, type, row) {
+                                            if (type === 'display') {
+                                                if (isNaN(data) && moment(data, 'YYYY-MM-DD', true).isValid()) {
+                                                    return moment(data).format('DD-MM-YYYY');
+                                                }
+                                            }
+                                            return data;
+                                        }
+                                    }
+                                ]
+                        });
+                    }
+
+                    js("#ExecuteRequest").attr('disabled', false);
+                    js("#spin").addClass("visually-hidden");
+                }
+            });
+        });
+
+
+        //--- Consulta Balance B2B
+        js('#ExecuteRequestBalance').on("click", function (event) {
+            event.preventDefault();
+            js("#spinBalance").removeClass("visually-hidden");
+            js("#ExecuteRequestBalance").attr('disabled', true);
+
+            var url = "@Url.Action("BalanceB2B", "ReporteSpei")";
+            var idudn = js("#udn").val();
+
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: { udn: idudn },
+                success: function (data) {
+                    var value = data.saldo_udn;
+                    js("#txtBalance").text(currencyFormatter({ currency: "USD", value }));                
+                    js("#ExecuteRequestBalance").attr('disabled', false);
+                    js("#spinBalance").addClass("visually-hidden");
+                }
+            });
+        });
+
+
+
+
+
+
+    });
+</script>
+
+<script>
+    js(document).ready(function () {
+        // Inicializa la tabla con configuración en español y formateo de columnas
+        var table = js('#dataTable').DataTable({
+            language: {
+                "url": "../lib/Spanish.json"
+            },
+            order: [[1, 'asc']],
+            columns: [
+                { data: 'id_pblu', width: '10%' },
+                { data: 'descripcion', width: '70%' },
+                {
+                    data: 'saldo',
+                    width: '20%',
+                    render: function (data, type, row) {
+                        if (type === 'display') {
+                            return '$' + parseFloat(data).toLocaleString('es-MX', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            });
+                        }
+                        return data;
+                    }
+                }
+            ],
+            footerCallback: function (row, data, start, end, display) {
+                var api = this.api();
+
+                // Calcula el total de la columna Saldo
+                var total = api.column(2).data().reduce(function (a, b) {
+                    return parseFloat(a) + parseFloat(b);
+                }, 0);
+
+                // Actualiza el pie de la tabla con el total formateado
+                js(api.column(2).footer()).html(
+                    '$' + total.toLocaleString('es-MX', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    })
+                );
+            }
+        });
+
+        // Llenado de la tabla dataTable al presionar el botón loadDataButton
+        js('#loadDataButton').on('click', function () {
+            js.ajax({
+                url: '@Url.Action("GetParticipantesSaldoPblu", "ReporteSpei")', // Asegúrate de que "ReporteSpei" sea el nombre correcto de tu controlador
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    table.clear().draw(); // Limpia la tabla
+                    table.rows.add(data).draw(); // Añade las filas nuevas y las dibuja
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log('Error: ' + textStatus);
+                }
+            });
+        });
+    });
+</script>
+

@@ -1,0 +1,316 @@
+﻿
+@{
+    ViewData["Title"] = "MonitorSpei";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .img-container {
+        text-align: center;
+    }
+</style>
+
+@section Estilos {
+    <link href="~/css/icons.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="~/css/bootstrap-datepicker.css" rel="stylesheet" />
+    <link href="~/fonts/fontawesome-webfont.woff2">
+}
+
+<h5>SPEI - ASP pago</h5>
+<div id="emailHelp" class="form-text">Operaciones IN/OUT del producto ASP Pago del día actual</div><br />
+
+ <div class="container">
+@*     <div class="row">
+    <div class="col-sm-3">
+        <div class="input-group">
+            <label class="control-label col-sm-4">Fecha</label><input type="text" class="form-control" placeholder="dd/mm/yyyy" id="datepicker-autoclose">
+            <span class="input-group-addon bg-custom b-5 text-white">
+        </div><!-- input-group -->
+
+    </div>
+    <div class="col-sm-2">
+        <button type="submit" id="ExecuteRequest" class="btn btn-success">
+            <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+            Ejecutar Operación
+        </button>
+    </div>
+    </div>
+    <br /> *@
+
+     <div class="row">
+        <div class="col-lg-6">
+            <div class="card-box">
+                <h6 class="card-title">Operaciones SpeiIn</h6>
+                <div class="d-flex align-items-center" id="spinnerSpeiIn">
+                    Cargando...
+                    <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+                </div>
+                <div class="text-center" style="height: 290px; margin-left: 50px;">
+                    <canvas id="myChart" style="margin-left:50px;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card-box">
+                <h6 class="card-title">Operaciones SpeiOut</h6>
+                <div class="d-flex align-items-center" id="spinnerSpeiOut">
+                    Cargando...
+                    <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+                </div>
+                <div class="text-center" style="height: 290px; margin-left: 100px;">
+                    <canvas id="myChartOut" style="margin-left:50px;"></canvas>
+                </div>
+            </div>
+        </div>       
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card-box">
+                <h6 class="card-title">Operaciones SpeiIn</h6>
+                <table id="example" class="display" style="width:100%">
+                    <thead>
+                        <tr>                           
+                            <th>Clave Rastreo</th>                     
+                            <th>Emisor</th>                           
+                            <th>Beneficiario</th>
+                            <th>Monto</th>                           
+                            <th>Estatus</th>
+                            <th>Motivo de Estatus</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+     </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card-box">
+                <h6 class="card-title">Operaciones SpeiOut</h6>
+                <table id="example2" class="display" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Clave Rastreo</th>
+                            <th>Emisor</th>
+                            <th>Beneficiario</th>
+                            <th>Monto</th>
+                            <th>Estatus</th>
+                            <th>Motivo de Estatus</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/js/bootstrap-datepicker.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js"></script>
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+
+    js(document).ready(function () {
+
+        js('#datepicker-autoclose').datepicker({
+            autoclose: true,
+            todayHighlight: true,
+            format: "dd/mm/yyyy",
+
+        });
+       
+
+        var table = js('#example').DataTable({
+            language: {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+            }
+        });
+        var table2 = js('#example2').DataTable({
+            language: {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+            }
+        });
+
+        createDashboard();
+
+        // js('#ExecuteRequest').on("click", function (event) {
+        //     event.preventDefault();
+        //    createDashboard(js("#datepicker-autoclose").val());
+        //     createDashboard();
+        // });
+
+        function createDashboard() {
+            var urlSpeiIN = "@Url.Action("DashBoardSpeiIn","MonitorSpei")";
+            js.ajax({
+                type: "POST",
+                url: urlSpeiIN,
+                dataType: "json",
+                data: null,
+                async: true,
+                success: function (data) {
+                    console.log(data);
+                    const estatusIn = [];
+                    const cantIn = [];
+                    data.totalSpeis.forEach(function (detallado, index) {
+                        estatusIn.push(detallado.estatusSpei);
+                        cantIn.push(detallado.totalSpei);
+                    });
+
+                    var xValues = estatusIn;
+                    var yValues = cantIn;
+                    var barColors = [
+                        "#b91d47",
+                        "#00aba9",
+                        "#2b5797",
+                        "#e8c3b9",
+                        "#1e7145"
+                    ];
+
+                    new Chart("myChart", {
+                        destroy : true,
+                        type: "doughnut",
+                        data: {
+                            labels: xValues,
+                            datasets: [{
+                                backgroundColor: barColors,
+                                data: yValues
+                            }]
+                        },
+                        options: {
+                            responsive: true
+                        }
+                    });
+                    js("#spinnerSpeiIn").addClass("visually-hidden");
+
+                    js('#example').dataTable({
+                        destroy: true,
+                        responsive: true,
+                        scrollX: true,
+                        ordering: true,
+                        paging: true,
+                        language: {
+                            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+                        },
+                        data: data.detalleSpei.data,
+                        columns: [
+                            { 'data': 'claveRastreo' },
+                            { 'data': 'nombreOrigen' },
+                            { 'data': 'nombreDestino' },
+                            { 'data': 'monto' },
+                            { 'data': 'descripcionEstatus' },
+                            { 'data': 'descripcionDetallada' }
+                        ],
+                        columnDefs:
+                            [
+                                {
+                                    targets: 3,
+                                    render: js.fn.dataTable.render.number(',', '.', 2, '')
+                                },
+                                {
+                                    targets: '_all',
+                                    render: function (data, type, row) {
+                                        if (type === 'display') {
+                                            if (isNaN(data) && moment(data, 'YYYY-MM-DD', true).isValid()) {
+                                                return moment(data).format('DD-MM-YYYY');
+                                            }
+                                        }
+                                        return data;
+                                    }
+                                }
+                            ]
+                    });
+                }
+            });
+
+
+            var urlSpeiOUT = "@Url.Action("DashBoardSpeiOut","MonitorSpei")";
+            js.ajax({
+                type: "POST",
+                url: urlSpeiOUT,
+                dataType: "json",
+                data: null,
+                async: true,
+                success: function (data) {
+                    console.log(data);
+                    const estatusOut = [];
+                    const cantOut = [];
+                    data.totalSpeis.forEach(function (detallado, index) {
+                        estatusOut.push(detallado.estatusSpei);
+                        cantOut.push(detallado.totalSpei);
+                    });
+
+                    var xValues = estatusOut;
+                    var yValues = cantOut;
+                    var barColors = [
+                        "#b91d47",
+                        "#00aba9",
+                        "#2b5797",
+                        "#e8c3b9",
+                        "#1e7145",
+                        "#6c757d"
+                    ];
+
+                    new Chart("myChartOut", {
+                        destroy : true,
+                        type: "doughnut",
+                        data: {
+                            labels: xValues,
+                            datasets: [{
+                                backgroundColor: barColors,
+                                data: yValues
+                            }]
+                        },
+                        options: {
+                            responsive: true
+                        }
+                    });
+                    js("#spinnerSpeiOut").addClass("visually-hidden");
+                    js('#example2').dataTable({
+                        destroy: true,
+                        responsive: true,
+                        scrollX: true,
+                        ordering: true,
+                        paging: true,
+                        language: {
+                            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+                        },
+                        data: data.detalleSpei.data,
+                        columns: [
+                            { 'data': 'claveRastreo' },
+                            { 'data': 'nombreOrigen' },
+                            { 'data': 'nombreDestino' },
+                            { 'data': 'monto' },
+                            { 'data': 'descripcionEstatus' },
+                            { 'data': 'descripcionDetallada' }
+                        ],
+                        columnDefs:
+                            [
+                                {
+                                    targets: 3,
+                                    render: js.fn.dataTable.render.number(',', '.', 2, '')
+                                },
+                                {
+                                    targets: '_all',
+                                    render: function (data, type, row) {
+                                        if (type === 'display') {
+                                            if (isNaN(data) && moment(data, 'YYYY-MM-DD', true).isValid()) {
+                                                return moment(data).format('DD-MM-YYYY');
+                                            }
+                                        }
+                                        return data;
+                                    }
+                                }
+                            ]
+                    });
+                }
+            });
+        }
+    });
+</script>

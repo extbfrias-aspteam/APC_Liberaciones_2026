@@ -1,0 +1,135 @@
+﻿
+@{
+    ViewData["Title"] = "ReporteDiarioActividadDiaria";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Estilos {
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+}
+<h5>Reporte Diario de Actividad Diaria [Visualización]</h5>
+<div id="emailHelp" class="form-text">Visualización de la Información del Reporte de Actividad Diaria.</div>
+<div class="card-box">
+    <div class="card">
+    <div class="card-body">
+        <form class="">
+            <div class="row g-2">
+                <div class="col-sm-6">
+                    <input class="form-control" type="file" name="fileUpload" id="fileUpload">
+                </div>
+
+                <div class="col-sm-6">
+                    <button type="submit" id="ExecuteRequest" class="btn btn-success">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Operación</button>
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+</div>
+
+
+<br />
+
+<div class="row gx-5 visually-hidden" id="tabla">
+
+    <table id="example" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>#Tarjeta </th>
+                <th>Fecha TRX</th>
+                <th>Hora TRX</th>
+                <th>Importe</th>
+                <th>Importe USD</th>
+                <th>Número de Comercio</th>
+                <th>Secuencia</th>
+                <th>Clave Transacción</th>
+                <th>Clave Respuesta</th>
+                <th>Número Autorización</th>
+                <th>Descripción del Comercio</th>
+                <th>Descripción del País Origen</th>
+                <th>Concepto de Movimiento</th>
+                <th>Número de Empleado</th>
+                <th>Medio de Acceso a reportar</th>
+                <th>Cuenta Cacao</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+    js(document).ready(function () {
+
+        js('#ExecuteRequest').on("click", function (event) {
+            event.preventDefault();
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+
+            var input = document.getElementById("fileUpload"); //get file input id
+            var files = input.files; //get files
+            var formData = new FormData(); //create form
+
+            for (var i = 0; i != files.length; i++) {
+                formData.append("files", files[i]); //loop through all files and append
+            }
+
+            $.ajax(
+                {
+                    url: "/ReporteDiarioActividadDiaria/ReadFileDA",
+                    data: formData, // send it as formData
+                    processData: false,
+                    contentType: false,
+                    type: "POST", //type is post as we will need to post files
+                    success: function (data) {                        
+                        js("#tabla").removeClass("visually-hidden");
+                        js('#example').dataTable({
+                            destroy: true,
+                            responsive: true,
+                            scrollX: true,
+                            ordering: true,
+                            paging: true,
+                            language: {
+                                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+                            },
+                            data: data,
+                            columns: [
+                                { 'data': 'numeroTarjeta' },
+                                { 'data': 'fechaTransaccion' },
+                                { 'data': 'horaTransaccion' },
+                                { 'data': 'importe' },
+                                { 'data': 'importeUSD' },
+                                { 'data': 'numeroComercio' },
+                                { 'data': 'secuencia' },
+                                { 'data': 'claveTransaccion' },
+                                { 'data': 'claveRespuesta' },
+                                { 'data': 'numeroAutorizacion' },
+                                { 'data': 'descripcionComercio' },
+                                { 'data': 'descripcionPaisOrigen' },
+                                { 'data': 'conceptoMovimiento' },
+                                { 'data': 'numeroEmpleado' },
+                                { 'data': 'mAaReportar' },
+                                { 'data': 'cuentaCacao' }
+                            ],
+                            columnDefs:
+                                [
+                                    {
+                                        targets: 6,
+                                        render: js.fn.dataTable.render.number(',', '.', 2, '')
+                                    }
+                                ]
+                        });
+                        js("#ExecuteRequest").attr('disabled', false);
+                        js("#spin").addClass("visually-hidden");
+                    }
+                }
+            );
+        });
+    });
+</script>

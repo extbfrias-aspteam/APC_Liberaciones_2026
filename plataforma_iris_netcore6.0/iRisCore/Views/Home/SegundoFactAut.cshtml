@@ -1,0 +1,71 @@
+﻿@{
+    ViewData["Title"] = "SegundoFactAut";
+    Layout = "~/Views/Shared/_Layout_SegundoFact.cshtml";
+}
+
+
+<div class="card-box">
+    <div class="widget-chart text-center">
+        <img src="~/images/logo_banderasinmarco.png" width="200px" />
+    </div>
+    <br />
+    <form id="formVerifyToken" role="form" asp-controller="Account" asp-action="VerifyTokenSMS" method="post" class="row g-4">
+        <div class="row g-1">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-3">
+                <div class="input-group">
+                    <div class="input-group-text"><i class="fa fa-unlock"></i></div>
+                    <input type="password" class="form-control" name="tokenSMS" id="tokenSMS" placeholder="Ingrese su token">
+                </div>
+            </div>
+            <div class="col-sm-3 d-grid gap-2">
+                <button type="button" id="ExecuteRequest" class="btn btn-success">
+                    <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span> Verificar
+                </button>
+            </div>
+            <div class="col-sm-3"></div>
+
+        </div>
+    </form>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+    js(document).ready(function () {
+
+        js('#ExecuteRequest').on("click", function (event) {
+            // event.preventDefault();
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+            js("#formVerifyToken").submit();
+
+        });
+
+        var time;
+        var timeoutDuration = 3 * 60 * 1000; // 3 minutos en milisegundos
+
+        setTimeout(redirectToLogin, timeoutDuration);
+    });
+
+    function redirectToLogin() {
+        var url = "@Url.Action("ExpiredTokenSMS", "Account")";
+
+        js.ajax({
+            type: "GET",
+            url: url,
+            dataType: "json",
+            success: function (response) {
+                window.location.href = response.redirectUrl;
+
+            },
+            error: function () {
+                window.location.href = '/Account/Login'; // Redirige manualmente en caso de error
+            }
+        });
+    }
+
+</script>

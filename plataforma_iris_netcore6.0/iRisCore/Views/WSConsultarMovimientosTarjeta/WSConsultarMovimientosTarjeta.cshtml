@@ -1,0 +1,258 @@
+﻿
+@{
+    ViewData["Title"] = "WSConsultarMovimientosTarjeta";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Estilos {
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+}
+
+<h5>Consultar Movimientos Tarjeta</h5>
+<div id="emailHelp" class="form-text"> WebService que permitirá conocer la información de los Movimientos realizados por la Tarjeta.</div>
+    <div class="card-box">
+    <div class="card-body">
+        <form>
+            <div class="row g-1">
+                <div class="col-sm-12">
+                    <select class="form-select" name="tipoMedio" id="tipoMedio" aria-label="Default select example">
+                        <option selected>Seleccione el Medio de Disposicipón</option>
+                        <option value="T">Tarjeta</option>
+                        <option value="O">Otro Medio de Disposición</option>
+                    </select>
+                </div>
+            </div>
+            <div id ="salto1">
+                <br />
+            </div>
+            
+            <div class="row g-2" id="tipTarjeta">
+                <div class="col-sm-6" >
+                    <select class="form-select" name="tipoTarjeta" id="tipoTarjeta" aria-label="Default select example">
+                        <option selected>Seleccione el tipo de Tarjeta</option>
+                        <option value="F">Física</option>
+                        <option value="V">Virtual</option>
+                    </select>
+                </div>
+
+                <div class="col-sm-6" id="numTarjeta">
+                    <input class="form-control" type="password" name="numeroTarjeta" id="numeroTarjeta" placeholder="Número de Tarjeta" aria-label="default input example">
+                </div>
+            </div>
+            <div id="salto2">
+                <br />
+            </div>            
+
+            <div class="row g-2" id="tipMedioAcceso">
+                <div class="col-sm-6">
+                    <input class="form-control" type="text" name="tipoMedioAcceso" id="tipoMedioAcceso" placeholder="Tipo Medio de Disposición" aria-label="default input example">
+                </div>
+                <div class="col-sm-6">
+                    <input class="form-control" type="text" name="medioAcceso" id="medioAcceso" placeholder="Clave Medio Disposición" aria-label="default input example">
+                </div>
+            </div>
+            <div id="salto3">
+                <br />
+            </div>
+
+            <div class="row g-2" id="fechas">
+                <div class="col-sm-6">
+                    <input  name="fechaInicial" id="fechaInicial" class="form-control" type="date" />
+                </div>
+                <div class="col-sm-6">
+                    <input id="fechaFinal" name="fechaFinal" class="form-control" type="date" />
+                </div>
+            </div>
+            <div id="salto4">
+                <br  />
+            </div>            
+
+            <div class="row g-2" id="btnEjecutar">
+                <div class="col-sm-6">
+                    <button type="submit" id="ExecuteRequest" class="btn btn-success">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Operación</button>
+                    <a class="visually-hidden" id="urlExcel" href="@Url.Action("GenerateExcel","WSConsultarMovimientosTarjeta")">Download Excel</a>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+<br />
+
+<div class="row gx-5 visually-hidden" id="tabla">
+
+    <table id="example" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>Autorización</th>
+                <th>Clave</th>
+                <th>Movimiento</th>
+                <th>Comercio</th>
+                <th>Pais</th>
+                <th>PostOperación</th>
+                <th>Estatus</th>
+                <th>Fecha Movimiento</th>
+                <th>Id Movto</th>
+                <th>Importe</th>
+                <th>Importe Origen</th>
+                <th>MCC</th>
+                <th>Moneda</th>
+                <th>Moneda Origen</th>
+                <th>Afiliación</th>
+                <th>Observaciones</th>
+                <th>Pais Comercio</th>
+                <th>Referencia</th>
+                <th>Saldo Después Movimiento</th>
+                <th>Tipo Movimientos</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+    js(document).ready(function () {
+
+        limpiarView();
+
+        function limpiarView() {
+            js("#tipMedioAcceso").addClass("visually-hidden");           
+            js("#tipTarjeta").addClass("visually-hidden");
+            js("#numTarjeta").addClass("visually-hidden");
+            js("#fechas").addClass("visually-hidden");
+            js("#btnEjecutar").addClass("visually-hidden");
+            js("#salto1").addClass("visually-hidden");
+            js("#salto2").addClass("visually-hidden");
+            js("#salto3").addClass("visually-hidden");
+            js("#salto4").addClass("visually-hidden");
+        }
+
+        js(document).on('change', '#tipoMedio', function () {
+            js("#tabla").addClass("visually-hidden");
+
+            if (js("#tipoMedio").val() == 'T') {
+                js("#salto1").removeClass("visually-hidden");
+                js("#salto2").removeClass("visually-hidden");
+                js("#salto3").addClass("visually-hidden");
+                js("#salto4").removeClass("visually-hidden");
+               
+
+                js("#tipMedioAcceso").addClass("visually-hidden");                
+                js("#tipTarjeta").removeClass("visually-hidden");
+                js("#numTarjeta").removeClass("visually-hidden");
+                js("#fechas").removeClass("visually-hidden");
+                js("#btnEjecutar").removeClass("visually-hidden");
+
+            } else if (js("#tipoMedio").val() == 'O') {
+                js("#salto1").addClass("visually-hidden");
+                js("#salto2").removeClass("visually-hidden");
+                js("#salto3").removeClass("visually-hidden");
+                js("#salto4").removeClass("visually-hidden");
+                js("#tipMedioAcceso").removeClass("visually-hidden");                
+                js("#tipTarjeta").addClass("visually-hidden");
+                js("#numTarjeta").addClass("visually-hidden");
+                js("#fechas").removeClass("visually-hidden");
+                js("#btnEjecutar").removeClass("visually-hidden");
+            } else {
+                js("#salto1").addClass("visually-hidden");
+                js("#salto2").addClass("visually-hidden");
+                js("#salto3").addClass("visually-hidden");
+                js("#salto4").addClass("visually-hidden");
+                js("#tipMedioAcceso").addClass("visually-hidden");               
+                js("#tipTarjeta").addClass("visually-hidden");
+                js("#numTarjeta").addClass("visually-hidden");
+                js("#fechas").addClass("visually-hidden");
+                js("#btnEjecutar").addClass("visually-hidden");
+            }
+        });
+
+
+        js('#ExecuteRequest').on("click", function (event) {
+            event.preventDefault();
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+
+            var url = "@Url.Action("WSConsultarMovimientosTarjeta","WSConsultarMovimientosTarjeta")";
+
+            var info = new Object();
+            info.tipoTarjeta = js("#tipoTarjeta").val();
+            info.numeroTarjeta = js("#numeroTarjeta").val();
+            info.tipoMedioAcceso = js("#tipoMedioAcceso").val();
+            info.MedioAcceso = js("#medioAcceso").val();
+            info.fechaInicial = js("#fechaInicial").val();
+            info.fechaFinal = js("#fechaFinal").val();
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: {model : info, tipoMedio : js("#tipoMedio").val()},
+                success: function (data) {
+                    js("#tabla").removeClass("visually-hidden");                    
+                   js('#example').dataTable({
+                        destroy: true,
+                        responsive: true,
+                        scrollX: true,
+                        ordering: true,
+                        paging: true,
+                        language: {
+                            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+                        },
+                        data: data.movimientos,
+                        columns: [
+                            { 'data': 'autorizacion' },
+                            { 'data': 'claveMovimiento' },
+                            { 'data': 'conceptoMovimiento' },
+                            { 'data': 'descripcionComercio' },
+                            { 'data': 'descripcionPais' },
+                            { 'data': 'descripcionPostOperacion' },
+                            { 'data': 'estatusPostOperacion' },
+                            { 'data': 'fechaMovimiento' },
+                            { 'data': 'idMovimiento' },
+                            { 'data': 'importeMovimiento' },
+                            { 'data': 'importeOrigenMovimiento' },
+                            { 'data': 'mcc' },
+                            { 'data': 'monedaMovimiento' },
+                            { 'data': 'monedaOrigenMovimiento' },
+                            { 'data': 'numeroAfiliacionComercio' },
+                            { 'data': 'observaciones' },
+                            { 'data': 'paisComercio' },
+                            { 'data': 'referencia' },
+                            { 'data': 'saldoDespuesMovimiento' },
+                            { 'data': 'tipoMovimientoCargoAbono' }
+                        ],
+                        columnDefs:
+                            [
+                                {
+                                    targets: 9,
+                                    render: js.fn.dataTable.render.number(',', '.', 2, '')
+                                },
+                                {
+                                    targets: 10,
+                                    render: js.fn.dataTable.render.number(',', '.', 2, '')
+                                },
+                                {
+                                    targets: 18,
+                                    render: js.fn.dataTable.render.number(',', '.', 2, '')
+                                }
+
+                            ]
+                    });
+                    js("#ExecuteRequest").attr('disabled', false);
+                    js("#spin").addClass("visually-hidden");
+                    js("#urlExcel").removeClass("visually-hidden");
+                }
+            });
+
+        });
+
+    });
+</script>
+

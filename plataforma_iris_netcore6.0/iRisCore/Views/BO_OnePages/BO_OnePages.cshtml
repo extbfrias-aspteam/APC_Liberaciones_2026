@@ -1,0 +1,1528 @@
+﻿@{
+    ViewData["Title"] = "BO_OnePages";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Estilos {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.3.1/css/select.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <style>
+        .dt-button {
+            display: none !important;
+            /* Oculta el botón de exportación */
+        }
+    </style>
+}
+
+<h5>One Pages Participante SPEI</h5>
+<div class="form-text">Esta vista permitirá realizar consulta y generación de los Estados de Cuenta por participante.</div>
+
+<div class="card-box">
+    <div class="card-body">
+        <form id="formulario">
+            <div class="row g-3">
+                <div class="col-sm-5">
+                    <select class="form-select" name="participantes" id="participantes" disabled>
+                        <option value="-1" selected disabled>Seleccione al participante...</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <button type="submit" class="btn btn-success rounded-1" id="consultarOnePages" disabled>
+                        <span id="spnConsultarOnePages" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Consultar One Pages
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="mt-2 align-self-end d-flex justify-content-end">
+    <button type="button" class="bg-warning border-0 p-2" data-bs-toggle="modal" data-bs-target="#modalConceptos">
+        Conceptos Comerciales
+    </button>
+</div>
+<input type="hidden" id="idPblu" value="" />
+
+<div class="p-4 bg-white shadow-sm mb-5 rounded table-responsive">
+    <table id="tblOnePages" class="table table-striped table-borderless" style="width:100%">
+        <thead>
+            <tr>
+                <th>Participante</th>
+                <th>Nombre Comercial</th>
+                <th>Razón Social</th>
+                <th>Clabe</th>
+                <th>Estatus</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<!-- MODAL CONCEPTOS COMERCIALES-->
+<div class="modal fade" tabindex="-1" id="modalConceptos">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Conceptos Comerciales</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="mb-5">
+                    <div class="d-flex gap-3 mb-2">
+                        <div class="mb-3 w-25">
+                            <input type="text" autocomplete="off" class="form-control" id="claveConcepto" placeholder="Clave" maxlength="10" />
+                            <input type="hidden" id="idConcepto" value="" />
+                            <div class="form-text">Clave</div>
+                        </div>
+                        <div class="mb-3 w-100">
+                            <input type="text" autocomplete="off" class="form-control" id="nombreConcepto" placeholder="Concepto" maxlength="50" />
+                            <div class="form-text">Concepto</div>
+                        </div>
+                        <div class="mb-3 w-75">
+                            <select class="form-select" id="activoConcepto">
+                                <option disabled selected>Seleccione el estatus...</option>
+                                <option value="true">Activo</option>
+                                <option value="false">Inactivo</option>
+                            </select>
+                            <div class="form-text">Estatus</div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary rounded-1" id="btnNuevoConcepto" onclick="guardarConcepto()">
+                        <i class="fa-solid fa-plus"></i>&nbsp;Nuevo&nbsp;<span id="spnNuevoConcepto" class="spinner-border spinner-border-sm visually-hidden"></span>
+                    </button>
+                    <button type="button" class="btn btn-secondary rounded-1 visually-hidden" id="btnLimpiarConcepto" onclick="limpiarConceptos()">
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn btn-success rounded-1 visually-hidden" id="btnActualizarConcepto" onclick="guardarConcepto()">
+                        Actualizar&nbsp;<span id="spnActualizarConcepto" class="spinner-border spinner-border-sm visually-hidden"></span>
+                    </button>
+                </form>
+                <!-- TABLA CONCEPTOS COMERCIALES-->
+                <table id="tblConceptos" class="table table-striped table-borderless" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Clave</th>
+                            <th>Concepto</th>
+                            <th>Estatus</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- MODAL ACTUALIZAR INFORMACIÓN B2B-->
+<div class="modal fade" tabindex="-1" id="modalInformacionB2B">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Actualizar Información B2B</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="row g-4 row-gap-1" id="formInformacionB2B">
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" id="nombreComercialB2B" placeholder="Nombre Comercial" disabled />
+                        <div class="form-text">Nombre Comercial</div>
+                    </div>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" id="razonSocialB2B" placeholder="Razón Social" disabled />
+                        <div class="form-text">Razón Social</div>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" id="rfcB2B" placeholder="RFC" disabled />
+                        <div class="form-text">RFC</div>
+                    </div>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" id="direccionFiscalB2B" placeholder="Dirección Fiscal" disabled />
+                        <div class="form-text">Dirección Fiscal</div>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" id="idiomaB2B" placeholder="Idioma" />
+                        <div class="form-text">Idioma</div>
+                        <!--<select class="form-select" id="idiomaB2B" maxlength="20">
+                            <option selected>Seleccione Idioma</option>
+                        </select>-->
+                    </div>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" id="horarioDeAtencionB2B" placeholder="Horario de Atención" maxlength="50" />
+                        <div class="form-text">Horario de Atención</div>
+                    </div>
+                    <div class="col-md-3 col-md-3 d-flex align-items-center">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="traductorB2B" />
+                            <label class="form-check-label" for="traductor"> Traductor </label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" id="numeroDeClienteB2B" placeholder="Número de Cliente" disabled />
+                        <div class="form-text">Número de Cliente</div>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" id="numeroDeCuentaB2B" placeholder="Número de Cuenta" disabled />
+                        <div class="form-text">Número de Cuenta</div>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" id="cuentaClabeB2B" placeholder="Cuenta CLABE" disabled />
+                        <div class="form-text">Cuenta CLABE</div>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="tipoDeClienteB2B" placeholder="Tipo Cliente" disabled />
+                        <div class="form-text">Tipo Cliente</div>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="estatusB2B" placeholder="Estado" disabled />
+                        <div class="form-text">Estado</div>
+                    </div>
+                    <div class="col-md-12">
+                        <input type="text" class="form-control" id="urlB2B" placeholder="URL Modelo de Negocio" maxlength="250" />
+                        <div class="form-text">URL Modelo de Negocio</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <!--<button type="button" class="btn btn-secondary rounded-1" data-bs-dismiss="modal" id="btnCancelarB2B" onclick="cancelarB2B()">
+                    Cancelar
+                </button>-->
+                <button type="button" class="btn btn-primary rounded-1" id="btnActualizarB2B" onclick="guardarInformacionB2B()">
+                    Actualizar&nbsp;<span class="spinner-border spinner-border-sm" id="spnActualizarB2B" role="status" aria-hidden="true"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- MODAL INFORMACIÓN DEL CONTRATO B2B -->
+<div class="modal fade" tabindex="-1" id="modalInformacionContrato">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Información del Contrato B2B</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row row-gap-4 form-group">
+                    <div class="col-md-3">
+                        <div class="input-group date" id="datepicker" data-provide="datepicker">
+                            <input type="text" class="form-control" placeholder="mm/dd/yyyy" id="fechaEmision" disabled />
+                            <span class="input-group-append">
+                                <span class="input-group-text bg-white h-100 rounded-0">
+                                    <i class="fa fa-calendar form-control-icon"></i>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="form-text">Fecha de emisión</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="input-group date" id="datepicker" data-provide="datepicker">
+                            <input type="date" class="form-control" placeholder="mm/dd/yyyy" id="fechaTermino" />
+                            <span class="input-group-append">
+                                <span class="input-group-text bg-white h-100 rounded-0">
+                                    <i class="fa fa-calendar form-control-icon"></i>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="form-text" id="addon2">Fecha de término</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="input-group date" id="datepicker" data-provide="datepicker">
+                            <input type="date" class="form-control" placeholder="mm/dd/yyyy" id="fechaAnexos" />
+                            <span class="input-group-append">
+                                <span class="input-group-text bg-white h-100 rounded-0">
+                                    <i class="fa fa-calendar form-control-icon"></i>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="form-text" id="addon3">Fecha de anexos/Addendas</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="input-group date" id="datepicker" data-provide="datepicker">
+                            <input type="date" class="form-control" placeholder="mm/dd/yyyy" id="fechaConvenio" />
+                            <span class="input-group-append">
+                                <span class="input-group-text bg-white h-100 rounded-0">
+                                    <i class="fa fa-calendar form-control-icon"></i>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="form-text" id="addon4">Fecha de convenio modificatorio</div>
+                    </div>
+                    <div class="col-md-12 mt-4">
+                        <select id="productoContratado" class="form-select">
+                            <option disabled selected>Seleccione el producto contratado...</option>
+                        </select>
+                        <div class="form-text">Producto Contratado</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnActualizarContratoB2B" onclick="guardarContratoB2B()">
+                    Actualizar&nbsp;<span class="spinner-border spinner-border-sm" id="spnActualizarContratoB2B" role="status" aria-hidden="true"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- MODAL CONDICIONES COMERCIALES-->
+<div class="modal fade" tabindex="-1" id="modalCondiciones">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Condiciones Comerciales</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row row-gap-5 mb-5 form-group">
+                    <input type="hidden" id="idCondicion" value="" />
+                    <div class="mb-4 col-md-5">
+                        <select class="form-select" id="conceptosCondicion" disabled>
+                            <option selected>Seleccione el concepto...</option>
+                        </select>
+                        <div class="form-text">Concepto</div>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="number" autocomplete="off" class="form-control" id="precio" placeholder="Precio Unitario" maxlength="10" setp="0.01" />
+                        <div class="form-text">Precio Unitario</div>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-success rounded-1" id="btnAgregarCondicion" onclick="guardarCondicion()">
+                            Agregar concepto&nbsp;<span id="spnAgregarCondicion" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        </button>
+                        <button type="button" class="btn btn-success rounded-1 visually-hidden" id="btnActualizarCondicion" onclick="guardarCondicion()">
+                            Actualizar concepto&nbsp;<span id="spnActualizarCondicion" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        </button>
+                        <button type="button" class="btn btn-secondary rounded-1 visually-hidden" id="btnLimpiarCondicion" onclick="limpiarCondicion()">
+                            Limpiar
+                        </button>
+                    </div>
+                    <div class="col-md-5">
+                        <select class="form-select" id="cobrosCondicion" disabled>
+                            <option selected>Seleccione el tipo de cobro...</option>
+                        </select>
+                        <div class="form-text">Tipo de cobro</div>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="number" autocomplete="off" class="form-control" id="meses" placeholder="Meses a diferir" maxlength="3" setp="1" />
+                        <div class="form-text">Meses a diferir</div>
+                    </div>
+                </div>
+                <!-- TABLA CONDICIONES COMERCIALES -->
+                <table class="table table-striped table-borderless mb-4" id="tblCondiciones" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Clave</th>
+                            <th>Concepto</th>
+                            <th>Tipo Cobro</th>
+                            <th>Precio Unitario</th>
+                            <th>Meses a Diferir</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <!-- SECCIÓN TARIFA SPEI OUT -->
+                <h5 class="modal-title mb-1">Tarifa Spei Out</h5>
+                <div class="row row-gap-5 mb-3 form-group">
+                    <input type="hidden" id="idTarifa1" value="" />
+                    <div class="col-md-3">
+                        <input type="number" autocomplete="off" class="form-control" id="de1" placeholder="De" maxlength="10" setp="1" />
+                        <div class="form-text">Min. operaciones</div>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="number" autocomplete="off" class="form-control" id="a1" placeholder="A" maxlength="10" setp="1" />
+                        <div class="form-text">Máx. operaciones</div>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" autocomplete="off" class="form-control" id="precio1" placeholder="Precio Unitario" maxlength="10" step="0.01" />
+                        <div class="form-text">Precio Unitario</div>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-success rounded-1" id="btnAgregarParametro1" onclick="guardarParametro(1)">
+                            Agregar parámetro&nbsp;<span id="spnAgregarParametro1" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        </button>
+                        <button type="button" class="btn btn-success rounded-1 visually-hidden" id="btnActualizarParametro1" onclick="guardarParametro(1)">
+                            Actualizar parámetro&nbsp;<span id="spnActualizarParametro1" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        </button>
+                        <button type="button" class="btn btn-secondary rounded-1 visually-hidden" id="btnLimpiarParametro1" onclick="limpiarParametro(1)">
+                            Limpiar
+                        </button>
+                    </div>
+                </div>
+                <!-- TABLA TARIFA SPEI OUT -->
+                <table class="table table-striped table-borderless mb-4" id="tblTarifas1">
+                    <thead>
+                        <tr>
+                            <th>De</th>
+                            <th>A</th>
+                            <th>Precio Unitario</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <!-- SECCIÓN TARIFA SPEI IN -->
+                <h5 class="modal-title mb-1">Tarifa Spei In</h5>
+                <div class="row row-gap-5 mb-3 form-group">
+                    <input type="hidden" id="idTarifa2" value="" />
+                    <div class="col-md-3">
+                        <input type="number" autocomplete="off" class="form-control" id="de2" placeholder="De" maxlength="10" setp="1" />
+                        <div class="form-text">Min. operaciones</div>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="number" autocomplete="off" class="form-control" id="a2" placeholder="A" maxlength="10" setp="1" />
+                        <div class="form-text">Máx. operaciones</div>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" autocomplete="off" class="form-control" id="precio2" placeholder="Precio Unitario" maxlength="10" step="0.01" />
+                        <div class="form-text">Precio Unitario</div>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-success rounded-1" id="btnAgregarParametro2" onclick="guardarParametro(2)">
+                            Agregar parámetro&nbsp;<span id="spnAgregarParametro2" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        </button>
+                        <button type="button" class="btn btn-success rounded-1 visually-hidden" id="btnActualizarParametro2" onclick="guardarParametro(2)">
+                            Actualizar parámetro&nbsp;<span id="spnActualizarParametro2" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        </button>
+                        <button type="button" class="btn btn-secondary rounded-1 visually-hidden" id="btnLimpiarParametro2" onclick="limpiarParametro(2)">
+                            Limpiar
+                        </button>
+                    </div>
+                </div>
+                <!-- TABLA TARIFA SPEI IN -->
+                <table class="table table-striped table-borderless mb-4" id="tblTarifas2">
+                    <thead>
+                        <tr>
+                            <th>De</th>
+                            <th>A</th>
+                            <th>Precio Unitario</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- MODAL CONTACTOS-->
+<div class="modal fade" tabindex="-1" id="modalContactos">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Contactos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="idContacto" value="">
+                <form class="mb-5">
+                    <div class="d-flex gap-3 mb-2">
+                        <div class="mb-3 w-50">
+                            <input type="text" autocomplete="off" class="form-control" id="nombreContactos" placeholder="Nombre" maxlength="50" />
+                            <div class="form-text">Nombre</div>
+                        </div>
+                        <div class="mb-3 w-50">
+                            <input type="text" autocomplete="off" class="form-control" id="areaContactos" placeholder="Área" maxlength="50" />
+                            <div class="form-text">Área</div>
+                        </div>
+                        <div class="mb-3 w-50">
+                            <input type="text" autocomplete="off" class="form-control" id="puestoContactos" placeholder="Puesto" maxlength="50" />
+                            <div class="form-text">Puesto</div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-3 mb-2">
+                        <div class="mb-3 w-50">
+                            <input type="tel" autocomplete="off" class="form-control" id="telefonoContactos" placeholder="Teléfono" maxlength="10" />
+                            <div class="form-text">Teléfono</div>
+                        </div>
+                        <div class="mb-3 w-50">
+                            <input type="tel" autocomplete="off" class="form-control" id="whatsappContactos" placeholder="WhatsApp" maxlength="10" />
+                            <div class="form-text">WhatsApp</div>
+                        </div>
+                        <div class="mb-3 w-50">
+                            <input type="email" autocomplete="off" class="form-control" id="correoContactos" placeholder="Correo" maxlength="250" />
+                            <div class="form-text">Correo</div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary rounded-1" id="btnAgregarContacto" onclick="guardarContacto()">
+                        <i class="fa-solid fa-plus"></i>&nbsp;Nuevo<span id="spnAgregarContacto" class="spinner-border spinner-border-sm visually-hidden"></span>
+                    </button>
+                    <button type="button" class="btn btn-success rounded-1 visually-hidden" id="btnActualizarContacto" onclick="guardarContacto()">
+                        Actualizar&nbsp;<span id="spnActualizarContacto" class="spinner-border spinner-border-sm visually-hidden"></span>
+
+                    </button>
+                    <button type="button" class="btn btn-secondary rounded-1 visually-hidden" id="btnLimpiarContacto" onclick="limpiarContacto()">
+                        Limpiar
+                    </button>
+                </form>
+                <!-- TABLA CONTACTOS-->
+                <table id="tblContactos" class="table table-striped table-borderless" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Área</th>
+                            <th>Puesto</th>
+                            <th>Teléfono</th>
+                            <th>WhatsApp</th>
+                            <th>Correo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.1.0/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.1.0/js/buttons.html5.min.js"></script>
+
+<script type="text/javascript">
+    var js = jQuery.noConflict(true);
+    let modalDataModified = false; // Variable para rastrear si se modificó algo en el modal
+    let tblConceptos, tblOnePages, tblCondiciones, tblContactos, tblTarifas1, tblTarifas2;
+    let modalConceptos, modalInformacionB2B, modalInformacionContrato, modalCondiciones, modalContactos;
+
+    js(document).ready(function () {
+        //#region Tablas
+        tblOnePages = js('#tblOnePages').DataTable({
+            destroy: true,
+            responsive: true,
+            scrollX: true,
+            ordering: true,
+            paging: true,
+            language: {
+                "url": "../lib/Spanish.json"
+            },
+            columns: [
+                { data: 'idPblu' },
+                {
+                    data: 'nombreComercial',
+                    render: function (data, type, row) {
+                        return data ? data : "N/A";
+                    }
+                },
+                { data: 'razonSocial' ,
+                    render: function (data, type, row) {
+                        return data ? data : "N/A";
+                    }
+                },
+                { data: 'cuentaClabe' },
+                {
+                    data: 'estatus',
+                    render: function (data, type, row) {
+                        return data ? data : "N/A";
+                    }
+                },
+                {
+                    data: null,
+                    orderable: false,
+                    className: "text-nowrap ",
+                    render: function (data, type, row) {
+                        return `
+                        <button class="btn btn-outline-none p-0 mx-1" onclick="showModalInformacionB2B(event, ${row.idPblu})" title="Actualizar información B2B">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button class="btn btn-outline-none p-0 mx-1" onclick="showModalInformacionContrato(event, ${row.idPblu})" title="Información del contrato">
+                            <i class="fa-solid fa-hammer"></i>
+                        </button>
+                        <button class="btn btn-outline-none p-0 mx-1" onclick="showModalCondiciones(event, ${row.idPblu})" title="Condiciones Comerciales">
+                            <i class="fa-solid fa-gears"></i>
+                        </button>
+                        <button class="btn btn-outline-none p-0 mx-1" onclick="showModalContactos(event, ${row.idPblu})" title="Contactos">
+                            <i class="fa-solid fa-users"></i>
+                        </button>
+                    `;
+                    }
+                }
+
+            ],
+        });
+
+        tblConceptos = js('#tblConceptos').DataTable({
+            destroy: true,
+            responsive: true,
+            ordering: true,
+            paging: true,
+            language: {
+                "url": "../lib/Spanish.json"
+            },
+            columns: [
+                { data: 'id_concepto_comercial', title: 'Id' },
+                { data: 'concepto', title: 'Concepto' },
+                { data: 'clave', title: 'Clave' },
+                {
+                    data: 'activo', title: 'activo',
+                    render: function (data, type, row) {
+                        return data ? "Activo" : "Inactivo";
+                    }
+                },
+                {
+                    data: null,
+                    title: 'Acciones',
+                    orderable: false,
+                    render: function (data, type, row) {
+                        return `
+                        <button class="btn btn-outline-none p-0 mx-1" onclick="editarConcepto(${row.id_concepto_comercial})" title="Editar Información">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                    `;
+                    }
+                },
+            ],
+        });
+
+        tblCondiciones = js('#tblCondiciones').DataTable({
+            destroy: true,
+            responsive: true,
+            ordering: true,
+            paging: true,
+            language: {
+                "url": "../lib/Spanish.json"
+            },
+            columns: [
+                { data: 'id_condicion_comercial', title: 'Id', visible: false },
+                {
+                    data: null, title: 'Clave', render: function (data, type, row) {
+                        return row.id_concepto_comercial.clave
+                    }
+                },
+                {
+                    data: null, title: 'Concepto', render: function (data, type, row) {
+                        return row.id_concepto_comercial.concepto
+                    }
+                },
+                {
+                    data: null, title: 'Tipo Cobro', render: function (data, type, row) {
+                        return row.id_tipo_cobro.tipo_cobro
+                    }
+                },
+                { data: 'precio_unitario', title: 'Precio Unitario' },
+                { data: 'meses', title: 'Meses a Diferir' },
+                {
+                    data: null,
+                    title: 'Acciones',
+                    orderable: false,
+                    render: function (data, type, row) {
+                        return `
+                        <button class="btn btn-outline-none p-0 mx-1" onclick="editarCondicion(${row.id_condicion_comercial})" title="Editar Información">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                    `;
+                    }
+                },
+            ],
+        });
+
+        tblTarifas1 = js('#tblTarifas1').DataTable({
+            destroy: true,
+            responsive: true,
+            ordering: true,
+            paging: true,
+            language: {
+                "url": "../lib/Spanish.json"
+            },
+            columns: [
+                { data: 'min_operaciones', title: 'De' },
+                { data: 'max_operaciones', title: 'A' },
+                { data: 'precio_unitario', title: 'Precio Unitario' },
+                {
+                    data: null,
+                    title: 'Acciones',
+                    orderable: false,
+                    render: function (data, type, row) {
+                        return `
+                        <button class="btn btn-outline-none p-0 mx-1" onclick="editarParametro(1, ${row.id_tarifa_comercial}, false)" title="Editar Información">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                    `;
+                    }
+                },
+            ],
+        });
+
+        tblTarifas2 = js('#tblTarifas2').DataTable({
+            destroy: true,
+            responsive: true,
+            ordering: true,
+            paging: true,
+            language: {
+                "url": "../lib/Spanish.json"
+            },
+            columns: [
+                { data: 'min_operaciones', title: 'De' },
+                { data: 'max_operaciones', title: 'A' },
+                { data: 'precio_unitario', title: 'Precio Unitario' },
+                {
+                    data: null,
+                    title: 'Acciones',
+                    orderable: false,
+                    render: function (data, type, row) {
+                        return `
+                        <button class="btn btn-outline-none p-0 mx-1" onclick="editarParametro(2, ${row.id_tarifa_comercial}, true)" title="Editar Información">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                    `;
+                    }
+                },
+            ],
+        });
+
+        tblContactos = js('#tblContactos').DataTable({
+            destroy: true,
+            responsive: true,
+            scrollX: true,
+            ordering: true,
+            paging: true,
+            language: {
+                "url": "../lib/Spanish.json"
+            },
+            columns: [
+                { data: 'nombre' },
+                { data: 'area' },
+                { data: 'puesto' },
+                { data: 'telefono' },
+                { data: 'whatsapp' },
+                { data: 'correo' },
+                {
+                    data: null,
+                    orderable: false,
+                    render: function (data, type, row) {
+                        return `
+                        <button class="btn btn-outline-none p-0 mx-1" onclick="editarContactos(${row.id_contacto})" title="Actualizar contacto">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                    `;
+                    }
+                }
+
+            ],
+        });
+        //#endregion
+
+        //#region Modals
+        modalInformacionB2B = new bootstrap.Modal(document.getElementById('modalInformacionB2B'));
+        modalInformacionContrato = new bootstrap.Modal(document.getElementById('modalInformacionContrato'));
+        modalConceptos = new bootstrap.Modal(document.getElementById('modalConceptos'));
+        modalCondiciones = new bootstrap.Modal(document.getElementById('modalCondiciones'));
+        modalContactos = new bootstrap.Modal(document.getElementById('modalContactos'));
+
+        modalConceptos._element.addEventListener('show.bs.modal', () => {
+            cargarTblConceptos();
+        })
+        //#endregion
+
+        //Inicialización input participantes
+        participantes.disabled = true;
+        js('#participantes').on('change', function () {
+            if (participantes.value != -1)
+                consultarOnePages.disabled = false;
+        });
+
+        //Carga Participantes
+        ajaxCall("GET", "GetParticipantes", "BO_OnePages", null, (data) => {
+            participantes.innerHTML = "";
+            participantes.insertAdjacentHTML("beforeend", '<option value="-1" selected disabled>Seleccione el participante...</option>');
+            participantes.disabled = !Array.isArray(data) || data.length === 0;
+
+            if (!Array.isArray(data)) return;
+
+            // Filtrar registros válidos (no null ni undefined)
+            let participantesValidos = data.filter(p => p !== null && typeof p === 'object');
+
+            // Ordenar antes de insertar
+            participantesValidos.sort((a, b) => {
+                const nombreA = (a.razonSocial || a.nombreComercial || "N/A").toLowerCase().trim();
+                const nombreB = (b.razonSocial || b.nombreComercial || "N/A").toLowerCase().trim();
+                return nombreA.localeCompare(nombreB);
+            });
+
+            if (participantesValidos.length > 0) {
+                let option = document.createElement("option");
+                option.value = 0;
+                option.textContent = "Todos";
+                participantes.appendChild(option);
+            }
+
+            // Insertar opciones con "N/A" si no hay nombre
+            participantesValidos.forEach((udn) => {
+                let option = document.createElement("option");
+                option.value = udn.idPblu ?? ""; // por si acaso
+                let texto = udn.razonSocial?.trim() || udn.nombreComercial?.trim() || "N/A";
+                option.textContent = texto;
+                participantes.appendChild(option);
+            });
+        });
+
+        //Carga OnePages
+        js('#consultarOnePages').on('click', async function () {
+            event.preventDefault();
+            spnConsultarOnePages.classList.remove("visually-hidden");
+            consultarOnePages.disabled = true;
+
+            cargarTblOnePages();
+        });
+
+        //Carga Contrato Productos
+        cargarContratoProductos();
+    });
+
+    function cargarTblOnePages(fn) {
+        var data = new Object();
+        data.idParticipante = participantes.value;
+
+        ajaxCall("GET", "GetOnePages", "BO_OnePages", data, (data) => {
+            tblOnePages.clear();
+            tblOnePages.rows.add(data);
+            tblOnePages.draw();
+
+            spnConsultarOnePages.classList.add("visually-hidden");
+            consultarOnePages.disabled = false;
+            if (fn) fn();
+        });
+    }
+
+    //#region Conceptos
+    function cargarTblConceptos() {
+
+        ajaxCall("GET", "GetConceptos", "BO_OnePages", null, (data) => {
+            tblConceptos.clear();
+            tblConceptos.rows.add(data);
+            tblConceptos.draw();
+        });
+    }
+
+    function guardarConcepto() {
+        const inputs = [
+            claveConcepto,
+            nombreConcepto,
+        ];
+        const selects = [
+            {
+                element: activoConcepto,
+                defaultText: "Seleccione el estatus..."
+            },
+        ];
+
+        if (validarCamposGenerico(inputs, selects, null)) {
+            btnNuevoConcepto.disabled = btnActualizarConcepto.disabled = btnLimpiarConcepto.disabled = true;
+            spnNuevoConcepto.classList.remove("visually-hidden");
+            spnActualizarConcepto.classList.remove("visually-hidden");
+
+            var data = new Object();
+            data.id_concepto_comercial = idConcepto.value;
+            data.concepto = nombreConcepto.value;
+            data.clave = claveConcepto.value;
+            data.activo = activoConcepto.value;
+
+            ajaxCall("GET", "SetConceptos", "BO_OnePages", data, (data) => {
+                successSave();
+
+                btnNuevoConcepto.disabled = btnActualizarConcepto.disabled = btnLimpiarConcepto.disabled = false;
+                spnNuevoConcepto.classList.add("visually-hidden");
+                spnActualizarConcepto.classList.add("visually-hidden");
+                limpiarConceptos();
+                cargarTblConceptos();
+            });
+        }
+    }
+
+    function limpiarConceptos() {
+        idConcepto.value = '';
+        claveConcepto.value = '';
+        nombreConcepto.value = '';
+        activoConcepto.selectedIndex = 0;
+        btnNuevoConcepto.classList.remove('visually-hidden');
+        btnActualizarConcepto.classList.add('visually-hidden');
+        btnLimpiarConcepto.classList.add('visually-hidden');
+        spnNuevoConcepto.classList.add('visually-hidden');
+        spnActualizarConcepto.classList.add('visually-hidden');
+    }
+
+    function editarConcepto(id) {
+        limpiarConceptos();
+        // Obtener el registro por ID de los datos cargados en la tabla
+        let data = tblConceptos.rows().data().toArray();
+        let registro = data.find(item => item.id_concepto_comercial == id);
+
+        if (registro) {
+            idConcepto.value = id;
+            claveConcepto.value = registro.clave;
+            nombreConcepto.value = registro.concepto;
+            activoConcepto.value = registro.activo;
+            btnActualizarConcepto.classList.remove('visually-hidden');
+            btnNuevoConcepto.classList.add('visually-hidden');
+            btnLimpiarConcepto.classList.remove('visually-hidden');
+        } else {
+            alert('No se encontró el concepto comercial.');
+        }
+    }
+    //#endregion
+
+    //#region Información B2B
+    function showModalInformacionB2B(event, id) {
+        event.preventDefault();
+        idPblu.value = id;
+
+        limpiarInformacionB2B();
+
+        cargarInformacionB2B(id);
+
+        modalInformacionB2B.show();
+    }
+
+    function cargarInformacionB2B(id) {
+        let data = tblOnePages.rows().data().toArray();
+        let registro = data.find(item => item?.idPblu == id);
+
+        if (registro) {
+            nombreComercialB2B.value = registro.nombreComercial ?? "N/A";
+            razonSocialB2B.value = registro.razonSocial ?? "N/A";
+            rfcB2B.value = registro.rfc ?? "N/A";
+            direccionFiscalB2B.value = registro.direccionFiscal ?? "N/A";
+            idiomaB2B.value = registro.idioma ?? "";
+            tipoDeClienteB2B.value = registro.tipodeCliente ?? "";
+            estatusB2B.value = registro.estatus ?? "";
+            horarioDeAtencionB2B.value = registro.horariodeatencion ?? "";
+            traductorB2B.checked = !!registro.traductor; // se asegura que sea boolean
+            numeroDeClienteB2B.value = registro.numerodeCliente ?? "";
+            numeroDeCuentaB2B.value = registro.numerodeCuenta ?? "";
+            cuentaClabeB2B.value = registro.cuentaClabe ?? "";
+            urlB2B.value = registro.url ?? "";
+        } else {
+            alert("No se encontró el registro.");
+        }
+    }
+
+    function guardarInformacionB2B() {
+        const inputs = [
+            //nombreComercialB2B,
+            //razonSocialB2B,
+            //rfcB2B,
+            //direccionFiscalB2B,
+            horarioDeAtencionB2B,
+            //numeroDeClienteB2B,
+            //numeroDeCuentaB2B,
+            //cuentaClabeB2B,
+            urlB2B,
+            idiomaB2B,
+        ];
+
+        const selects = [];
+
+        const checkbox = traductorB2B;
+        if (validarCamposGenerico(inputs, selects, checkbox)) {
+            btnActualizarB2B.disabled = true;
+            spnActualizarB2B.classList.remove("visually-hidden");
+
+            var data = new Object();
+            data.idPblu = idPblu.value;
+            data.idioma = idiomaB2B.value;
+            data.horario = horarioDeAtencionB2B.value;
+            data.traductor = traductorB2B.checked;
+            data.url = urlB2B.value;
+            data.usuario = "";
+
+            ajaxCall("GET", "SetInformacionB2B", "BO_OnePages", data, (data) => {
+                successSave();
+
+                btnActualizarB2B.disabled = false;
+                spnActualizarB2B.classList.add("visually-hidden");
+
+                cargarTblOnePages(() => {
+                    cargarInformacionB2B(idPblu.value);
+                });
+            });
+        }
+    }
+
+    function limpiarInformacionB2B() {
+        nombreComercialB2B.value = "";
+        razonSocialB2B.value = "";
+        rfcB2B.value = "";
+        direccionFiscalB2B.value = "";
+        horarioDeAtencionB2B.value = "";
+        numeroDeClienteB2B.value = "";
+        numeroDeCuentaB2B.value = "";
+        cuentaClabeB2B.value = "";
+        urlB2B.value = "";
+        idiomaB2B.value = "";
+
+        btnActualizarB2B.disabled = false;
+        spnActualizarB2B.classList.add("visually-hidden");
+    }
+    //#endregion
+
+    //#region Información del Contrato
+    function showModalInformacionContrato(event, id) {
+        event.preventDefault();
+        idPblu.value = id;
+
+        limpiarContratoB2B();
+
+        cargarContratoB2B(id);
+
+        modalInformacionContrato.show();
+    }
+
+    function cargarContratoB2B(id) {
+        let data = tblOnePages.rows().data().toArray();
+        let registro = data.find(item => item.idPblu == id);
+        if (registro) {
+            fechaEmision.value = registro.fechadeEmision;
+            fechaTermino.value = registro.fechadeTermino;
+            fechaAnexos.value = registro.fechadeAnexosAdendas;
+            fechaConvenio.value = registro.fechaconveniomodificatiorio;
+            if (registro.idProductoContratado)
+                productoContratado.value = registro.idProductoContratado;
+            else productoContratado.selectedIndex = 0;
+        } else {
+            alert("No se encontró el registro.");
+        }
+    }
+
+    function limpiarContratoB2B() {
+        fechaTermino.value = "";
+        fechaAnexos.value = "";
+        fechaConvenio.value = "";
+        productoContratado.selectedIndex = 0;
+
+        btnActualizarContratoB2B.disabled = false;
+        spnActualizarContratoB2B.classList.add("visually-hidden");
+    }
+
+    function guardarContratoB2B() {
+        const inputs = [
+            @* fechaTermino,
+            fechaAnexos,
+            fechaConvenio, *@
+        ];
+
+        const selects = [
+            @* {
+                element: productoContratado,
+                defaultText: "Seleccione el producto contratado..."
+            } *@
+            ];
+
+        if (validarCamposGenerico(inputs, selects, null)) {
+            btnActualizarContratoB2B.disabled = true;
+            spnActualizarContratoB2B.classList.remove("visually-hidden");
+
+            var data = new Object();
+            data.idPblu = idPblu.value;
+            data.fechaTermino = fechaTermino.value;
+            data.fechaAddenda = fechaAnexos.value;
+            data.fechaConvenio = fechaConvenio.value;
+            data.idProductoContratado = productoContratado.selectedIndex != 0 ? productoContratado.value : null;
+            data.usuario = "";
+
+            ajaxCall("GET", "SetContratoB2B", "BO_OnePages", data, (data) => {
+                successSave();
+
+                btnActualizarContratoB2B.disabled = false;
+                spnActualizarContratoB2B.classList.add("visually-hidden");
+
+                cargarTblOnePages(() => {
+                    cargarInformacionB2B(idPblu.value);
+                });
+            });
+        };
+    }
+
+    function cargarContratoProductos() {
+        ajaxCall("GET", "GetContratoProductos", "BO_OnePages", null, (data) => {
+            productoContratado.innerHTML = "";
+            productoContratado.insertAdjacentHTML("beforeend", '<option value="-1" selected disabled>Seleccione el concepto...</option>');
+            productoContratado.disabled = data.length == 0;
+
+            js.each(data, function (index, producto) {
+                let option = document.createElement("option");
+                option.value = producto.id;
+                option.textContent = producto.nombre.trim();
+                productoContratado.appendChild(option);
+            });
+        });
+    }
+    //#endregion
+
+    //#region Condiciones Comerciales 
+    function showModalCondiciones(event, id) {
+        event.preventDefault();
+        idPblu.value = id;
+
+        tblCondiciones.clear().draw();
+        tblTarifas1.clear().draw();
+        tblTarifas2.clear().draw();
+        limpiarCondicion();
+        limpiarParametro(1);
+        limpiarParametro(2);
+
+        cargarConceptos();
+        cargarTiposCobro();
+        cargarTblCondiciones(id);
+        cargarTblTarifas(id, 1, tblTarifas1);
+        cargarTblTarifas(id, 2, tblTarifas2);
+        modalCondiciones.show();
+    }
+
+    function cargarConceptos() {
+        ajaxCall("GET", "GetConceptos", "BO_OnePages", null, (data) => {
+            conceptosCondicion.innerHTML = "";
+            conceptosCondicion.insertAdjacentHTML("beforeend", '<option value="-1" selected disabled>Seleccione el concepto...</option>');
+            conceptosCondicion.disabled = data.length == 0;
+
+            js.each(data, function (index, condicion) {
+                let option = document.createElement("option");
+                option.value = condicion.id_concepto_comercial;
+                option.textContent = condicion.concepto.trim();
+                conceptosCondicion.appendChild(option);
+            });
+        });
+    }
+
+    function cargarTiposCobro() {
+        ajaxCall("GET", "GetTiposCobro", "BO_OnePages", null, (data) => {
+            cobrosCondicion.innerHTML = "";
+            cobrosCondicion.insertAdjacentHTML("beforeend", '<option value="-1" selected disabled>Seleccione el tipo de cobro...</option>');
+            cobrosCondicion.disabled = data.length == 0;
+
+            js.each(data, function (index, tipoCobro) {
+                let option = document.createElement("option");
+                option.value = tipoCobro.id_tipo_cobro;
+                option.textContent = tipoCobro.tipo_cobro.trim();
+                cobrosCondicion.appendChild(option);
+            });
+        });
+    }
+
+    function cargarTblCondiciones(id) {
+        const req = new Object();
+        req.idPblu = id;
+
+        ajaxCall("GET", "GetCondiciones", "BO_OnePages", req, (data) => {
+            tblCondiciones.clear();
+            tblCondiciones.rows.add(data);
+            tblCondiciones.draw();
+        });
+    }
+
+    function cargarTblTarifas(id, tipoTarifa, tblTarifa) {
+        const req = new Object();
+        req.pblu = id;
+        req.idTipoTarifa = tipoTarifa;
+
+        ajaxCall("GET", "GetTarifas", "BO_OnePages", req, (data) => {
+            tblTarifa.clear();
+            tblTarifa.rows.add(data);
+            tblTarifa.draw();
+        });
+    }
+
+    function guardarCondicion() {
+        const inputs = [
+            meses,
+            precio,
+        ];
+        const selects = [
+            {
+                element: conceptosCondicion,
+                defaultText: "Seleccione el concepto..."
+            },
+            {
+                element: cobrosCondicion,
+                defaultText: "Seleccione el tipo de cobro..."
+            },
+        ];
+
+        if (validarCamposGenerico(inputs, selects, null)) {
+            btnAgregarCondicion.disabled = btnActualizarCondicion.disabled = btnLimpiarCondicion.disabled = true;
+            spnAgregarCondicion.classList.remove("visually-hidden");
+            spnActualizarCondicion.classList.remove("visually-hidden");
+
+            var data = new Object();
+            data.id_condicion_comercial = idCondicion.value;
+            data.id_concepto_comercial = conceptosCondicion.value;
+            data.idPblu = idPblu.value;
+            data.id_tipo_cobro = cobrosCondicion.value;
+            data.precio_unitario = precio.value;
+            data.meses = meses.value;
+            data.activo = true;
+            data.usuario = "";
+
+            ajaxCall("GET", "SetCondicion", "BO_OnePages", data, (data) => {
+                successSave();
+
+                btnAgregarCondicion.disabled = btnActualizarCondicion.disabled = btnLimpiarCondicion.disabled = false;
+                spnAgregarCondicion.classList.add("visually-hidden");
+                spnActualizarCondicion.classList.add("visually-hidden");
+                limpiarCondicion();
+                cargarTblCondiciones(idPblu.value);
+            });
+        }
+    }
+
+    function limpiarCondicion() {
+        idCondicion.value = "";
+        conceptosCondicion.selectedIndex = 0;
+        cobrosCondicion.selectedIndex = 0;
+        meses.value = "";
+        precio.value = "";
+
+        btnAgregarCondicion.classList.remove('visually-hidden');
+        btnActualizarCondicion.classList.add('visually-hidden');
+        btnLimpiarCondicion.classList.add('visually-hidden');
+        spnAgregarCondicion.classList.add("visually-hidden");
+        spnActualizarCondicion.classList.add("visually-hidden");
+    }
+
+    function editarCondicion(id) {
+        limpiarCondicion();
+        let data = tblCondiciones.rows().data().toArray();
+        let registro = data.find(item => item.id_condicion_comercial == id);
+
+        if (registro) {
+            idCondicion.value = id;
+            conceptosCondicion.value = registro.id_concepto_comercial.id_concepto_comercial;
+            cobrosCondicion.value = registro.id_tipo_cobro.id_tipo_cobro;
+            meses.value = registro.meses;
+            precio.value = registro.precio_unitario;
+
+            btnAgregarCondicion.classList.add('visually-hidden');
+            btnActualizarCondicion.classList.remove('visually-hidden');
+            btnLimpiarCondicion.classList.remove('visually-hidden');
+
+        } else {
+            alert('No se encontró la condición.');
+        }
+    }
+
+    function guardarParametro(tipoTarifa) {
+        const inputs = [
+            document.getElementById('de' + tipoTarifa),
+            document.getElementById('a' + tipoTarifa),
+            document.getElementById('precio' + tipoTarifa)
+        ];
+        const selects = [];
+
+        if (validarCamposGenerico(inputs, selects, null)) {
+            var data = new Object();
+            data.id_tarifa_comercial = document.getElementById('idTarifa' + tipoTarifa).value;
+            data.idPblu = idPblu.value;
+            data.id_tipo_tarifa_comercial = tipoTarifa;
+            data.min_operaciones = document.getElementById('de' + tipoTarifa).value;
+            data.max_operaciones = document.getElementById('a' + tipoTarifa).value;
+            data.precio_unitario = document.getElementById('precio' + tipoTarifa).value;
+            data.activo = true;
+            data.usuario = "";
+
+            const tblTarifa = tipoTarifa == 1 ? tblTarifas1 : tblTarifas2;
+
+            if (seSolapaParametro(data, tblTarifa.rows().data().toArray())) {
+                let mensaje = "El parámetro se solapa con un parámetro existente.";
+                const min = Number(data.min_operaciones);
+                const max = Number(data.max_operaciones);
+
+                if (min > max)
+                    mensaje = "El máximo de operaciones no puede ser menor al mínimo de operacines."
+
+                swal({
+                    type: 'error',
+                    title: 'Error',
+                    text: mensaje,
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: "#DD6B55",
+                });
+            }
+            else {
+                document.getElementById('btnAgregarParametro' + tipoTarifa).setAttribute("disabled", true);
+                document.getElementById('btnActualizarParametro' + tipoTarifa).setAttribute("disabled", true);
+                document.getElementById('spnAgregarParametro' + tipoTarifa).classList.remove("visually-hidden");
+                document.getElementById('spnActualizarParametro' + tipoTarifa).classList.remove("visually-hidden");
+
+                ajaxCall("GET", "SetTarifa", "BO_OnePages", data, (data) => {
+                    successSave();
+
+                    cargarTblTarifas(idPblu.value, tipoTarifa, tblTarifa);
+                    limpiarParametro(tipoTarifa);
+                });
+            }
+        }
+    }
+
+    function limpiarParametro(tipoTarifa) {
+        document.getElementById('idTarifa' + tipoTarifa).value = '';
+        document.getElementById('de' + tipoTarifa).value = '';
+        document.getElementById('a' + tipoTarifa).value = '';
+        document.getElementById('precio' + tipoTarifa).value = '';
+        document.getElementById('btnActualizarParametro' + tipoTarifa).classList.add('visually-hidden');
+        document.getElementById('btnAgregarParametro' + tipoTarifa).classList.remove('visually-hidden');
+        document.getElementById('btnLimpiarParametro' + tipoTarifa).classList.add('visually-hidden');
+        document.getElementById('spnAgregarParametro' + tipoTarifa).classList.add("visually-hidden");
+        document.getElementById('spnActualizarParametro' + tipoTarifa).classList.add("visually-hidden");
+        document.getElementById('btnAgregarParametro' + tipoTarifa).removeAttribute("disabled");
+        document.getElementById('btnActualizarParametro' + tipoTarifa).removeAttribute("disabled");
+    }
+
+    function editarParametro(tipoTarifa, idTarifaComercial) {
+        limpiarParametro(tipoTarifa);
+        let data = js('#tblTarifas' + tipoTarifa).DataTable().rows().data().toArray();
+        let registro = data.find(item => item.id_tarifa_comercial == idTarifaComercial);
+
+        if (registro) {
+            document.getElementById('idTarifa' + tipoTarifa).value = registro.id_tarifa_comercial;
+            document.getElementById('de' + tipoTarifa).value = registro.min_operaciones;
+            document.getElementById('a' + tipoTarifa).value = registro.max_operaciones;
+            document.getElementById('precio' + tipoTarifa).value = registro.precio_unitario;
+
+            document.getElementById('btnActualizarParametro' + tipoTarifa).classList.remove('visually-hidden');
+            document.getElementById('btnAgregarParametro' + tipoTarifa).classList.add('visually-hidden');
+            document.getElementById('btnLimpiarParametro' + tipoTarifa).classList.remove('visually-hidden');
+            document.getElementById('spnAgregarParametro' + tipoTarifa).classList.add("visually-hidden");
+            document.getElementById('spnActualizarParametro' + tipoTarifa).classList.add("visually-hidden");
+        } else {
+            alert('No se encontró el parámetro.');
+        }
+    }
+
+    function seSolapaParametro(nuevo, existentes) {
+        // Convertir a número
+        const min = Number(nuevo.min_operaciones);
+        const max = Number(nuevo.max_operaciones);
+
+        if (min > max)
+            return true;
+
+        return existentes.some(param => {
+            const minExistente = Number(param.min_operaciones);
+            const maxExistente = Number(param.max_operaciones);
+
+            if (nuevo.id_tarifa_comercial.length > 0 && nuevo.id_tarifa_comercial == param.id_tarifa_comercial)
+                return false;
+
+            return min <= maxExistente && max >= minExistente;
+        });
+    }
+    //#endregion
+
+    //#region Contactos
+    function showModalContactos(event, id) {
+        event.preventDefault();
+        idPblu.value = id;
+
+        limpiarContacto();
+        cargarTblContactos(id)
+
+        modalContactos.show();
+    }
+
+    function cargarTblContactos(id) {
+        const req = new Object();
+        req.idPblu = id;
+
+        ajaxCall("GET", "GetContactos", "BO_OnePages", req, (data) => {
+            tblContactos.clear();
+            tblContactos.rows.add(data);
+            tblContactos.draw();
+        });
+    }
+
+    function guardarContacto() {
+        const inputs = [
+            nombreContactos,
+            areaContactos,
+            puestoContactos,
+            telefonoContactos,
+            whatsappContactos,
+            correoContactos,
+        ];
+        const selects = [];
+
+        if (validarCamposGenerico(inputs, selects, null)) {
+            btnAgregarContacto.disabled = btnActualizarContacto.disabled = btnLimpiarContacto.disabled = true;
+            spnAgregarContacto.classList.remove("visually-hidden");
+            spnActualizarContacto.classList.remove("visually-hidden");
+
+            var data = new Object();
+            data.id_contacto = idContacto.value;
+            data.nombre = nombreContactos.value;
+            data.area = areaContactos.value;
+            data.puesto = puestoContactos.value;
+            data.telefono = telefonoContactos.value;
+            data.whatsapp = whatsappContactos.value;
+            data.correo = correoContactos.value;
+            data.idPblu = idPblu.value;
+            data.usuario = "";
+            data.estatus = true;
+
+            ajaxCall("GET", "SetContacto", "BO_OnePages", data, (data) => {
+                btnAgregarContacto.disabled = btnActualizarContacto.disabled = btnLimpiarContacto.disabled = false;
+                spnAgregarContacto.classList.add("visually-hidden");
+                spnActualizarContacto.classList.add("visually-hidden");
+                limpiarContacto();
+                cargarTblContactos(idPblu.value);
+            });
+        }
+    }
+
+    function limpiarContacto() {
+        idContacto.value = "";
+        nombreContactos.value = "";
+        areaContactos.value = "";
+        puestoContactos.value = "";
+        telefonoContactos.value = "";
+        whatsappContactos.value = "";
+        correoContactos.value = "";
+        btnActualizarContacto.classList.add('visually-hidden');
+        btnAgregarContacto.classList.remove('visually-hidden');
+        btnLimpiarContacto.classList.add('visually-hidden');
+    }
+
+    function editarContactos(id) {
+        limpiarContacto();
+        let data = tblContactos.rows().data().toArray();
+        let registro = data.find(item => item.id_contacto == id);
+
+        if (registro) {
+            idContacto.value = registro.id_contacto
+            nombreContactos.value = registro.nombre;
+            areaContactos.value = registro.area;
+            puestoContactos.value = registro.puesto;
+            telefonoContactos.value = registro.telefono;
+            whatsappContactos.value = registro.whatsapp;
+            correoContactos.value = registro.correo;
+
+            btnActualizarContacto.classList.remove('visually-hidden');
+            btnAgregarContacto.classList.add('visually-hidden');
+            btnLimpiarContacto.classList.remove('visually-hidden');
+
+        } else {
+            alert('No se encontró el contacto.');
+        }
+    }
+
+    //#endregion
+
+    //#region General
+
+    function ajaxCall(type, task, controller, data, successFunction) {
+        js.ajax({
+            type: type,
+            url: '@Url.Action("__TASK__", "__CONTROLLER__")'
+                .replace("__TASK__", task)
+                .replace("__CONTROLLER__", controller),
+            dataType: "json",
+            data: data,
+            success: function (data) {
+                if (data.result.codigo == 1)
+                    successFunction(data.result.data);
+                else
+                    //console.error('Error:', data.result.mensaje);
+                    swal({
+                        type: 'error',
+                        title: 'Error',
+                        text: data.result.mensaje,
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: "#DD6B55",
+                    });
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    }
+
+    // Función para validar todos los campos vacios
+    function validarCamposGenerico(inputs, selects, checkbox = null) {
+
+        // Validación de campos vacíos
+        const camposVacios = inputs.length > 0 && inputs.every(input => input.value.trim() == "") && (!!checkbox ? !checkbox.checked : true);
+
+        // Validación de selects con valores por defecto
+        const selectsInvalidos = selects.some(select => select.element.options[select.element.selectedIndex].text == select.defaultText);
+
+        // Condición para mostrar el mensaje de advertencia
+        if (camposVacios || selectsInvalidos) {
+            swal({
+                type: 'warning',
+                title: 'Formulario vacío',
+                text: 'El formulario no puede enviarse con campos vacíos ni con valores predeterminados en las listas desplegables.',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: "#DD6B55",
+            });
+            return false;
+        }
+        return true;
+    }
+
+    //Función para detectar datos ingresados al formulario y no eliminarlos al refrescar pestaña
+    function configurarEventosModales(modalIds) {
+        modalIds.forEach(modalId => {
+            const modalElement = document.getElementById(modalId);
+
+            if (modalElement) {
+                // Detectar cambios en inputs, selects o checkboxes dentro del modal
+                modalElement.addEventListener('input', () => {
+                    modalDataModified = true;
+                });
+
+                // Detectar cierre del modal y resetear la variable
+                modalElement.addEventListener('hidden.bs.modal', () => {
+                    modalDataModified = false;
+                });
+            } else {
+                console.warn(`El modal con ID "${modalId}" no existe.`);
+            }
+        });
+    }
+
+    function handlerBeforeUnload(event) {
+        if (modalDataModified) {
+            event.preventDefault();
+            event.returnValue = 'Hay cambios sin guardar. ¿Está seguro de que desea salir?';
+        }
+    }
+
+    const modalIds = [
+        'modalConceptos',
+        'modalInformacionB2B',
+        'modalInformacionContrato',
+        'modalCondiciones',
+        'modalContactos',
+    ];
+
+    configurarEventosModales(modalIds);
+
+    // Interceptar el evento de recarga o cierre del navegador
+    window.beforeUnloadHandler = function (event) {
+        if (modalDataModified) {
+            event.preventDefault();
+            event.returnValue = 'Hay cambios sin guardar. ¿Está seguro de que desea salir?';
+        }
+    };
+
+    window.addEventListener('beforeunload', window.beforeUnloadHandler);
+
+    function successSave() {
+        swal({
+            type: 'success',
+            title: '¡Éxito!',
+            text: 'La información se guardó correctamente.',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: "#0B6E4F",
+        });
+    }
+    //#endregion
+
+</script>

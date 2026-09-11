@@ -1,0 +1,176 @@
+﻿﻿@{
+    var plataformaClaim = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Sid);
+    var plataforma = plataformaClaim?.Value;
+    var controller = plataforma == "59" ? "Home" : "HomeBO";
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="~/images/iris.ico">
+    <title>@ViewData["Title"] - iRisCore</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/iRisCore.styles.css" asp-append-version="true" />
+    <link href="~/fonts/fontawesome-free-6.4.0-web/css/fontawesome.css" rel="stylesheet" />
+    <link href="~/fonts/fontawesome-free-6.4.0-web/css/solid.css" rel="stylesheet" />
+    <link href="~/fonts/fontawesome-free-6.4.0-web/css/brands.css" rel="stylesheet" />
+    <link href="~/css/style.css" rel="stylesheet" />
+    <link href="~/css/sweetalert.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .error {
+            color: #f05050;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .parsley-errors-list {
+            display: none;
+            margin: 0;
+            padding: 0;
+        }
+
+            .parsley-errors-list.filled {
+                display: block;
+            }
+
+            .parsley-errors-list > li {
+                font-size: 12px;
+                list-style: none;
+                color: #f6504d;
+            }
+    </style>
+    @await RenderSectionAsync("Estilos", required: false)
+</head>
+
+<body>
+    <header>
+        <nav class="megamenu">
+            <ul class="megamenu-nav d-flex justify-content-center" role="menu">
+                <li class="nav-item">
+                    <h5><a class="nav-link" asp-area="" asp-controller="@controller" asp-action="Index"><i class="fa fa-eye"></i> iRisCore</a></h5>
+                </li>
+                @await Component.InvokeAsync("Menu")
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Home" asp-action="Salir">Cerrar Sesión</a>
+                </li>
+            </ul>
+            <div class="megamenu-background" id="megamenu-background"></div>
+        </nav>
+
+        <div class="megamenu-dim" id="megamenu-dim"></div>
+
+
+    </header>
+
+
+
+
+
+    <div class="container">
+        <br />
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            <img src="~/images/logo_banderasinmarco.png" width="3%" />
+            &copy; <span id="currentYear"></span> - iRisCore v2.2.0-1
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery.hoverintent/1.9.0/jquery.hoverIntent.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js'></script>
+
+    <script src="~/js/index.js"></script>
+
+    <script src="~/js/sweetalert.min.js"></script>
+    <script src="~/js/jquery.sweet-alert.init.js"></script>
+
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+
+        window.onload = function () {
+            document.addEventListener("contextmenu", function (e) {
+                e.preventDefault();
+            }, false);
+        }
+
+        $(document).ready(function () {
+            const usuarioAutenticado = '@User.Identity!.IsAuthenticated' === 'True';
+            const cantidadSegundosDeslogueo = @ViewBag.MilisegundosTimeout;
+            if (usuarioAutenticado) {
+
+                timerInactivo();
+
+                function timerInactivo() {
+                    let timer;
+                    let pingInterval = setInterval(ping, 30000);
+
+                    document.onmousemove = resetearTimer;
+                    document.onkeypress = resetearTimer;
+
+                    resetearTimer();
+
+                    function resetearTimer() {
+                        clearTimeout(timer);
+                        timer = setTimeout(logout, cantidadSegundosDeslogueo);
+                    }
+
+                    function logout() {
+                        $.ajax({
+                            url: '@Url.Action("Salir", "Home")',
+                            type: 'GET',
+                            cache: false,
+                            success: function (data) {
+                                if (window.beforeUnloadHandler) {
+                                    window.removeEventListener('beforeunload', window.beforeUnloadHandler);
+                                }
+                                window.location.href = '@Url.Action("Login", "Account")';
+                            },
+                            error: function (data) {
+                            }
+                        });
+                    }
+
+                    function ping() {
+                        $.ajax({
+                            url: '@Url.Action("Ping", "Home")',
+                            type: 'GET',
+                            success: function (data) {
+        @* console.log("Sesión renovada."); *@
+                            },
+                            error: function (data) {
+        @* console.error("Error al hacer ping"); *@
+                                if (window.beforeUnloadHandler) {
+                                    window.removeEventListener('beforeunload', window.beforeUnloadHandler);
+                                }
+                                window.location.href = '@Url.Action("Login", "Account")';
+                            }
+                        });
+                    }
+
+                }
+            }
+        });
+
+    </script>
+    <script>
+        document.getElementById("currentYear").textContent = new Date().getFullYear();
+    </script>
+</body>
+
+</html>

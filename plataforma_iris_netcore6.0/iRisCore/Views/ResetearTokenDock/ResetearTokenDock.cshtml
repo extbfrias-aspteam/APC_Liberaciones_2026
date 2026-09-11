@@ -1,0 +1,93 @@
+﻿
+@{
+    ViewData["Title"] = "ResetearTokenDock";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h5>Resetear Token Dock - Autorizador</h5>
+<div id="emailHelp" class="form-text">Operación para la generación de un nuevo Token de Dock.</div>
+
+<div class="card-box">
+    
+    <div class="card-body">
+
+        <form>
+            <div class="row g-1">
+                <div class="col-sm-12">
+                    <center>
+                        <img src="~/images/resettoken.png" width="20%" />
+                    <button type="submit" id="ExecuteRequest" class="btn btn-success d-md-block">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Resetear Token
+                    </button>
+                    </center>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+    js(document).ready(function () {
+
+
+        //-- Busqueda para el titular de la cuenta ---
+        js('#ExecuteRequest').on("click", function (event) {
+            event.preventDefault();
+
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+
+            var url = "@Url.Action("ResetearToken", "ResetearTokenDock")";           
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: null,
+                success: function (data) {
+
+                    console.log(data);
+
+                    if (data.codigo != 0) {
+                        swal({
+                            title: "Error",
+                            text: data.mensaje,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+
+                    }
+                    else {
+                        swal({
+                            title: "Exito",
+                            text: data.mensaje,
+                            type: "success",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                        js("#cuentaASP").val("");
+                    }
+                    js("#ExecuteRequest").attr('disabled', false);
+
+                },
+                complete: function () {
+                    js("#spin").addClass("visually-hidden");
+                }
+            });
+        });
+
+    })
+
+
+</script>
+

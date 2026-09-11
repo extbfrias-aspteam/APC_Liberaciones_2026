@@ -1,0 +1,513 @@
+﻿@using iRisModel;
+@{
+    ViewData["Title"] = "PagoCredito";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Estilos {
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+}
+
+<h5>Consulta - Estado de Movimientos - Crédito</h5>
+<div id="emailHelp" class="form-text">WS que permite consultar el Estado de Movimientos</div>
+<div class="card-box">
+    <div class="card-body">
+        <form>
+            <div class="row g-1">
+                <div class="col-sm-12">
+                    <select class="form-select" name="sucursalId" id="sucursalId" aria-label="Default select example">
+                        <option value="-1" selected>Seleccione la sucursal</option>
+                        @if (ViewBag.Sucursales != null)
+                        {
+                            List<SucursalModel> oSucursal = (List<SucursalModel>)ViewBag.Sucursales;
+                            foreach (SucursalModel item in oSucursal)
+                            {
+                                <option value=@item.idSucursal>@item.Sucursal</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>           
+            <br />
+            <div class="row g-1">                
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="cuentaCredito" id="cuentaCredito" placeholder="Cuenta de Crédito" maxlength="10" required>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="noDisposicion" id="noDisposicion" placeholder="Número de Disposición" maxlength="3" required>
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <button type="submit" id="ExecuteRequest" class="btn btn-success">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Consulta
+                    </button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div id="resultado" class="visually-hidden">
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card-box">
+            <center><h3>Estado de Movimientos</h3><strong><span style="color:darkred;" id="periodo"></span> </strong>  <span id="pago"></span></center>
+        </div>
+    </div>
+</div>
+
+
+<div class="row" id="detalle">
+    <div class="col-lg-6">
+        <div class="card-box">            
+            <form class="form-horizontal" role="form">
+                <div class="form-group">
+                    <label class="col-md-3 control-label"><strong>No. Cuenta</strong></label>
+                    <label class="col-md-8 control-label"><span style="color:darkblue;" id="cuenta"></span></label>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label"><strong>Empresa</strong></label>
+                    <label class="col-md-8 control-label"><span style="color:darkblue;" id="empresa"></span></label>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label"><strong>Solicitante</strong></label>
+                    <label class="col-md-8 control-label"><span style="color:darkblue;" id="solicitante"></span></label>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label"><strong>Referencia</strong></label>
+                    <label class="col-md-8 control-label"><span style="color:darkblue;" id="referencia"></span></label>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label"><strong>Disposición</strong></label>
+                    <label class="col-md-8 control-label"><span style="color:darkblue;" id="numeroDisposicion"></span></label>
+                </div>
+
+            </form>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card-box">
+            <form class="form-horizontal" role="form">
+                <div class="form-group">
+                    <label class="col-md-4 control-label"><strong>Tasa anual</strong></label>
+                    <label class="col-md-2 control-label"><span style="color:darkblue;" id="tasaAnual"></span></label>
+                    <label class="col-md-3 control-label"><strong>Tasa mensual</strong></label>
+                    <label class="col-md-2 control-label"><span style="color:darkblue;" id="tasaMensual"></span></label>
+                </div>               
+                <div class="form-group">
+                    <label class="col-md-4 control-label"><strong>Tasa moratoria</strong></label>
+                    <label class="col-md-6 control-label"><span style="color:darkblue;" id="tasaMoratoria"></span></label>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label"><strong>CAT</strong></label>
+                    <label class="col-md-6 control-label"><span style="color:darkblue;" id="cat"></span></label>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label"><strong>Monto</strong></label>
+                    <label class="col-md-6 control-label"><span style="color:darkblue;" id="montoDispersion"></span></label>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label"><strong>Fecha de descuento</strong></label>
+                    <label class="col-md-2 control-label"><span style="color:darkblue;" id="fechaDescuento"></span></label>
+                        <label class="col-md-3 control-label"><strong>Calificación</strong></label>
+                        <label class="col-md-2 control-label"><span style="color:darkblue;" id="calificacion"></span></label>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+  <div class="col-12">
+
+      <table id="example" class="display" style="width:100%">
+        <thead>
+             <tr>                
+                <th colspan="11" style="background-color:darkgrey; text-align:center; color:white;">Vencimientos</th>
+                <th colspan="10" style="background-color:dimgray; text-align:center; color:white;">Pagos</th>
+            </tr> 
+            <tr>
+                <th rowspan="2">No</th>
+                <th rowspan="2">Fecha.Venc</th>
+                <th rowspan="2">Capital</th>
+                <th rowspan="2">Int.Normal</th>
+                <th rowspan="2">Falta-Pago</th>
+                <th rowspan="2">Pago-Tardío</th>
+                <th colspan="3" style="text-align:center;">Impuestos</th>
+                <th rowspan="2">Total</th>
+                <th rowspan="2">Edo</th>
+
+                        <th rowspan="2">Capital</th>
+                        <th rowspan="2">Int.Normal</th>
+                        <th rowspan="2">Falta-Pago</th>
+                        <th rowspan="2">Pago-Tardío</th>
+                        <th colspan="3" style="text-align:center;">Impuestos</th>
+                        <th rowspan="2">Total</th>
+                        <th rowspan="2">Fecha-Pago</th>
+                        <th rowspan="2">Dias-atraso</th>
+
+            </tr>
+            <tr>             
+                <th>Normal</th>
+                <th>Falta-Pago</th>
+                <th>Pago-Tardio</th>               
+                <th>Normal</th>
+                <th>Falta-Pago</th>
+                <th>Pago-Tardío</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        </tbody>
+      </table>
+    </div>
+
+</div>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js"></script>
+
+
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+
+    js(document).ready(function () {
+
+
+        var table = js('#example').DataTable({           
+            destroy: true,
+            responsive: true,
+            scrollX: true,
+            scrollY: true,
+            ordering: false,
+            paging: true,
+            searching: false,                      
+            language: {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+            }
+        });
+
+        js('#ExecuteRequest').on('click', function () {
+            event.preventDefault();         
+
+            var url = "@Url.Action("PagoCredito","PagoCredito")";
+            var info = new Object();
+            info.noDisposicion = js("#noDisposicion").val();
+            info.cuentaCredito = js("#cuentaCredito").val();
+            info.sucursalId = js("#sucursalId").val();
+          
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: { model: info },
+                beforeSend: function () {
+                    limpiarSpan();
+                    js("#spin").removeClass("visually-hidden");
+                },
+                success: function (data) {
+                    console.log(data);    
+                    
+                    if (data.codigo == 0) {
+
+
+
+
+                        js("#periodo").text(data.data.cabecero.periodo);
+                        //* Lado derecho */
+                        js("#cuenta").text(js("#cuentaCredito").val());
+                        js("#empresa").text(data.data.cabecero.empresa);
+                        js("#solicitante").text(data.data.cabecero.solicitante);
+                        js("#referencia").text(data.data.cabecero.referencia);
+                        js("#numeroDisposicion").text(data.data.cabecero.numeroDisposicion);
+                        /* Lado izquierdo */    
+                        js("#tasaAnual").text(data.data.cabecero.tasaAnual + " %");
+                        js("#tasaMensual").text(data.data.cabecero.tasaMensual + " %");
+                        js("#tasaMoratoria").text(data.data.cabecero.tasaMoratoria + " %");
+
+                        js("#cat").text(data.data.cabecero.cat + " %");
+                        var value = data.data.cabecero.montoDispersion;                        
+                        js("#montoDispersion").text(currencyFormatter({ currency: "USD", value }));
+                        js("#fechaDescuento").text(data.data.cabecero.fechaDescuento);
+                        
+                        js("#calificacion").text(data.data.calificacion);
+                        
+                        var bodyTable = "";
+
+                       // table.destroy = true;
+                        table.clear();
+
+                        // --- Recorrido vencimientos --
+                        for (i = 0; i < data.data.detalle.length; i++) {
+
+                            table.row
+                                .add([
+                                    data.data.detalle[i].vencimientosDetalle.consecutivoPago,
+                                    data.data.detalle[i].vencimientosDetalle.fechaVencimiento,
+                                    data.data.detalle[i].vencimientosDetalle.capitalPagar,
+                                    data.data.detalle[i].vencimientosDetalle.interesNormal,
+                                    data.data.detalle[i].vencimientosDetalle.faltaPago,
+                                    data.data.detalle[i].vencimientosDetalle.tipoDisposicion.tipoValue,
+                                    data.data.detalle[i].vencimientosDetalle.impuestoNormal,
+                                    data.data.detalle[i].vencimientosDetalle.impuestoEsquemaCobro.tipoValue,
+                                    data.data.detalle[i].vencimientosDetalle.impuestoTipoDisposicion.tipoValue,
+                                    data.data.detalle[i].vencimientosDetalle.total,
+                                    data.data.detalle[i].vencimientosDetalle.edoAmortizacion,
+                                    data.data.detalle[i].pagoDetalle.capital,
+                                    data.data.detalle[i].pagoDetalle.interesNormal,
+                                    data.data.detalle[i].pagoDetalle.faltaPago,
+                                    data.data.detalle[i].pagoDetalle.tipoDisposicion.tipoValue,
+                                    data.data.detalle[i].pagoDetalle.impuestoNormal,
+                                    data.data.detalle[i].pagoDetalle.impuestoEsquemaCobro.tipoValue,
+                                    data.data.detalle[i].pagoDetalle.impuestoTipoDisposicion.tipoValue,
+                                    data.data.detalle[i].pagoDetalle.total,
+                                    data.data.detalle[i].pagoDetalle.fechaPago,
+                                    data.data.detalle[i].pagoDetalle.diasAtraso
+                                ])
+                                .draw(false);
+
+                             for (ii = 0; ii < data.data.detalle[i].pagoDetalle.detallePagoEdoMov.length; ii++) {
+                                table.row
+                                    .add([
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        data.data.detalle[i].pagoDetalle.detallePagoEdoMov[ii].capital,
+                                        data.data.detalle[i].pagoDetalle.detallePagoEdoMov[ii].intereses,
+                                        data.data.detalle[i].pagoDetalle.detallePagoEdoMov[ii].esquemaCobro,
+                                        data.data.detalle[i].pagoDetalle.detallePagoEdoMov[ii].tipoDisposicion,
+                                        data.data.detalle[i].pagoDetalle.detallePagoEdoMov[ii].impuestoNormal,
+                                        data.data.detalle[i].pagoDetalle.detallePagoEdoMov[ii].impuestoTipoDisposicion,
+                                        data.data.detalle[i].pagoDetalle.detallePagoEdoMov[ii].impuestoEsquemaCobro,
+                                        data.data.detalle[i].pagoDetalle.detallePagoEdoMov[ii].total,
+                                        data.data.detalle[i].pagoDetalle.detallePagoEdoMov[ii].fechaPago,
+                                        ''
+                                    ])
+                                    .draw(false);
+                             }
+
+
+
+                            //console.log("Consecutivo: " + data.data.detalle[i].vencimientosDetalle.consecutivoPago);
+                        //     bodyTable = bodyTable + "<tr>\n\
+                        //                                     <td style='text-align:center;'>" + data.data.detalle[i].vencimientosDetalle.consecutivoPago + "</td>\n\
+                        //                                             <td style='text-align:center;'>" + data.data.detalle[i].vencimientosDetalle.fechaVencimiento + "</td>\n\
+                        //                                             <td style='text-align:center;'>" + data.data.detalle[i].vencimientosDetalle.capitalPagar + "</td>\n\
+                        //                                             <td style='text-align:center;'>" + data.data.detalle[i].vencimientosDetalle.interesNormal + "</td>\n\
+                        //                                             <td style='text-align:center;'>" + data.data.detalle[i].vencimientosDetalle.faltaPago + "</td>\n\
+                        //                                             <td style='text-align:center;'>" + data.data.detalle[i].vencimientosDetalle.tipoDisposicion.tipoValue + "</td>\n\
+                        //                                             <td style='text-align:center;'>" + data.data.detalle[i].vencimientosDetalle.impuestoNormal + "</td>\n\
+                        //                                             <td style='text-align:center;'>" + data.data.detalle[i].vencimientosDetalle.impuestoEsquemaCobro.tipoValue + "</td>\n\
+                        //                                             <td style='text-align:center;'>" + data.data.detalle[i].vencimientosDetalle.impuestoTipoDisposicion.tipoValue + "</td>\n\
+                        //                                             <td style='text-align:center;'>" + data.data.detalle[i].vencimientosDetalle.total + "</td>\n\
+                        //                                             <td style='text-align:center;'>" + data.data.detalle[i].vencimientosDetalle.edoAmortizacion + "</td>\n\
+                        //                                             <td style='text-align:center;'>" + data.data.detalle[i].pagoDetalle.capital + "</td>\n\
+                        //                                             <td style='text-align:center;'>" + data.data.detalle[i].pagoDetalle.interesNormal + "</td>\n\
+                        //                                             <td style='text-align:center;'>" + data.data.detalle[i].pagoDetalle.faltaPago + "</td>\n\
+                        //                                              <td style='text-align:center;'>" + data.data.detalle[i].pagoDetalle.tipoDisposicion.tipoValue + "</td>\n\
+                        //                                              <td style='text-align:center;'>" + data.data.detalle[i].pagoDetalle.impuestoNormal + "</td>\n\
+                        //                                              <td style='text-align:center;'>" + data.data.detalle[i].pagoDetalle.impuestoEsquemaCobro.tipoValue + "</td>\n\
+                        //                                              <td style='text-align:center;'>" + data.data.detalle[i].pagoDetalle.impuestoTipoDisposicion.tipoValue + "</td>\n\
+                        //                                              <td style='text-align:center;'>" + data.data.detalle[i].pagoDetalle.total + "</td>\n\
+                        //                                              <td style='text-align:center;'>" + data.data.detalle[i].pagoDetalle.fechaPago + "</td>\n\
+                        //                                              <td style='text-align:center;'>" + data.data.detalle[i].pagoDetalle.diasAtraso + "</td>\n\
+                        //                              </tr>";
+                        //      for (ii = 0; ii < data.data.detalle[i].pagoDetalle.detallePagoEdoMov.length; ii++) {                                
+                        //          //console.log("Subdetalle Pago: " + data.data.detalle[i].pagoDetalle.detallePagoEdoMov[ii].capital);
+                        //          bodyTable = bodyTable + "<tr>\n\
+                        //                                                 <td style='text-align:center;'></td>\n\
+                        //                                                 <td style='text-align:center;'></td>\n\
+                        //                                                 <td style='text-align:center;'></td>\n\
+                        //                                                 <td style='text-align:center;'></td>\n\
+                        //                                                 <td style='text-align:center;'></td>\n\
+                        //                                                 <td style='text-align:center;'></td>\n\
+                        //                                                 <td style='text-align:center;'></td>\n\
+                        //                                                 <td style='text-align:center;'></td>\n\
+                        //                                                 <td style='text-align:center;'></td>\n\
+                        //                                                 <td style='text-align:center;'></td>\n\
+                        //                                                 <td style='text-align:center;'></td>\n\
+                        //                                                 <td style='text-align:center;'>" + data.data.detalle[i].pagoDetalle.detallePagoEdoMov[ii].capital + "</td>\n\
+                        //                                                 <td style='text-align:center;'>" + data.data.detalle[i].pagoDetalle.detallePagoEdoMov[ii].intereses + "</td>\n\
+                        //                                                 <td style='text-align:center;'>" + data.data.detalle[i].pagoDetalle.detallePagoEdoMov[ii].esquemaCobro + "</td>\n\
+                        //                                                 <td style='text-align:center;'>" + data.data.detalle[i].pagoDetalle.detallePagoEdoMov[ii].tipoDisposicion + "</td>\n\
+                        //                                                 <td style='text-align:center;'>" + data.data.detalle[i].pagoDetalle.detallePagoEdoMov[ii].impuestoNormal + "</td>\n\
+                        //                                                 <td style='text-align:center;'>" + data.data.detalle[i].pagoDetalle.detallePagoEdoMov[ii].impuestoTipoDisposicion + "</td>\n\
+                        //                                                 <td style='text-align:center;'>" + data.data.detalle[i].pagoDetalle.detallePagoEdoMov[ii].impuestoEsquemaCobro + "</td>\n\
+                        //                                                 <td style='text-align:center;'>" + data.data.detalle[i].pagoDetalle.detallePagoEdoMov[ii].total + "</td>\n\
+                        //                                                 <td style='text-align:center;'>" + data.data.detalle[i].pagoDetalle.detallePagoEdoMov[ii].fechaPago + "</td>\n\
+                        //                                 </tr>";
+                        //      }       
+                         }
+
+                        // // //-- Totales --
+
+                        table.row
+                            .add([
+                                '',
+                                'TOTALES',
+                                data.data.vencimientoFooter.totalCapitalVencimiento,
+                                data.data.vencimientoFooter.totalInteresNormalVencimiento,
+                                data.data.vencimientoFooter.totalFaltaPagoVencimiento,
+                                data.data.vencimientoFooter.totalTipoDisposicionVencimiento,
+                                data.data.vencimientoFooter.totalImpuestoNormalVencimiento,
+                                data.data.vencimientoFooter.totalImpuestoEsquemaCobroVencimiento,
+                                data.data.vencimientoFooter.totalImpuestoTipoDisposicionVencimiento,
+                                data.data.vencimientoFooter.totalVencimiento,
+                                '',
+                                data.data.pagoFooter.totalCapitalSum,
+                                data.data.pagoFooter.totalInteresNormalPago,
+                                data.data.pagoFooter.totalFaltaPagoPago,
+                                data.data.pagoFooter.totalTipoDisposicionPago,
+                                data.data.pagoFooter.totalImpuestoNormalPago,
+                                data.data.pagoFooter.totalImpuestoEsquemaCobroPago,
+                                data.data.pagoFooter.totalImpuestoTipoDisposicionPago,
+                                data.data.pagoFooter.totalPago,                                
+                                '',
+                                ''
+                            ])
+                            .draw(false);                        
+
+                        table.row
+                            .add([
+                                '',
+                                'Vencido',
+                                data.data.vencidoFooter.vencidoCapital,
+                                data.data.vencidoFooter.vencidoInteresNormal,
+                                data.data.vencidoFooter.vencidoFaltaPago,
+                                data.data.vencidoFooter.vencidoTipoDisposicion,
+                                data.data.vencidoFooter.vencidoImpuestoNormal,
+                                data.data.vencidoFooter.vencidoImpuestoEsquemaCobro,
+                                data.data.vencidoFooter.vencidoImpuestoTipoDisposicion,
+                                data.data.vencidoFooter.vencidoTotal,
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                ''
+                            ])
+                            .draw(false);                        
+
+                        table.row
+                            .add([
+                                '',
+                                'Vence',
+                                data.data.venceFooter.venceCapital,
+                                data.data.venceFooter.venceInteresNormal,
+                                data.data.venceFooter.venceFaltaPago,
+                                data.data.venceFooter.venceTipoDisposicion,
+                                data.data.venceFooter.venceImpuestoNormal,
+                                data.data.venceFooter.venceImpuestoEsquemaCobro,
+                                data.data.venceFooter.venceImpuestoTipoDisposicion,
+                                data.data.venceFooter.venceTotal,
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                ''
+                            ])
+                            .draw(false);                                                   
+
+                        table.row
+                            .add([
+                                '',
+                                'Vigente',
+                                data.data.vigenteFooter.vigenteCapital,
+                                data.data.vigenteFooter.vigenteInteresNormal,
+                                data.data.vigenteFooter.vigenteFaltaPago,
+                                data.data.vigenteFooter.vigenteTipoDisposicion,
+                                data.data.vigenteFooter.vigenteImpuestoNormal,
+                                data.data.vigenteFooter.vigenteImpuestoEsquemaCobro,
+                                data.data.vigenteFooter.vigenteImpuestoTipoDisposicion,
+                                data.data.vigenteFooter.vigenteTotal,
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                ''
+                            ])
+                            .draw(false);                        
+                    }   
+
+                },
+                complete: function () {                    
+                    js("#ExecuteRequest").attr('disabled', false);                   
+                    js("#spin").addClass("visually-hidden");
+                    js("#resultado").removeClass("visually-hidden");
+                    
+                },
+                error : function() {
+                    console.log("ojo");                
+                }
+
+            });
+        });
+
+        js("#sucursalId").on('change', function () {
+            js("#resultado").addClass("visually-hidden");
+        });
+
+        js("#cuentaCredito").on('change', function () {
+            js("#resultado").addClass("visually-hidden");
+        });
+
+        js("#noDisposicion").on('change', function () {
+            js("#resultado").addClass("visually-hidden");
+        });
+
+
+
+        function limpiarSpan() {
+            js("#montoCredito").text("");
+            js("#saldoCapital").text("");
+            js("#capitalPagado").text("");
+            js("#saldoInteres").text("");
+            js("#interesPagado").text("");
+            js("#saldoIva").text("");
+            js("#ivaPagado").text("");
+            js("#saldoMora").text("");
+            js("#moraPagado").text("");
+            js("#saldoMoraIva").text("");
+            js("#moraIvaPagado").text("");
+        }
+
+    });
+</script>

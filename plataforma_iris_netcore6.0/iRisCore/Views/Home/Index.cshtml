@@ -1,0 +1,509 @@
+﻿@{
+    ViewData["Title"] = "Home iRis";
+}
+
+<div class="container">
+
+     <div class="row">
+        <div class="col-lg-6">
+            <div class="card-box" >
+                <h6 class="card-title">Producto - Mi Ahorro ASP</h6>
+                <div class="widget-chart text-center" style="height: 290px;">
+                    <canvas id="chLineMiAhorro"></canvas>
+                </div>
+                <div class="card-footer">
+                    Total Cuentas Vigentes <span id="totVigenteMiAhorro"></span>
+                </div>  
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card-box">
+                <h6 class="card-title">Producto - Cuenta Fácil</h6>
+                <div class="widget-chart text-center" style="height: 290px;">
+                    <canvas id="chLine"></canvas>
+                </div>
+                <div class="card-footer">
+                    Total Cuentas Vigentes <span id="totVigenteCuentaFacil"></span>
+                </div>
+            </div>
+        </div>
+     </div>
+
+    <div class="row">
+        
+
+        <div class="col-lg-3">
+            <div class="card-box" style="max-width: 540px;">
+                <div class="row g-0">
+
+                    <div class="col-md-12">
+                        <h6 class="card-title">Tarjetas Físicas</h6>
+
+                        <div class="card-body" style="height: 290px;">
+                            <div class="col-md-12 ">
+                                <img src="~/images/cardMC.png" width="90%" />
+                            </div>
+                            <div class="row">
+                                <div class="col-6 col-sm-7"><small>ACTIVAS</small></div>
+                                <div class="col-6 col-sm-5" style="text-align:right;"><span id="TFActivas"></span></div>
+                                <!-- Force next columns to break to new line at md breakpoint and up -->
+                                <div class="w-100 d-none d-md-block"></div>
+                                <div class="col-6 col-sm-7"><small>BLOQUEADAS</small></div>
+                                <div class="col-6 col-sm-5" style="text-align:right;"><span id="TFBloqueadas"></span></div>
+                                <!-- Force next columns to break to new line at md breakpoint and up -->
+                                <div class="w-100 d-none d-md-block"></div>
+                                <div class="col-6 col-sm-7"><small>CANCELADAS</small></div>
+                                <div class="col-6 col-sm-5" style="text-align:right;"><span id="TFCanceladas"></span></div>
+
+                                <div class="w-100 d-none d-md-block"></div>
+                                <div class="col-6 col-sm-7"><small>SIN ASIGNAR</small></div>
+                                <div class="col-6 col-sm-5" style="text-align:right;"><span id="TFSinAsignar"></rigth></div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="card-box" style="max-width: 540px;">
+                <div class="row g-0">
+                    <div class="col-md-12">
+                        <h6 class="card-title">Tarjetas Virtuales</h6>
+                        <div class="card-body" style="height: 290px;">
+                            <div class="col-md-12">
+                                <img src="~/images/digitalcard.png" width="90%" />
+                            </div>
+                            <div class="row">
+                                <div class="col-6 col-sm-5">ACTIVAS</div>
+                                <div class="col-6 col-sm-6" style="text-align:right;"><span id="TVActivas"></span></div>
+                                <!-- Force next columns to break to new line at md breakpoint and up -->
+                                <div class="w-100 d-none d-md-block"></div>
+                                <div class="col-6 col-sm-5">BLOQUEADAS</div>
+                                <div class="col-6 col-sm-6" style="text-align:right;"><span id="TVBloqueadas"></span></div>
+                                <!-- Force next columns to break to new line at md breakpoint and up -->
+                                <div class="w-100 d-none d-md-block"></div>
+                                <div class="col-6 col-sm-5">CANCELADAS</div>
+                                <div class="col-6 col-sm-6" style="text-align:right;"><span id="TVCanceladas"></span></div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>      
+    </div>
+</div>
+
+
+@* <div class="container">
+    <div class="row">
+
+        <div class="col-lg-6">
+            <div class="card-box">
+                <h6 class="card-title">Operaciones SpeiIn</h6>
+                <div class="d-flex align-items-center" id="spinnerSpeiIn">
+                    Cargando...
+                    <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+                </div>
+                <div class="text-center" style="height: 290px; margin-left: 50px;">
+                    <canvas id="myChart" style="margin-left:50px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card-box">
+                <h6 class="card-title">Operaciones SpeiOut</h6>
+                <div class="d-flex align-items-center" id="spinnerSpeiOut">
+                    Cargando...
+                    <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+                </div>
+                <div class="text-center" style="height: 290px; margin-left: 100px;">
+                    <canvas id="myChartOut" style="margin-left:50px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        @*<div class="col">
+            <div class="card-box" style="max-width: 540px;">
+                <div class="row g-0">
+                    <div class="col-md-12">
+                        <h6 class="card-title">Transacciones/Devoluciones</h6>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12 col-sm-10">
+                                    <canvas id="chDonut1"></canvas>
+                                </div>                                             
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br /> *@
+
+
+
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+
+    js(document).ready(function () {
+
+        // var urlSpeiIN = "Url.Action("DashBoardSpeiIn","Home")";
+        // js.ajax({
+        //     type: "POST",
+        //     url: urlSpeiIN,
+        //     dataType: "json",
+        //     data: null,
+        //     async: true,
+        //     success: function (data) {  
+        //         console.log(data);
+        //         const estatusIn = [];
+        //         const cantIn = [];
+        //         data.totalSpeis.forEach(function (detallado, index) {
+        //             estatusIn.push(detallado.estatusSpei);
+        //             cantIn.push(detallado.totalSpei);
+        //         });
+
+        //         var xValues = estatusIn;
+        //         var yValues = cantIn;
+        //         var barColors = [
+        //             "#b91d47",
+        //             "#00aba9",
+        //             "#2b5797",
+        //             "#e8c3b9",
+        //             "#1e7145"
+        //         ];
+
+        //         new Chart("myChart", {
+        //             type: "doughnut",
+        //             data: {
+        //                 labels: xValues,
+        //                 datasets: [{
+        //                     backgroundColor: barColors,
+        //                     data: yValues
+        //                 }]
+        //             },
+        //             options: {
+        //                 responsive: true
+        //             }
+        //         });
+        //         js("#spinnerSpeiIn").addClass("visually-hidden");
+        //     }
+        // });
+
+
+        // var urlSpeiOUT = "Url.Action("DashBoardSpeiOut","Home")";
+        // js.ajax({
+        //     type: "POST",
+        //     url: urlSpeiOUT,
+        //     dataType: "json",
+        //     data: null,
+        //     async: true,
+        //     success: function (data) {
+        //         console.log(data);
+        //         const estatusOut = [];
+        //         const cantOut = [];
+        //         data.totalSpeis.forEach(function (detallado, index) {
+        //             estatusOut.push(detallado.estatusSpei);
+        //             cantOut.push(detallado.totalSpei);
+        //         });
+
+        //         var xValues = estatusOut;
+        //         var yValues = cantOut;
+        //         var barColors = [
+        //             "#b91d47",
+        //             "#00aba9",
+        //             "#2b5797",
+        //             "#e8c3b9",
+        //             "#1e7145",
+        //             "#6c757d"
+        //         ];
+
+        //         new Chart("myChartOut", {
+        //             type: "doughnut",
+        //             data: {
+        //                 labels: xValues,
+        //                 datasets: [{
+        //                     backgroundColor: barColors,
+        //                     data: yValues
+        //                 }]
+        //             },
+        //             options: {
+        //                 responsive: true
+        //             }
+        //         });
+        //         js("#spinnerSpeiOut").addClass("visually-hidden");
+        //     }
+        // });
+
+
+
+
+
+        var colors = ['#b91d47', '#00aba9', '#2b5797', '#e8c3b9', '#1e7145', '#6c757d'];
+
+        var url = "@Url.Action("DashBoardCuentas","Home")";
+
+        js.ajax({
+            type: "POST",
+            url: url,
+            dataType: "json",
+            data: { tipoProducto: "facil" },
+            async: true,
+            success: function (data) {
+                const meses = [];
+                const vigente = [];
+                const cancelada = [];
+                const bloqueada = [];
+
+                var idx = 0;
+                data.concentradoActual.forEach(function (detallado, index) {                     
+                        if (detallado.estatus == "VIGENTE") {
+                        js("#totVigenteCuentaFacil").text(data.concentradoActual[idx].total);
+                        }
+                    idx++;
+                });               
+
+                data.detalladoAnual.forEach(function(detallado, index)
+                {
+                    meses.push(detallado.mes.substring(0,3));
+                    
+                    detallado.estatusCuenta.forEach(function(detalle, index) {
+                        if (detalle.estatus == "VIGENTE") {
+                            vigente.push(detalle.cantidad);
+                        } else if (detalle.estatus == "CANCELADA") {
+                            cancelada.push(detalle.cantidad);
+                        } else {
+                            bloqueada.push(detalle.cantidad);
+                        }
+                    });
+                }); 
+
+                /* large line chart */
+                var chLine = document.getElementById("chLine");
+                var chartData = {
+                    labels: meses,
+                    datasets: [{
+                        label: 'Activas',
+                        data: vigente,
+                        backgroundColor: colors[1], //'transparent',
+                        borderColor: colors[1],
+                        borderWidth: 4,
+                        pointBackgroundColor: colors[1]
+                    },
+                    {
+                        label: 'Bloqueadas',
+                        data: bloqueada,
+                        backgroundColor: colors[3],
+                        borderColor: colors[3],
+                        borderWidth: 4,
+                        pointBackgroundColor: colors[3]
+                    },
+                    {
+                        label: 'Canceladas',
+                        data: cancelada,
+                        backgroundColor: colors[4],
+                        borderColor: colors[4],
+                        borderWidth: 4,
+                        pointBackgroundColor: colors[4]
+                    }
+                    ]
+                };
+                if (chLine) {
+                    new Chart(chLine, {
+                        type: 'line',
+                        data: chartData,
+                        options: {                            
+                            legend: {
+                                display: false
+                            },
+                            responsive: true
+                        }
+                    });
+                }
+            }
+        });
+
+
+
+        /* ------ ------- */
+        js.ajax({
+            type: "POST",
+            url: url,
+            dataType: "json",
+            data: { tipoProducto: "miahorro" },
+            async: true,
+            success: function (data) {
+                const meses2 = [];
+                const vigente2 = [];
+                const cancelada2 = [];
+                const bloqueada2 = [];
+
+                var idxAhorro = 0;
+
+                data.concentradoActual.forEach(function (detallado, index) {
+                    if (detallado.estatus == "VIGENTE") {
+                        js("#totVigenteMiAhorro").text(data.concentradoActual[idxAhorro].total);
+                    }
+                    idxAhorro++;
+                });                
+
+                data.detalladoAnual.forEach(function (detallado, index) {
+                    meses2.push(detallado.mes.substring(0, 3));
+
+                    detallado.estatusCuenta.forEach(function (detalle, index) {
+                        if (detalle.estatus == "VIGENTE") {
+                            vigente2.push(detalle.cantidad);
+                        } else if (detalle.estatus == "CANCELADA") {
+                            cancelada2.push(detalle.cantidad);
+                        } else {
+                            bloqueada2.push(detalle.cantidad);
+                        }
+                    });
+                });
+
+                /* large line chart */
+                chLine = document.getElementById("chLineMiAhorro");
+                 chartData = {
+                    labels: meses2,
+                    datasets: [{
+                        label: 'Activas',
+                        data: vigente2,
+                        backgroundColor: colors[1], //'transparent',
+                        borderColor: colors[1],
+                        borderWidth: 4,
+                        pointBackgroundColor: colors[1]
+                    },
+                    {
+                        label: 'Bloqueadas',
+                        data: bloqueada2,
+                        backgroundColor: colors[3],
+                        borderColor: colors[3],
+                        borderWidth: 4,
+                        pointBackgroundColor: colors[3]
+                    },
+                    {
+                        label: 'Canceladas',
+                        data: cancelada2,
+                        backgroundColor: colors[4],
+                        borderColor: colors[4],
+                        borderWidth: 4,
+                        pointBackgroundColor: colors[4]
+                    }
+                    ]
+                };
+                if (chLine) {
+                    new Chart(chLine, {
+                        type: 'line',
+                        data: chartData,
+                        options: {
+                            legend: {
+                                display: false
+                            },
+                            responsive: true
+                        }
+                    });
+                }
+            }
+        });
+
+        /* -------------- */
+
+
+
+
+
+        var urlEstatus = "@Url.Action("DashBoardTarjetas","Home")";
+        js.ajax({
+            type: "GET",
+            url: urlEstatus,
+            dataType: "json",
+            data: null,
+            async: true,
+            success: function (data) {
+                                
+                js("#TFActivas").text(data.totalTFActiva);
+                js("#TFBloqueadas").text(data.totalTFBloqueada);
+                js("#TFCanceladas").text(data.totalTFCancelada);     
+                js("#TFSinAsignar").text(data.totalTFSinAsignar);
+
+                js("#TVActivas").text(data.totalTVActiva);
+                js("#TVBloqueadas").text(data.totalTVBloqueada);
+                js("#TVCanceladas").text(data.totalTVCancelada);
+            }
+        });
+
+
+        /* bar chart */
+        var chBar = document.getElementById("chBar");
+        if (chBar) {
+            new Chart(chBar, {
+                type: 'bar',
+                data: {
+                    labels: ["S", "M", "T", "W", "T", "F", "S"],
+                    datasets: [{
+                        label: 'Liquidadas',
+                        data: [589, 445, 483, 503, 689, 692, 634],
+                        backgroundColor: colors[0]
+                    },
+                    {
+                        label: 'Devueltas',
+                        data: [639, 465, 493, 478, 589, 632, 674],
+                        backgroundColor: colors[4]
+                    }]
+                },
+                options: {
+                    legend: {
+                        display: false
+                    }
+                    //scales: {
+                    //    xAxes: [{
+                    //        barPercentage: 1,
+                    //        categoryPercentage: 1
+                    //    }]
+                    //}
+                }
+            });
+        }
+
+        /* 3 donut charts */
+        var donutOptions = {
+            cutoutPercentage: 85,
+            legend: { position: 'bottom', padding: 5, labels: { pointStyle: 'circle', usePointStyle: true } }
+        };
+
+        // donut 1
+        var chDonutData1 = {
+            labels: ['POS', 'eCommerce', 'ATM', 'Devoluciones'],
+            datasets: [
+                {
+                    backgroundColor: colors.slice(0, 4),
+                    borderWidth: 0,
+                    data: [74, 11, 40, 3]
+                }
+            ]
+        };
+
+        var chDonut1 = document.getElementById("chDonut1");
+        if (chDonut1) {
+            new Chart(chDonut1, {
+                type: 'pie',
+                data: chDonutData1,
+                options: donutOptions
+            });
+        }
+    
+    });
+</script>

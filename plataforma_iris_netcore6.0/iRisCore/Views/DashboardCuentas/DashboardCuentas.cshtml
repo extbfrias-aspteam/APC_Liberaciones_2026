@@ -1,0 +1,123 @@
+﻿@using iRisModel
+@{
+    ViewData["Title"] = "DashboardCuentas";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h5>Dashboard Cuentahabiente [Medios de disposición por producto]</h5>
+<div id="emailHelp" class="form-text">Información de la cuenta y los medios de disposición asociados.</div>
+<div class="card-box">
+    <div class="card-body">
+        <form>
+            <div class="row g-3">
+                <div class="col-sm-4">
+                    <select class="form-select" name="producto" id="producto" aria-label="Default select example">
+                        <option selected>Seleccione el producto</option>
+                        @if (ViewBag.Productos != null)
+                        {
+                            List<ProductoModel> oProducto = (List<ProductoModel>)ViewBag.Productos;
+                            foreach (ProductoModel item in oProducto)
+                            {
+                                <option value=@item.claveProducto>@item.descProducto</option>
+                            }
+                        }
+                    </select>
+                </div>               
+                
+                <div class="col-sm-3">
+                    <button type="submit" class="btn btn-success" id="ExecuteRequest">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Consulta
+                    </button>
+                </div>
+            </div>
+          
+            <div class="row g-3">
+                
+                    <div class="col-sm-4">
+                        <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="actualizaPayloads", name="actualizaPayloads">
+                            <label class="form-check-label" for="flexCheckDefault">
+                            <small>Cargar información base del cuentahabiente </small>
+                        </label>
+                        </div>
+                    </div>
+                
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+
+<script type="text/javascript">
+    var js = jQuery.noConflict(true);
+    js(document).ready(function () {       
+
+        js('#ExecuteRequest').on("click", function (event) {
+            event.preventDefault();
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+
+            var url = "@Url.Action("DashboardCuentas", "DashboardCuentas")";
+
+            var data = new Object();
+            data.producto = js("#producto").val();
+            data.actualizaPayloads = js("#actualizaPayloads").val();
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: data,
+                success: function (data) {
+                    console.log(data);
+
+                    // if (data.codigo != 0) {
+                    //     swal({
+                    //         title: "Error",
+                    //         text: data.mensaje,
+                    //         type: "warning",
+                    //         showCancelButton: false,
+                    //         confirmButtonColor: "#DD6B55",
+                    //         closeOnConfirm: false
+                    //     });                                     
+                    // }
+                    // else {                       
+
+                    //     js('#example').dataTable({
+                    //         destroy: true,
+                    //         responsive: true,
+                    //         scrollX: true,
+                    //         ordering: true,
+                    //         paging: true,
+                    //         language: {
+                    //             "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+                    //         },
+                    //         data: data.mediosDisposicion,
+                    //         columns: [
+                    //             { 'data': 'medio' },
+                    //             { 'data': 'clave' },
+                    //             { 'data': 'estatus' },
+                    //             { 'data': 'tipo' },
+                    //             { 'data': 'tipoProducto' }
+                    //         ]
+                    //     });
+                    // }
+
+                    js("#ExecuteRequest").attr('disabled', false);
+                    js("#spin").addClass("visually-hidden");
+
+                }
+            });
+
+        });
+
+    })
+
+
+</script>

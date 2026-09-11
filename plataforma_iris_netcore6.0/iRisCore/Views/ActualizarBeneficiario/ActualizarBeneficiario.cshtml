@@ -1,0 +1,349 @@
+﻿@using iRisModel
+@{
+    ViewData["Title"] = "ActualizarBeneficiario";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Estilos {
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+}
+
+<h5>Actualización del Beneficiario ASP Pago</h5>
+<div id="emailHelp" class="form-text">Proceso para la actualización de la información del beneficiario de un cuentahabiente de ASP.</div>
+
+<div class="card-box">
+    <h5 class="card-title">Cuentahabiente</h5>
+    <div class="card-body">
+       
+        <form>
+            <div class="row g-4">
+                <div class="col-sm-3">
+                    <select class="form-select" name="claveProducto" id="claveProducto" aria-label="Default select example">
+                        <option selected>Seleccione el producto</option>
+                        @if (ViewBag.Productos != null)
+                        {
+                            List<ProductoModel> oProducto = (List<ProductoModel>)ViewBag.Productos;
+                            foreach (ProductoModel item in oProducto)
+                            {
+                                <option value=@item.claveProducto>@item.descProducto</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <select class="form-select" name="tipoBusqueda" id="tipoBusqueda" aria-label="Default select example">
+                        <option selected>Seleccione búsqueda por</option>
+                        <option value="ASP">Cuenta ASP</option>
+                        <option value="TEL"> Teléfono</option>
+                    </select>
+                </div>
+                
+                <div class="col-sm-4">
+                    <input name="valor" id="valor" class="form-control" type="text" placeholder="" />
+                </div>
+
+                <div class="col-sm-2">
+                    <button type="submit" id="ExecuteRequest" class="btn btn-success">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Consulta
+                    </button>
+                </div>
+            </div>
+            <br />
+            <div class="row g-2">                
+                <div class="col-sm-6">
+                    <strong><span style="color:darkred" id="nomTitular"></span></strong>
+                </div>                 
+            
+                <div class="col-sm-6">
+                    <strong><span style="color:darkblue" id="nomBeneficiario"></span></strong>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id ="divBeneficiario" class="visually-hidden">
+<form id="benefic">
+    <div class="card-box">
+            <h5 class="card-title">Datos del beneficiario</h5>
+            <div class="card-body">       
+                <div class="row g-3">
+                    <div class="col-sm-4">
+                        <input class="form-control" type="text" name="nombre" id="nombre" placeholder="Nombre(s)" aria-label="default input example">
+                    </div>
+                    <div class="col-sm-4">
+                        <input class="form-control" type="text" name="paterno" id="paterno" placeholder="Apellido paterno" aria-label="default input example">
+                    </div>
+                    <div class="col-sm-4">
+                        <input class="form-control" type="text" name="materno" id="materno" placeholder="Apellido materno" aria-label="default input example">
+                    </div>
+                </div>
+                <br />
+                <div class="row g-1">
+                    <div class="col-sm-12">
+                        <select class="form-select" name="descripcionParentesco" id="descripcionParentesco" aria-label="Default select example">
+                            <option selected>Seleccione el parentesco</option>
+                            @if (ViewBag.Parentesco != null)
+                            {
+                                List<Parentesco> oProducto = (List<Parentesco>)ViewBag.Parentesco;
+                                foreach (Parentesco item in oProducto)
+                                {
+                                    <option value=@item.decripcionParentesco>@item.decripcionParentesco</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+    <h5 class="card-title">Información del domicilio</h5>
+    <div class="card-body">               
+            <div class="row g-12">
+                <div class="col-sm-12">
+                    <input class="form-control" type="text" name="calle" id="calle" placeholder="Calle" aria-label="default input example">
+                </div>
+            </div><br />
+            <div class="row g-4">
+                <div class="col-sm-2">
+                    <input class="form-control" type="text" name="cp" id="cp" placeholder="CP" aria-label="default input example">
+                </div>
+                <div class="col-sm-6">
+                    <input class="form-control" type="text" name="colonia" id="colonia" placeholder="Colonia" aria-label="default input example">
+                </div>
+                <div class="col-sm-2">
+                    <input class="form-control" type="text" name="numExt" id="numExt" placeholder="Num. Ext" aria-label="default input example">
+                </div>
+                <div class="col-sm-2">
+                    <input class="form-control" type="text" name="numInt" id="numInt" placeholder="Num. Int" aria-label="default input example">
+                </div>
+            </div>
+            <br />
+            <div class="row g-3">
+                <div class="col-sm-4">
+                        <input class="form-control" type="text" name="ciudad" id="ciudad" placeholder="Ciudad" aria-label="default input example">
+                </div>
+                <div class="col-sm-4">
+                        <input class="form-control" type="text" name="municipio" id="municipio" placeholder="Delegación o Municipio" aria-label="default input example">
+                </div>
+                    <div class="col-sm-4">
+                        <input class="form-control" type="text" name="entidadfederativa" id="entidadfederativa" placeholder="Entidad Federativa" aria-label="default input example">
+                    </div>
+                </div>
+    </div>
+    <h5 class="card-title">Datos personales</h5>
+    <div class="card-body">            
+        <div class="row g-4">
+            <div class="col-sm-3">
+                <input class="form-control" type="date" name="fechaNacimiento" id="fechaNacimiento" placeholder="Fecha de Nacimiento" aria-label="default input example">
+                <span class="font-13 text-muted">Fecha de nacimiento</span>
+            </div>
+
+            <div class="col-sm-3">
+                <input class="form-control" type="text" name="telefono" id="telefono" placeholder="Teléfono" aria-label="default input example">
+            </div>
+            <div class="col-sm-3">
+                <input class="form-control" type="text" name="email" id="email" placeholder="e-Mail" aria-label="default input example">
+            </div>                
+        </div>
+        <br />
+        <div class="row g-12">
+            <div class="col-sm-3">
+                <button type="submit" id="ExecuteRequestUpdate" class="btn btn-success">
+                    <span id="spinUpdate" class="spinner-border spinner-border-sm visually-hidden"></span>
+                    Ejecutar Operación
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+</div>
+
+
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+<script src="~/lib/jquery-validation/dist/additional-methods.js"></script>
+<script type="text/javascript">
+    var js = jQuery.noConflict(true);
+    js(document).ready(function () {
+
+        // // js("#commentForm").validate();
+        // js("#myform").validate({
+        //     rules: {
+        //         field: {
+        //             required: true
+        //         }
+        //     },
+        //     messages: {
+        //         field: {
+        //             required : " Plase"
+        //         }
+        //     }
+        // });
+
+        js(document).on("change", '#tipoBusqueda', function () {          
+            if (js("#tipoBusqueda").val() == "TEL") {
+                js("#valor").attr('placeholder', 'Ingrese número telefónico asociado a la app');
+            } else if (js("#tipoBusqueda").val() == "ASP") {
+                js("#valor").attr('placeholder', 'Ingrese número de cuenta ASP del titular');
+            } else {
+                js("#valor").attr('placeholder', '');
+            }
+         });
+
+        //-- Busqueda para el titular de la cuenta ---
+        js('#ExecuteRequest').on("click", function (event) {
+            event.preventDefault();
+
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+
+            var url = "@Url.Action("ConsultaTitular", "ActualizarBeneficiario")";
+
+            var data = new Object();
+            if (js("#tipoBusqueda").val() == "TEL") {
+                data.numTelefono = js("#valor").val();
+            } else if (js("#tipoBusqueda").val() == "ASP") {
+                data.cuentaASP = js("#valor").val();
+            } 
+
+            data.claveProducto = js("#claveProducto").val();
+            data.tipoBusqueda = js("#tipoBusqueda").val();
+            data.valorBusqueda = js("#valor").val();
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: data,
+                success: function (data) {                 
+                    console.log(data);
+
+                    if (data.codigo != 0) {
+                        swal({
+                            title: "Error",
+                            text: data.mensaje,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                        js("#valorBusqueda").val("");
+                        js("#tabla").addClass("visually-hidden");
+                        js("#cuentahabiente").addClass("visually-hidden");
+                      
+                    }
+                    else {
+                       // console.log("Hola: " + data.beneficiario);
+                        var count = Object.keys(data.beneficiario).length;
+                        //console.log(count);
+
+                        if (count > 0) {
+                            js("#nomTitular").text("TITULAR: " + data.nombreCompleto.toUpperCase());
+                            js("#nomBeneficiario").text("BENEFICIARIO: " + data.beneficiario.nombre.toUpperCase());
+                            js("#divBeneficiario").removeClass("visually-hidden");
+                        } else { 
+                            swal({
+                                title: "Error",
+                                text: "El titular no cuenta con beneficiario registrado",
+                                type: "warning",
+                                showCancelButton: false,
+                                confirmButtonColor: "#DD6B55",
+                                closeOnConfirm: false
+                            });
+                        }
+                    }
+                    js("#ExecuteRequest").attr('disabled', false);
+                    js("#spin").addClass("visually-hidden");
+                }
+            });
+
+        });
+        //-- Fin Busqueda titular de la cuenta
+
+
+        //-- Boton par aactualiza al beneficiario --
+        js('#ExecuteRequestUpdate').on("click", function (event) {
+            event.preventDefault();
+
+            js("#spinUpdate").removeClass("visually-hidden");
+            js("#ExecuteRequestUpdate").attr('disabled', true);
+
+            var url = "@Url.Action("ActualizarBeneficiario", "ActualizarBeneficiario")";
+
+            var data = new Object();
+            var beneficiario = new Object();
+
+            if (js("#tipoBusqueda").val() == "TEL") {
+                data.numeroTelefono = js("#valor").val();
+                data.cuentaASP = null
+            } else if (js("#tipoBusqueda").val() == "ASP") {
+                data.cuentaASP = js("#valor").val();
+                data.numeroTelefono = null
+                }
+
+            beneficiario.nombre = js("#nombre").val() + " " + js("#paterno").val() + " " + js("#materno").val();
+            beneficiario.descripcionParentesco = js("#descripcionParentesco").val();
+            beneficiario.cp = js("#cp").val();
+            beneficiario.colonia = js("#colonia").val();
+            beneficiario.calle = js("#calle").val();
+            beneficiario.numExt = js("#numExt").val();
+            beneficiario.numInt = js("#numInt").val();
+            beneficiario.municipio = js("#municipio").val();
+            beneficiario.ciudad = js("#ciudad").val();
+            beneficiario.entidadfederativa = js("#entidadfederativa").val();
+            beneficiario.Telefono = js("#telefono").val();
+            beneficiario.fechaNacimiento = js("#fechaNacimiento").val();
+            beneficiario.email = js("#email").val();
+
+            data.beneficiario = beneficiario;
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: data,
+                success: function (data) {
+
+                    if (data.codigo != 0) {
+                        swal({
+                            title: "Error",
+                            text: data.mensaje,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });                       
+                    }
+                    else {
+                        swal({
+                            title: "Exito",
+                            text: "¡Información actualizada!",
+                            type: "success",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                        js("#nomTitular").text("");
+                        js("#nomBeneficiario").text("");
+                        js("#valor").val("");
+                    }
+                    js("#ExecuteRequestUpdate").attr('disabled', false);
+                    js("#spinUpdate").addClass("visually-hidden");
+                },
+
+                complete: function () {
+                     js("#divBeneficiario").addClass("visually-hidden");
+                    $("#benefic")[0].reset()
+
+                }
+            });
+
+        });
+
+
+    })
+
+
+</script>

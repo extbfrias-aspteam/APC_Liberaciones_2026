@@ -1,0 +1,322 @@
+﻿
+@{
+    ViewData["Title"] = "BO_BloqueoCuenta";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div>
+    <h3>Bloqueo de Cuentas</h3>
+    Servicio que permite bloquear y desbloquear cuenta clabe de manera masiva o individual.
+</div>
+
+<div class="card-box">
+    <div class="card-body">
+
+        <form id="formulario">
+            <div class="row g-3">
+                <div class="col-sm-3">
+                    <select class="form-select" name="tipoBloqueo" id="tipoBloqueo" aria-label="Default select example">
+                        <option selected>Seleccione</option>
+                        <option value="BC">Bloqueo por cuenta</option>
+                        <option value="BMC">Bloqueo masivo de cuentas</option>
+                        <option value="DC">Desbloqueo por cuenta</option>
+                        <option value="DMC">Desbloqueo masivo de cuentas</option>
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <select class="form-select" name="tipoSpei" id="tipoSpei" aria-label="Default select example">
+                        <option value="TODOS" selected>TODOS</option>
+                        <option value="SPEI_IN">SPEI IN</option>
+                        <option value="SPEI_OUT">SPEI OUT</option>
+                    </select>
+                </div>
+                <div class="col-sm-2" id="dCuentaClabe">
+                    <input class="form-control" type="text" name="cuentaClabe" id="cuentaClabe" placeholder="Cuenta clabe" aria-label="default input example">
+                </div>
+                <div class="col-sm-3" id="dCuentaMotivo">
+                    <input class="form-control" type="text" name="cuentaMotivo" id="cuentaMotivo" placeholder="Motivo" aria-label="default input example">
+                </div>
+                <div class="col-sm-4" id="dArchivoClabe" style="display:none">
+                    <input class="form-control" type="file" accept=".txt" name="archivoClabe" id="archivoClabe" placeholder="Cuenta clabe">
+                </div>
+                <div class="col-sm-2">
+                    <button type="submit" class="btn btn-success" id="ExecuteRequest">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Operación
+                    </button>
+                </div>
+
+            </div>
+        </form>
+
+        <div class="row g-3 mt-3" id="tabla">
+            <table id="tablaNoAceptadas" class="d-none table table-striped table-hover" style="width:100%">
+                <thead>
+                    <h5 class="card-title d-none" id="tituloTabla">Clabes no aceptadas</h5>
+                    <tr> 
+                        <th>Fila</th>
+                        <th>CLABE</th>
+                        <th>Motivo</th>
+                    </tr>
+                </thead>
+                <tbody id="tErrors">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script>
+
+    var js = jQuery.noConflict(true);
+
+    $(document).ready(function () {
+        $('#tipoBloqueo').on('change', function () {
+                var selectedValue = $(this).val();
+
+                switch (selectedValue) {
+                    case 'BC':
+                        $('#dCuentaClabe').show();
+                        $('#dCuentaMotivo').show();
+                        $('#dArchivoClabe').hide();
+                        var inputClabe = document.getElementById("archivoClabe");
+                        inputClabe.value = "";
+                        break;
+                    case 'BMC':
+                        $('#dCuentaClabe').hide();
+                        $('#dCuentaMotivo').hide();
+                        var inputClabe = document.getElementById("cuentaClabe");
+                        inputClabe.value = "";
+                        var inputClabe = document.getElementById("cuentaMotivo");
+                        inputClabe.value = "";
+                        $('#dArchivoClabe').show();
+                        break;
+                    case 'DC':
+                        $('#dCuentaClabe').show();
+                        $('#dCuentaMotivo').show();
+                        $('#dArchivoClabe').hide();
+                        var inputClabe = document.getElementById("archivoClabe");
+                        inputClabe.value = "";
+                        break;
+                    case 'DMC':
+                        $('#dCuentaClabe').hide();
+                        $('#dCuentaMotivo').hide();
+                        var inputClabe = document.getElementById("cuentaClabe");
+                        inputClabe.value = "";
+                        var inputClabe = document.getElementById("cuentaMotivo");
+                        inputClabe.value = "";
+                        $('#dArchivoClabe').show();
+                        break;
+                    default:
+                        $('#dCuentaClabe').show();
+                        $('#dCuentaMotivo').show();
+                        $('#dArchivoClabe').hide();
+                        var inputClabe = document.getElementById("archivoClabe");
+                        inputClabe.value = "";
+                        break;
+                }
+
+                $('#tablaNoAceptadas').addClass('d-none');
+                $('#tituloTabla').addClass('d-none');
+        });
+
+        $('#archivoClabe').on('change', function () {
+            var fileInput = document.getElementById('archivoClabe');
+            var file = fileInput.files[0];
+            var allowedExtensions = /(.txt)$/i;
+
+            if (allowedExtensions.test(file.name)) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    var fileContent = e.target.result;
+                    var lines = fileContent.split(/\r\n|\n/);
+                    $('#fileContent').text(lines.join('\n'));
+                    if (lines.length > 100) {
+                        alert('Estructura incorrecta del archivo, seleccione un archivo de tipo texto con un máximo de 100 clabes');
+                        fileInput.value = '';
+                    }
+                };
+
+                reader.readAsText(file);
+            } else {
+                alert('Seleccione un archivo de tipo texto .txt.');
+                fileInput.value = '';
+            }
+        });
+
+        js('#ExecuteRequest').on("click", function (event) {
+            event.preventDefault();
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+            
+            var selectedValue = $('#tipoBloqueo').val();
+
+            if (!$('#tablaNoAceptadas').hasClass('d-none')) {
+                $('#tablaNoAceptadas').addClass('d-none');
+                $('#tituloTabla').addClass('d-none');
+            }
+
+            if (selectedValue == 'BC' || selectedValue == 'DC') { //individual
+                    if ($('#tipoBloqueo').val() != 'Seleccione' && $("#cuentaClabe").val() != '' && $("#cuentaMotivo").val() != '') {
+
+                    var url = "@Url.Action("BloqueoCuentaIndv","BO_BloqueoCuenta")";
+
+                    var data = new Object();
+
+                    data.tipoSpei = js("#tipoSpei").val();
+                    data.clabe = js("#cuentaClabe").val();
+                    data.causa = js("#cuentaMotivo").val();
+
+                    if (selectedValue == 'DC') {
+                        data.estatusCuenta = 0;
+                    }
+                    else{
+                        data.estatusCuenta = 1;
+                    }
+
+                    console.log(data);
+
+                    js.ajax({
+                        type: "POST",
+                        url: url,
+                        dataType: "json",
+                        data: data,
+                        success: function (data) {
+                            if (data.eiyuResponseCode == "OK") {
+                                swal({
+                                    title: "Exito",
+                                    text: "Operación exitosa",
+                                    type: "success",
+                                    showCancelButton: false,
+                                    confirmButtonColor: "#DD6B55",
+                                    closeOnConfirm: false
+                                });   
+                                }
+                            else if (data.eiyuResponseCode == "ERROR") {
+                                swal({
+                                    title: "ERROR_CLABE",
+                                    text: data.mensaje,
+                                    type: "warning",
+                                    showCancelButton: false,
+                                    confirmButtonColor: "#DD6B55",
+                                    closeOnConfirm: false
+                                });
+                            }
+                            else{
+                                swal({
+                                    title: "ERROR_CLABE",
+                                    text: data.mensaje,
+                                    type: "warning",
+                                    showCancelButton: false,
+                                    confirmButtonColor: "#DD6B55",
+                                    closeOnConfirm: false
+                                });
+                            }
+                        js("#ExecuteRequest").attr('disabled', false);
+                        js("#spin").addClass("visually-hidden");
+                        var inputClabe = document.getElementById("cuentaClabe");
+                        inputClabe.value = "";
+                        var inputClabe = document.getElementById("cuentaMotivo");
+                        inputClabe.value = "";
+                        }
+                    });
+                }
+                else
+                {
+                    alert('Llene los campos necesarios');
+                    js("#ExecuteRequest").attr('disabled', false);
+                    js("#spin").addClass("visually-hidden");
+                }
+            }
+            else
+            {
+                if ($('#tipoBloqueo').val() != 'Seleccione' && $("#archivoClabe").val() != '') {
+
+                    var input = document.getElementById("archivoClabe"); //get file input id
+                    var files = input.files; //get files
+                    var formData = new FormData(); //create form
+
+                    for (var i = 0; i != files.length; i++) {
+                        formData.append("files", files[i]); //loop through all files and append
+                    }
+
+                    if (selectedValue == 'DMC') {
+                        formData.append("estatus", 0);
+                    }
+                    else{
+                        formData.append("estatus", 1);
+                    }
+                    
+                    formData.append("tipoSpei", js("#tipoSpei").val());
+
+                    var url = "@Url.Action("BloqueoCuentaMas","BO_BloqueoCuenta")";
+
+                    js.ajax({
+                        url: url,
+                        data: formData, // send it as formData
+                        processData: false,
+                        contentType: false,
+                        type: "POST", //type is post as we will need to post files
+                        success: function (data) {
+                            if (data.codigo == "OK") {
+                                var tableBody = $('#tErrors');
+                                tableBody.empty();
+
+                                if (data.clabesNoAceptadas.length > 0){
+                                        data.clabesNoAceptadas.forEach(function (item, index) {
+                                        var row = '<tr>' +
+                                            '<td>' + (index + 1) + '</td>' +
+                                            '<td>' + item.clabe + '</td>' +
+                                            '<td>' + item.motivo + '</td>' +
+                                            '</tr>';
+                                        tableBody.append(row);
+                                    });
+
+                                    $('#tablaNoAceptadas').removeClass('d-none');
+                                    $('#tituloTabla').removeClass('d-none');
+                                }
+                                swal({
+                                    title: "Exito",
+                                    text: "",
+                                    type: "success",
+                                    showCancelButton: false,
+                                    confirmButtonColor: "#DD6B55",
+                                    closeOnConfirm: false
+                                });
+                            }
+                            else {
+                                swal({
+                                    title: "Error",
+                                    text: data.mensaje,
+                                    type: "warning",
+                                    showCancelButton: false,
+                                    confirmButtonColor: "#DD6B55",
+                                    closeOnConfirm: false
+                                });
+                            }
+                            js("#ExecuteRequest").attr('disabled', false);
+                            js("#spin").addClass("visually-hidden");
+                            var inputClabe = document.getElementById("archivoClabe");
+                            inputClabe.value = "";
+                        },
+                        error: function(XMLHttpRequest, textStatus, errorThrown) 
+                        {
+                            alert("Status: " + textStatus); alert("Error: " + errorThrown);
+                        }
+                    });
+                }
+                else {
+                    alert('Llene los campos necesarios');
+                    js("#ExecuteRequest").attr('disabled', false);
+                    js("#spin").addClass("visually-hidden");
+                }
+            }         
+        });
+    });
+</script>
+}

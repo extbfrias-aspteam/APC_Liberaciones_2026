@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <td>Autorización</td>
+                <td>Clave</td>
+                <td>Movimiento</td>
+                <td>Comercio</td>
+                <td>Pais</td>
+                <td>PostOperación</td>
+                <td>Estatus</td>
+                <td>Fecha Movimiento</td>
+                <td>Id Movto</td>
+                <td>Importe</td>
+                <td>Importe Origen</td>
+                <td>MCC</td>
+                <td>Moneda</td>
+                <td>Moneda Origen</td>
+                <td>Afiliación</td>
+                <td>Observaciones</td>
+                <td>Pais Comercio</td>
+                <td>Referencia</td>
+                <td>Saldo Después Movimiento</td>
+                <td>Tipo Movimientos</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td></td><td>T6</td><td>DECREMENTO O REVERSO</td><td></td><td></td><td>COMPENSADA</td><td>001</td><td>06/07/2023 10:40:33 PM</td><td>17201</td><td>15.5</td><td>15.5</td><td></td><td>MXN</td><td></td><td></td><td>Cargo T6</td><td></td><td>1234567</td><td>5397.97</td><td>Cargo</td></tr><tr><td></td><td>T5</td><td>RECARGA</td><td></td><td></td><td>COMPENSADA</td><td>001</td><td>06/07/2023 10:38:45 PM</td><td>17200</td><td>10</td><td>10</td><td></td><td>MXN</td><td></td><td></td><td>RECARGA DE SALDO</td><td></td><td>0</td><td>5413.47</td><td>Abono</td></tr>
+        </tbody>
+    </table>
+
+</body>
+</html>

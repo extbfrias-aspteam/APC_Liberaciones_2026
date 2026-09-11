@@ -1,0 +1,178 @@
+﻿
+@{
+    ViewData["Title"] = "ConsultaCODI";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Estilos {
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+}
+
+<h5>Consulta Operaciones CoDi</h5>
+<div id="emailHelp" class="form-text">Visualización de las operaciones CoDi</div>
+<div class="card-box">
+    <div class="card-body">
+        <form>
+            <div class="row g-4">
+
+                <div class="col-sm-4">
+                    <div class="form-floating mb-3">
+                        <input name="fecha" id="fechaInicial" class="form-control" type="date" />
+                        <label for="floatingInput">Fecha Inicial</label>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-floating mb-3">
+                        <input name="fecha" id="fechaFinal" class="form-control" type="date" />
+                        <label for="floatingInput">Fecha Final</label>
+                    </div>
+                </div>
+                
+                <div class="col-sm-3">
+                    <button type="submit" id="ExecuteRequest" class="btn btn-success">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Operación
+                    </button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<br />
+
+<div class="row gx-5 visually-hidden" id="tabla">
+
+    <table id="example" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>Fecha Operación</th>
+                <th>Fecha Aplicación</th>
+                <th>Cta Emisora</th>
+                <th>Emisor</th>
+                <th>Banco Origen</th>
+                <th>Beneficiario</th>
+                <th>Cta Beneficiaria</th>
+                <th>Banco Destino</th>
+                <th>Movimiento</th>
+                <th>Monto</th>
+                <th>Clave Rastreo</th>
+                <th>Referencia</th>
+                <th>Tipo Operación</th>
+                <th>Estatus</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/plug-ins/1.13.6/api/sum().js"></script>
+<script src="https://cdn.datatables.net/plug-ins/1.13.7/dataRender/datetime.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js"></script>
+
+
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+
+    js(document).ready(function () {
+
+        var table = js('#example').DataTable({
+            language: {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+            }
+        });
+
+        js('#ExecuteRequest').on('click', function () {
+            event.preventDefault();
+
+            js("#spin").removeClass("visually-hidden");
+
+            var url = "@Url.Action("ConsultaCODI","ConsultaCODI")";
+            var info = new Object();
+            info.fechaInicio = js("#fechaInicial").val();
+            info.fechaFin = js("#fechaFinal").val();
+            
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: { model: info },
+                success: function (data) {
+                    console.log(data);
+                    if (data.result.codigo == 0) {
+                        js("#tabla").removeClass("visually-hidden");
+
+                        js('#example').dataTable({
+                            destroy: true,
+                            responsive: true,
+                            scrollX: true,
+                            ordering: true,
+                            paging: true,
+                            language: {
+                                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+                            },
+                            data: data.detalle,
+                            columns: [
+                                { 'data': 'fechaOperacion' },
+                                { 'data': 'fechaAplicacion' },
+                                { 'data': 'cuentaOrigen' },
+                                { 'data': 'nombreEmisor' },
+                                { 'data': 'bancoOrigen' },
+                                { 'data': 'nombreBeneficiario' },
+                                { 'data': 'cuentaDestino' },
+                                { 'data': 'bancoDestino' },
+                                { 'data': 'descripcionMovimiento' },
+                                { 'data': 'monto' },
+                                { 'data': 'claveRastreo' },
+                                { 'data': 'referencia' },
+                                { 'data': 'tipoOperacion' },
+                                { 'data': 'estatus' }
+                            ],
+                            columnDefs:
+                                [
+                                    {
+                                        targets: '_all',
+                                        render: function (data, type, row) {
+                                            if (type === 'display') {
+                                                if (isNaN(data) && moment(data, 'YYYY-MM-DD', true).isValid()) {
+                                                    return moment(data).format('DD-MM-YYYY');
+                                                }
+                                            }
+                                            return data;
+                                        }
+                                    }
+                                ]
+
+                        });
+                    } else {
+                        table
+                            .clear()
+                            .draw();
+
+                        swal({
+                            title: "Error",
+                            text: data.result.mensaje,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+
+
+
+                    js("#ExecuteRequest").attr('disabled', false);
+                    js("#spin").addClass("visually-hidden");
+
+                }
+
+            });
+        });
+
+    });
+</script>

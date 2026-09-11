@@ -1,0 +1,153 @@
+﻿
+@{
+    ViewData["Title"] = "TrackingTarjetaFisica";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Estilos {
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+}
+
+<h5>Tracking de envío de Tarjeta Física a Domicilio</h5>
+<div id="emailHelp" class="form-text">Consulta de seguimiento del proceso de entrega a domicilio de la tarjeta fisica a través del número de guía.</div>
+
+<div class="card-box">
+    <h5 class="card-title">Guía de envío</h5>
+    <div class="card-body">
+
+        <form>
+            <div class="row g-4">
+                <div class="col-sm-4">
+                    <input name="guia" id="guia" class="form-control" type="text" placeholder="Número de guia de envío" />
+                </div>
+
+                <div class="col-sm-2">
+                    <button type="submit" id="ExecuteRequest" class="btn btn-success">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Consultar Tracking
+                    </button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div class="row visually-hidden" id="detalle">
+    <div class="col-lg-9">
+        <div class="card-box">
+            <h5 class="card-title">Información del envío</h5>
+            <form class="form-horizontal" role="form"> 
+                <div class="form-group">
+                    <label class="col-md-3 control-label"><strong>Lugar de entrega</strong></label>
+                    <label class="col-md-8 control-label"><span style="color:darkblue;" id="destino"></span></label>
+                </div>
+                <div class="form-group">
+	                <label class="col-md-3 control-label"><strong>Estatus</strong></label>
+                    <label class="col-md-8 control-label"><span style= "color:darkblue;" id="estatus"></span></label>
+	            </div>                                    
+	            <div class="form-group">
+                    <label class="col-md-3 control-label"><strong>Ubicación</strong></label>	
+                    <label class="col-md-8 control-label"><span style="color:darkblue;" id="ubicacion"></span></label>
+	            </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label"><strong>Ultima ubicación</strong></label>
+                    <label class="col-md-8 control-label"><span style="color:darkblue;"  id="lastEvent"></span></label>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label"><strong>Quien recibió</strong></label>
+                    <label class="col-md-8 control-label"><span style="color:darkblue;" id="recibio"></span></label>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+    <div class="col-lg-3">
+        <div class="card-box">
+            <h5 class="card-title">Tarjeta(s) asociadas</h5>
+            <div id="divcolectivas"></div>
+        </div>
+    </div>
+</div>
+
+
+
+
+        
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+<script src="~/lib/jquery-validation/dist/additional-methods.js"></script>
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+    js(document).ready(function () {
+
+        js("#guia").on('click', function () {
+            js("#detalle").addClass("visually-hidden");
+        });
+
+        //-- Busqueda para el titular de la cuenta ---
+        js('#ExecuteRequest').on("click", function (event) {
+            event.preventDefault();
+            var div = "";
+
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+
+            var url = "@Url.Action("TrackingTarjetaFisica", "TrackingTarjetaFisica")";
+
+            var data = new Object();
+            data.guia = js("#guia").val();
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: data,
+                success: function (data) {
+
+                    console.log(data);
+
+                    if (data.codigo != 0) {
+                        swal({
+                            title: "Error",
+                            text: data.mensaje,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+
+                    }
+                    else {
+                        js("#destino").text(data.data.destino);
+                        js("#estatus").text(data.data.estatus);
+                        js("#ubicacion").text(data.data.ubicacion);
+                        js("#lastEvent").text(data.data.lastEvent);
+                        js("#recibio").text(data.data.recibio);
+                       
+                        for (var i = 0; i < data.data.tarjetas.length; i++) {
+                            div = div + "<p>" + data.data.tarjetas[i] + "</p>";
+                        }                     
+
+                       
+                    }
+                    js("#ExecuteRequest").attr('disabled', false);
+
+                },
+                complete: function () {
+                    $("#divcolectivas").html(div);
+                    js("#detalle").removeClass("visually-hidden");
+                    js("#spin").addClass("visually-hidden");
+                },
+                error: function () {
+                    js("#detalle").removeClass("visually-hidden");
+                    js("#spin").addClass("visually-hidden");
+                }
+            });
+        });
+
+    })
+
+
+</script>

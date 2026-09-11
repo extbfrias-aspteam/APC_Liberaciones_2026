@@ -1,0 +1,162 @@
+﻿@using iRisModel;
+@{
+    ViewData["Title"] = "EntregarTarjetaFisica";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Estilos {
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+}
+
+
+<h5>Entrega de Tarjeta Física en Sucursal</h5>
+<div id="emailHelp" class="form-text">Módulo de entrega del sobre de la Tarjeta Física al Cuentahabiente</div>
+<div class="card-box">
+    <div class="card-body">
+        <form id="myForm">
+            <div class="row g-1">               
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-9">
+                            <div class="checkbox checkbox-primary">
+                                <input id="esReposicion" type="checkbox" name="esReposicion">
+                                <label for="checkbox2">
+                                    Es reposición de Tarjeta?
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>     
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-9">
+                            <div class="checkbox checkbox-primary"> 
+                                <input id="esPrimerLote" type="checkbox" name="esPrimerLote">
+                                <label for="checkbox2">
+                                    Es primer lote?
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>           
+            <br />
+            <div class="row g-1">
+                <div class="col-sm-3">
+                    <select class="form-select" name="marcaId" id="marcaId" aria-label="Default select example" required>
+                        <option selected>Seleccione la marca</option>
+                        @if (ViewBag.Marcas != null)
+                        {
+                            List<MarcaModel> oMarcas = (List<MarcaModel>)ViewBag.Marcas;
+                            foreach (MarcaModel item in oMarcas)
+                            {
+                                <option value=@item.idMarca>@item.Marca</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="idFolio" id="idFolio" placeholder="Folio del sobre a entregar" maxlength="20">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="cuentaASP" id="cuentaASP" placeholder="Número de Cuenta ASP" maxlength="10">
+                       
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <input type="text" class="form-control visually-hidden" name="pan" id="pan" placeholder="Número de Tarjeta" maxlength="16">
+                    </div>
+                </div>
+            </div>
+            <br />
+            
+            <div class="row g-1">
+                <div class="col-sm-3">
+                    <button type="submit" id="ExecuteRequest" class="btn btn-success ">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Entregar Sobre
+                    </button>
+                </div>         
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+
+    js(document).ready(function () {      
+      
+
+        js("#esPrimerLote").on('click', function () {
+
+            if ($('#esPrimerLote').prop('checked')) {
+                js("#pan").removeClass("visually-hidden");
+                js("#pan").val("");
+            } else {
+                js("#pan").addClass("visually-hidden");
+            }
+        });
+       
+        js('#ExecuteRequest').on('click', function () {           
+
+            event.preventDefault();
+            js("#spin").removeClass("visually-hidden");
+
+            var url = "@Url.Action("EntregarSobreEnSucursal","EntregarTarjetaFisica")";
+            var info = new Object();
+            info.marcaId = js("#marcaId").val();
+            info.idFolio = js("#idFolio").val();
+            info.cuentaASP = js("#cuentaASP").val();
+            info.pan = js("#pan").val();
+            if ($('#esReposicion').prop('checked')) {        
+                info.reposicion = true;
+            } else {
+                info.reposicion = false;
+            }
+
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: { model: info},
+                success: function (data) {
+                    //console.log(data);
+                    if (data.codigo == 0) {
+                        swal({
+                            title: "Exito",
+                            text: data.mensaje,
+                            type: "success",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });                       
+                    } else {
+                        swal({
+                            title: "Error",
+                            text: data.mensaje,
+                            type: "error",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }                    
+                },
+                complete: function () {
+                    js("#spin").addClass("visually-hidden");
+                } 
+            });
+        });  
+    });
+</script>
+

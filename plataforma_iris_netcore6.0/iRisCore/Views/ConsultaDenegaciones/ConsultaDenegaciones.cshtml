@@ -1,0 +1,149 @@
+﻿@{
+    ViewData["Title"] = "ConsultaDenegaciones";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Estilos {
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+}
+
+<h5>Consulta Denegaciones de Compra</h5>
+
+<div id="emailHelp" class="form-text">WebService que permitirá visualizar las Denegaciones que se hayan generado a una tarjeta en el procesador.</div>
+<div class="card-box">
+    <div class="card-body">
+        <form id="Formulario" class="">
+
+            <div class="row g-1" id="numTarjeta">
+                <div class="col-sm-12">
+                    <input type="password" name="numeroTarjeta" id="numeroTarjeta" class="form-control" placeholder="Número de tarjeta" maxlength="16" value="">
+                </div>
+            </div>
+            <div id="salto1">
+                <br />
+            </div>
+
+            <div class="row g-2" id="fechas">
+                <div class="col-sm-6">
+                    <input name="fechaInicial" id="fechaInicial" class="form-control" type="date" />
+                </div>
+                <div class="col-sm-6">
+                    <input id="fechaFinal" name="fechaFinal" class="form-control" type="date" />
+                </div>
+            </div>
+
+
+            <div id="salto2">
+                <br />
+            </div>
+
+            <div class="row g-3" id="btnEjecutar">
+                <div class="col-sm-2">
+                    <button type="submit" id="ExecuteRequest" class="btn btn-success">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Operación
+                    </button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<br />
+
+<div class="row gx-5 visually-hidden" id="tabla">
+
+    <table id="example" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>Fecha TRX</th>
+                <th>Hora TRX</th>
+                <th>Tipo TRX</th>
+                <th>Sucursal</th>
+                <th>Comercio</th>
+                <th>Código Denegación</th>
+                <th>Descripción Denegación</th>
+                <th>Tarjeta</th>
+                <th>Nombre TH</th>
+                <th>Monto Denegación</th>
+                <th>Código Moneda</th>
+                <th>Moneda</th>
+                <th>Código Estatus</th>
+                <th>Estatus Tarjeta</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+    js(document).ready(function () {
+
+        js('#ExecuteRequest').on("click", function (event) {
+            event.preventDefault();
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+
+            var info = new Object();
+            info.tarjeta = js("#numeroTarjeta").val();
+            info.fechaInicial = js("#fechaInicial").val();
+            info.fechaFinal = js("#fechaFinal").val();
+
+            js.ajax({
+                type: "POST",
+                url: "@Url.Action("ConsultaDenegaciones", "ConsultaDenegaciones")",
+                dataType: "json",
+                data: { model: info },
+                success: function (data) {
+                    console.log(data);
+                    js("#tabla").removeClass("visually-hidden");
+                    js('#example').dataTable({
+                        destroy: true,
+                        responsive: true,
+                        scrollX: true,
+                        ordering: true,
+                        paging: true,
+                        language: {
+                            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+                        },
+                        data: data,
+                        columns: [
+                            { 'data': 'fechaTransaccion', 'render': function(d, t, r){ return d || '' }},
+                            { 'data': 'horaTransaccion' },
+                            { 'data': 'tipoTransaccion' },
+                            { 'data': 'sucursalComercio' },
+                            { 'data': 'nombreComercio' },
+                            { 'data': 'razonDenegacion' },
+                            { 'data': 'razonDenegacionDescripcion' },
+                            { 'data': 'numeroTarjeta' },
+                            { 'data': 'nombreTH' },
+                            { 'data': 'montoDenegacion' },
+                            { 'data': 'codigoMoneda' },
+                            { 'data': 'nombreMoneda' },
+                            { 'data': 'estadoTarjeta' },
+                            { 'data': 'descripcionEstadoTarjeta' }
+                        ]
+                    });
+                    js("#ExecuteRequest").attr('disabled', false);
+                    js("#spin").addClass("visually-hidden");
+                }
+            });
+
+        });
+
+        var $numeroTarjeta = js("#numeroTarjeta");
+
+        function validarFormulario() {
+            var numeroTarjeta = $numeroTarjeta.val().trim();
+            js("#ExecuteRequest").prop('disabled', numeroTarjeta.length < 16);
+        }
+
+        $numeroTarjeta.on('input', validarFormulario);
+
+        validarFormulario();
+    });
+</script>

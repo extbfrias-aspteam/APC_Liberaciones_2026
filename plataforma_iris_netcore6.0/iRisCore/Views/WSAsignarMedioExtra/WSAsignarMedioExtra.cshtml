@@ -1,0 +1,101 @@
+﻿
+@{
+    ViewData["Title"] = "WSAsignarMedioExtra";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h5>Asignar Medio de Disposición</h5>
+<div id="emailHelp" class="form-text">WebService que permitirá agregar un Medio de Disposición a la cuenta (Tarjeta Virtual como Principal).</div>
+<div class="card-box">
+    <div class="card-body">
+        <form class="">
+            <div class="row g-3">
+                <div class="col-sm-4">
+                    <input class="form-control" type="password" placeholder="Número de Tarjeta Principal" maxlength="16" name="numeroTarjeta" id="numeroTarjeta" aria-label="default input example">
+                </div>          
+                <div class="col-sm-4">
+                    <input class="form-control" type="text" placeholder="Número de Tarjeta Extra" maxlength="16" name="numeroTarjetaExtra" id="numeroTarjetaExtra" aria-label="default input example">
+                </div>
+                <div class="col-sm-4">
+                    <button type="submit" id="ExecuteRequest" class="btn btn-success">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Operación</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+
+    js(document).ready(function () {
+
+        js(document).on('click', '.confirm', function () {
+            var myH2 = document.getElementsByTagName('h2')[0].innerHTML;
+            if (myH2 == 'Exito') {
+                js("#Formulario")[0].reset();
+            }
+        });
+
+
+        js('#ExecuteRequest').on("click", function (event) {
+            event.preventDefault();
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+
+            var url = "@Url.Action("WSAsignarMedioExtra","WSAsignarMedioExtra")";
+
+            var info = new Object();
+            info.numeroTarjeta = js("#numeroTarjeta").val();
+            info.numeroTarjetaExtra = js("#numeroTarjetaExtra").val();          
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: {
+                    model: info, 
+                    tipoTarjeta: js("#tipoTarjeta").val()
+                },
+                success: function (data) {                   
+                    var numTar = "";
+                    if (js("#tipoTarjeta").val() == "V") {
+                        numTar = data.tarjetaExtra;
+                    } else {
+                        numTar = js("#numeroTarjetaExtra").val();
+                    }
+
+                    if (data.codigo != 0) {
+                        swal({
+                            title: "Error",
+                            text: data.mensaje,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+                    else {
+                        swal({
+                            title: "Exito",
+                            text: "Tarjeta Nueva Extra: " + numTar,
+                            type: "success",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+                    js("#ExecuteRequest").attr('disabled', false);
+                    js("#spin").addClass("visually-hidden");
+                }
+            });
+
+        });
+
+
+    });
+</script>

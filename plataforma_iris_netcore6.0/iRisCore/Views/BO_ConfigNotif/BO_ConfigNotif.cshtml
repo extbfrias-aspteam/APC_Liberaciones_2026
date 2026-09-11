@@ -1,0 +1,407 @@
+﻿@{
+    ViewData["Title"] = "BO_ConfigNotif";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var regexPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+}
+@section Estilos {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+}
+
+<h5>Configuración de envio de Saldos</h5>
+<div id="emailHelp" class="form-text">Esta vista permitirá configurar el envío del saldo de un participante</div>
+<div class="card-box">
+    <div class="card-body">
+        <form id="Formulario" class="">
+            <div class="row g-2">
+                <div class="col-sm-4">
+                    <select class="form-select" name="participantes" id="participantes" disabled>
+                        <option value="-1" selected disabled>Participante</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <select class="form-select" name="udns" id="udns" disabled>
+                        <option value="-1" selected disabled>UDN</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <select class="form-select" name="notificacion" id="notificacion">
+                        <option value="-1" selected disabled>Notificación</option>
+                        <option value="SMS">SMS</option>
+                        <option value="EMAIL">Email</option>
+                    </select>
+                </div>
+            </div>
+            <br />
+            <div class="row g-2" id="fechas">
+                <div class="col-sm-3">
+                    <input id="fchInicial" name="fchInicial" class="form-control" type="date" />
+                </div>
+                <div class="col-sm-3">
+                    <input id="fchFinal" name="fchFinal" class="form-control" type="date" />
+                </div>
+                <div class="col-sm-3">
+                    <input id="celular" type="tel" name="celular" class="form-control" placeholder="Celular" maxlength="10">
+                </div>
+                <div class="col-sm-3">
+                    <input id="correo" type="email" name="correo" class="form-control" placeholder="Correo" maxlength="250">
+                </div>
+            </div>
+            <br />
+            <div class="row g-2" id="tipMedioAcceso">
+                <div class="col-sm-3">
+                    <select class="form-select" name="periodicidad" id="periodicidad">
+                        <option value="-1" selected disabled>Periodicidad</option>
+                        <option value="1">1 hora</option>
+                        <option value="3">3 horas</option>
+                        <option value="6">6 horas</option>
+                        <option value="12">12 horas</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <select class="form-select" name="ejecucion" id="ejecucion">
+                        <option value="-1" selected disabled>Hora Inicio</option>
+                        <option value="0">00:00</option>
+                        <option value="1">01:00</option>
+                        <option value="2">02:00</option>
+                        <option value="3">03:00</option>
+                        <option value="4">04:00</option>
+                        <option value="5">05:00</option>
+                        <option value="6">06:00</option>
+                        <option value="7">07:00</option>
+                        <option value="8">08:00</option>
+                        <option value="9">09:00</option>
+                        <option value="10">10:00</option>
+                        <option value="11">11:00</option>
+                        <option value="12">12:00</option>
+                        <option value="13">13:00</option>
+                        <option value="14">14:00</option>
+                        <option value="15">15:00</option>
+                        <option value="16">16:00</option>
+                        <option value="17">17:00</option>
+                        <option value="18">18:00</option>
+                        <option value="19">19:00</option>
+                        <option value="20">20:00</option>
+                        <option value="21">21:00</option>
+                        <option value="22">22:00</option>
+                        <option value="23">23:00</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <button type="submit" id="ExecuteRequest" class="btn btn-success" disabled>
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Guardar
+                    </button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<br />
+
+<div class="row gx-5 " id="tabla" style="white-space: nowrap">
+    <table id="example" class="display" style="width: 100%;">
+        <thead>
+            <tr>
+                <th>Sel</th>
+                <th>idParticipante</th>
+                <th>Participante</th>
+                <th>idUDN</th>
+                <th>UDN</th>
+                <th>Notificación</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Final</th>
+                <th>Celular</th>
+                <th>Correo</th>
+                <th>Periodicidad</th>
+                <th>Inicio de Ejecución</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+
+    js(document).ready(function () {
+        var table = js('#example').DataTable({
+            destroy: true,
+            responsive: true,
+            scrollX: true,
+            ordering: true,
+            paging: true,
+            language: {
+                "url": "../lib/Spanish.json"
+            },
+            columns: [
+                {
+                    data: null,
+                    render: function (data, type, row, meta) {
+                        return '<input type="radio" name="selectRow" value="' + meta.row + '">';
+                    },
+                    orderable: false
+                },
+                { data: 'idPblu' },
+                { data: 'participante' },
+                { data: 'idUdn' },
+                { data: 'nombre' },
+                { data: 'tipoNotif' },
+                { data: 'fchInicial' },
+                { data: 'fchFinal' },
+                { data: 'telefono' },
+                { data: 'email' },
+                { data: 'periodicidad' },
+                { data: 'inicio' },
+            ],
+        });
+        fillDataTable();
+
+        function fillDataTable() {
+            js.ajax({
+                type: "GET",
+                url: '@Url.Action("GetConfigNotif", "BO_ConfigNotif")',
+                dataType: "json",
+                success: function (data) {
+                    if (data.result.codigo > 0) {
+                        table.clear();
+                        table.rows.add(data.result.data);
+                        table.draw();
+                    }
+                    else if (data.result.codigo == -1) {
+                        console.error('Error:', data.result.mensaje);
+                    }
+                    else {
+                        swal({
+                            title: "Error",
+                            text: data.result.mensaje,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        }
+
+        js("#participantes").attr('disabled', true);
+
+        js.ajax({
+            type: "GET",
+            url: '@Url.Action("GetParticipantes", "BO_ConfigNotif")',
+            dataType: "json",
+            success: function (data) {
+                if (data.result.codigo > 0) {
+                    var select = js('#participantes');
+                    select.empty();
+                    select.append('<option value="-1" selected disabled>Participante</option>');
+                    js.each(data.result.data, function (index, udn) {
+                        select.append(js('<option>', {
+                            value: udn.id,
+                            text: udn.descripcion.trim(),
+                        }));
+                    });
+
+                    js("#participantes").attr('disabled', false);
+                }
+                else if (data.result.codigo == -1) {
+                    console.error('Error:', data.result.mensaje);
+                }
+                else {
+                    swal({
+                        title: "Error",
+                        text: data.result.mensaje,
+                        type: "warning",
+                        showCancelButton: false,
+                        confirmButtonColor: "#DD6B55",
+                        closeOnConfirm: false
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+
+        function selectRow(row) {
+            clearFields();
+
+            table.$('tr.selected').removeClass('selected').find('input[type="radio"]').prop('checked', false);
+            js(row).addClass('selected').find('input[type="radio"]').prop('checked', true);
+            var rowData = table.row(row).data();
+            participantes.value = rowData.idPblu;
+            fillUdnsSelect(rowData.idPblu, rowData.idUdn);
+            fchInicial.value = new Date(rowData.fchInicial).toISOString().split("T")[0];
+            fchFinal.value = new Date(rowData.fchFinal).toISOString().split("T")[0];
+            celular.value = rowData.telefono;
+            correo.value = rowData.email;
+            notificacion.value = rowData.tipoNotif;
+            periodicidad.value = rowData.periodicidad;
+            ejecucion.value = rowData.inicio;
+
+            js("#ExecuteRequest").attr('disabled', false);
+            //console.log('Selected row data:', rowData);
+        }
+
+        function clearFields() {
+            fchInicial.value = "";
+            fchFinal.value = "";
+            celular.value = "";
+            correo.value = "";
+            notificacion.value = "-1";
+            periodicidad.value = "-1";
+            ejecucion.value = "-1";
+            table.$('tr.selected').removeClass('selected').find('input[type="radio"]').prop('checked', false); //Deselecciona la configuración que este seleccionada
+            js("#ExecuteRequest").attr('disabled', true);
+        }
+
+        function fillUdnsSelect(idParticipante, idUdnSelected) {
+            var udnSelect = js('#udns');
+            udnSelect.empty();
+            udnSelect.append('<option value="-1" selected disabled>UDN</option>');
+            udns.disabled = true;
+
+            js.ajax({
+                url: '@Url.Action("GetUdnsByParticipante", "BO_ConfigNotif")',
+                type: 'GET',
+                data: { id: idParticipante },
+                success: function (data) {
+                    if (data.result.codigo > 0) {
+                        js.each(data.result.data, function (index, udn) {
+                            udnSelect.append(js('<option>', {
+                                value: udn.idUdn,
+                                text: udn.descripcion.trim(),
+                                selected: idUdnSelected == udn.idUdn
+                            }));
+                        });
+                        udns.disabled = false;
+                    }
+                    else if (data.result.codigo == -1) {
+                        console.error('Error:', data.result.mensaje);
+                    }
+                    else {
+                        swal({
+                            title: "Error",
+                            text: data.result.mensaje,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        }
+
+        function validFields() {
+            var regex = new RegExp("@Html.Raw(regexPattern)");
+            js("#ExecuteRequest").attr('disabled', true);
+            if (fchInicial.value != "")
+                if (fchFinal.value != "")
+                    if (celular.value != "" && celular.value.length == 10)
+                        if (correo.value != "" && regex.test(correo.value))
+                            if (notificacion.value != "-1")
+                                if (periodicidad.value != "-1")
+                                    if (ejecucion.value != "-1")
+                                        js("#ExecuteRequest").attr('disabled', false);
+        }
+
+        function convertirFecha(fechaInput) {
+            let fecha = new Date(fechaInput);
+
+            let dia = fecha.getDate();
+            let mes = fecha.getMonth() + 1;
+            let año = fecha.getFullYear();
+
+            dia = dia < 10 ? '0' + dia : dia;
+            mes = mes < 10 ? '0' + mes : mes;
+            return dia + '/' + mes + '/' + año;
+        }
+
+        js('#example tbody').on('click', 'input[type="radio"]', function () {
+            var $row = js(this).closest('tr');
+            selectRow($row);
+        });
+
+        js('#example tbody').on('click', 'tr', function () {
+            selectRow(this);
+        });
+
+        js('#participantes').on('change', function () {
+            var participanteId = js(this).val();
+            clearFields();
+            fillUdnsSelect(participanteId);
+        });
+
+        js('#udns').on('change', function () {
+            clearFields();
+        });
+
+        js('#notificacion, #periodicidad, #ejecucion, #fchInicial, #fchFinal').on('change', function () { validFields(); });
+
+        js('#celular, #correo').on('keyup', function () { validFields(); });
+
+        js('#ExecuteRequest').on('click', function () {
+            event.preventDefault();
+
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+
+            var data = new Object();
+            data.idPblu = participantes.value;
+            data.idUdn = udns.value;
+            data.fchInicial = convertirFecha(fchInicial.value);
+            data.fchFinal = convertirFecha(fchFinal.value);
+            data.telefono = celular.value;
+            data.email = correo.value;
+            data.tipoNotif = notificacion.value;
+            data.periodicidad = periodicidad.value;
+            data.horaIniNot = ejecucion.value;
+
+            js.ajax({
+                type: "POST",
+                url: '@Url.Action("SetConfigNotif", "BO_ConfigNotif")',
+                dataType: "json",
+                data: data,
+                success: function (data) {
+                    js("#spin").addClass("visually-hidden");
+                    js("#ExecuteRequest").attr('disabled', false);
+
+                    if (data.result.codigo == 1) {
+                        participantes.value = udns.value = "-1";
+                        clearFields();
+                        fillDataTable();
+                    }
+                    else if (data.result.codigo == -1) {
+                        console.error('Error:', data.result.mensaje);
+                    }
+                    else {
+                        swal({
+                            title: "Error",
+                            text: data.result.mensaje,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    });
+</script>

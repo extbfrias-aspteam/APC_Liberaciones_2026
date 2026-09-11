@@ -1,0 +1,85 @@
+﻿
+@{
+    ViewData["Title"] = "Login iRis";
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+}
+
+<div class="login-page bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 offset-lg-1">                
+                <h2 class="fs-1"></h2>
+                <div class="bg-white shadow rounded">                    
+                    <div class="row">                       
+                        <div class="col-md-7 pe-0">                         
+                            <div class="form-left h-100 py-5 px-5">
+                                <form id="tmForm" role="form" asp-controller="Account" asp-action="Login" method="post" class="row g-4">
+                                    <div class="col-12">
+                                        
+                                        <center><h6 class="fs-3"> <img src="~/images/logo_banderasinmarco.png" width="15%" style = "margin-bottom : 20px;" /> Login <i class="fa fa-eye"></i></h6></center>
+                                        <label>Usuario<span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <div class="input-group-text"><i class="fa fa-user"></i></div>
+                                            <input type="text" name="usuario" class="form-control" placeholder="Ingrese su usuario">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label>Contraseña<span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <div class="input-group-text"><i class="fa fa-lock"></i></div>
+                                            <input type="password" class="form-control" name="contrasena" placeholder="Ingrese su contraseña">
+                                        </div>
+                                    </div>
+                                    
+
+                                    <div class="col-12">
+                                        <label>Plataforma<span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <div class="input-group-text"><i class="fa fa-check-circle"></i></div>
+                                            <select class="form-select" name="plataforma" id="plataforma" aria-label="Default select example">
+                                            @if (ViewBag.Plataforma != null)
+                                            {
+                                                List<ModelPlataformas> oProducto = (List<ModelPlataformas>)ViewBag.Plataforma;
+                                                foreach (ModelPlataformas item in oProducto)
+                                                {
+                                                    <option value=@item.IdPlataforma>@item.NombrePlataforma</option>
+                                                }
+                                            }
+                                            </select>                                          
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group text-center m-t-40">
+                                        <div class="col-xs-12 text text-danger">
+                                            @TempData["ErrorMsg"]
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-secondary px-4 float-end mt-4"> Accesar</button>
+                                    </div>
+                                </form>
+                               
+                            </div>
+                           
+                        </div>
+                        <div class="col-md-5 ps-0 d-none d-md-block">
+                            <div class="form-right h-100 text-white text-center pt-5" style="background-image: url('../images/contact-center-support.jpg');background-repeat:no-repeat; background-size:cover; background-position:center center;  border-radius: 0px 10px 10px 0px;">
+                     
+                            </div>
+                        </div>
+                     
+                    </div>                  
+                </div>
+                <p class="text-end text-secondary mt-3">Soporte a la Operación - iRis Core v2.2.0-1  </p>
+            </div>           
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Bootstrap JS -->
+
+

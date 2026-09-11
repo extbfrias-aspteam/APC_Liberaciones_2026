@@ -1,0 +1,101 @@
+﻿
+@{
+    ViewData["Title"] = "ProcesoSolicitudTarjeta";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Estilos {
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+}
+
+<h5>Liberar Solicitud de Tarjeta Física</h5>
+<div id="emailHelp" class="form-text">Proceso para la liberación de las solicitud de tarjeta a domicilio después de haber aplicado la devolución final de la tarjeta.</div>
+
+<div class="card-box">
+    <h5 class="card-title">Cuenta del titular</h5>
+    <div class="card-body">
+
+        <form>
+            <div class="row g-4">
+                <div class="col-sm-4">
+                    <input name="cuentaASP" id="cuentaASP" class="form-control" type="text" placeholder="Cuenta ASP" />
+                </div>
+
+                <div class="col-sm-2">
+                    <button type="submit" id="ExecuteRequest" class="btn btn-success">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Liberar Solicitud
+                    </button>
+                </div>
+            </div>
+            
+        </form>
+    </div>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+<script src="~/lib/jquery-validation/dist/additional-methods.js"></script>
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+    js(document).ready(function () {   
+
+       
+        //-- Busqueda para el titular de la cuenta ---
+        js('#ExecuteRequest').on("click", function (event) {
+            event.preventDefault();
+
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+
+            var url = "@Url.Action("ProcesoSolicitudTarjeta", "ProcesoSolicitudTarjeta")";
+
+             var data = new Object();
+                 data.cuentaASP = js("#cuentaASP").val();
+           
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: data,
+                success: function (data) {
+
+                    console.log(data);
+
+                    if (data.codigo != 0) {
+                        swal({
+                            title: "Error",
+                            text: data.mensaje,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });                     
+                      
+                    }
+                    else {
+                        swal({
+                            title: "Exito",
+                            text: data.mensaje,
+                            type: "success",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                        js("#cuentaASP").val("");                      
+                    }
+                    js("#ExecuteRequest").attr('disabled', false);
+                   
+                },
+                complete: function () {
+                    js("#spin").addClass("visually-hidden");
+                }
+            });
+        });
+
+    })
+
+
+</script>

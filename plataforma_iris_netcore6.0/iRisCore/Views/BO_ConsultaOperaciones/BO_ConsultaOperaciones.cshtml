@@ -1,0 +1,274 @@
+﻿@{
+    ViewData["Title"] = "ConsultaOperaciones";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Estilos {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css" />
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <style>
+        .dt-button {
+            display: none !important;
+            /* Oculta el botón de exportación */
+        }
+    </style>
+}
+
+<h5>Consulta de Operaciones IN/OUT</h5>
+<div class="form-text">Visualización de la Información de la Operaciones.</div>
+<div class="card-box">
+    <div class="card-body">
+        <form>
+            <div class="row g-2">
+                <div class="col-sm-3">
+                    <select class="form-select" name="tipoConsulta" id="tipoConsulta">
+                        <option value="-1" selected disabled>Tipo Consulta</option>
+                        <option value="1">Por Operación</option>
+                        <option value="2">Masiva</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <select class="form-select" name="tipoOperacion" id="tipoOperacion">
+                        <option selected>Seleccione Operación</option>
+                        <option value="1">SPEIN IN</option>
+                        <option value="2"> SPEIN OUT</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <input name="fch" id="fch" class="form-control" type="date" />
+                </div>
+                <div class="col-sm-3" id="cveRastreoDiv">
+                    <input class="form-control" type="text" name="cveRastreo" id="cveRastreo" placeholder="Clave de Rastreo">
+                </div>
+                <div class="col-sm-3" id="fileInputDiv" style="display:none;">
+                    <input class="form-control" type="file" name="txtFile" id="txtFile" accept=".txt">
+                </div>
+                <div class="col-sm-3">
+                    <button type="submit" id="ExecuteRequest" class="btn btn-success">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Operación
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12 d-flex justify-content-end align-items-center">
+        <a href="#" id="downloadCsv">Descargar Resultado</a>
+    </div>
+</div>
+
+<div class="row gx-5" id="tabla" style="white-space: nowrap">
+    <table id="example" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>Fecha de Operación</th>
+                <th>Fecha de Liquidación</th>
+                <th>Clave de rastreo</th>
+                <th>Clave de rastreo dos</th>
+                <th>Banco Emisor</th>
+                <th>RFC Origen</th>
+                <th>Clabe Origen</th>
+                <th>Banco Beneficiario</th>
+                <th>RFC Destino</th>
+                <th>Clabe Beneficiaria</th>
+                <th>Monto</th>
+                <th>Concepto del Pago</th>
+                <th>Referencia</th>
+                <th>Estatus de la Operación</th>
+                <th>Motivo de rechazo</th>
+                <th>UDN</th>
+                <th>Folio Paquete</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.1.0/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.1.0/js/buttons.html5.min.js"></script>
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+
+    js(document).ready(function () {
+        var table = js('#example').DataTable({
+            destroy: true,
+            responsive: true,
+            scrollX: true,
+            ordering: true,
+            paging: true,
+            language: {
+                "url": "../lib/Spanish.json"
+            },
+            columns: [
+                { data: 'fchOperacion' },
+                { data: 'fchLiquidacion' },
+                { data: 'cveRastreo' },
+                { data: 'cveRastreo2' },
+                { data: 'bancoEmisor' },
+                { data: 'rfcOrigen' },
+                { data: 'cbeOrigen' },
+                { data: 'bancoBeneficiario' },
+                { data: 'rfcDestino' },
+                { data: 'cbeBeneficiaria' },
+                { data: 'monto' },
+                { data: 'conceptoPago' },
+                { data: 'referencia' },
+                { data: 'estatusOperacion' },
+                { data: 'motivoRechazo' },
+                { data: 'udn' },
+                { data: 'folioPaquete' },
+            ],
+            dom: 'lfrtipB', // Incluye el selector de longitud de registros (l), filtro (f), información (i), paginación (p) y botones (B)
+            buttons: [
+                {
+                    extend: 'csvHtml5',
+                    text: 'Descargar resultado',
+                    exportOptions: {
+                        modifier: {
+                            search: 'applied', // Exportar solo los datos filtrados
+                            order: 'applied', // Exportar en el orden aplicado
+                            page: 'all' // Exportar todos los datos sin paginación
+                        },
+                        format: {
+                            body: (data, row, column, node) => {
+                                // Forzamos el formato de texto para valores numéricos largos
+                                return typeof data === 'number' && data > 999999
+                                    ? `"${data.toString()}"`
+                                    : data;
+                            }
+                        }
+                    }
+                }
+            ],
+        });
+
+        function convertirFecha(fechaInput) {
+            let fecha = new Date(fechaInput + "T00:00:00");
+
+            let dia = fecha.getDate();
+            let mes = fecha.getMonth() + 1;
+            let año = fecha.getFullYear();
+
+            dia = dia < 10 ? '0' + dia : dia;
+            mes = mes < 10 ? '0' + mes : mes;
+            return dia + '/' + mes + '/' + año;
+        }
+
+        function clearFields() {
+            fch.value = "";
+            tipoConsulta.value = "-1";
+            tipoOperacion.value = "-1";
+            js("#ExecuteRequest").attr('disabled', true);
+        }
+
+        // Leer archivo .txt línea por línea y llenar objeto
+        function readFile(file) {
+            return new Promise((resolve, reject) => {
+                if (!file) {
+                    reject('No file provided');
+                }
+
+                if (file.type !== 'text/plain') {
+                    reject('Invalid file type, please select a .txt file');
+                }
+
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    var text = e.target.result;
+                    var lines = text.split('\n').map(line => line.trim()).filter(line => line !== "");
+
+                    resolve(lines);
+                };
+
+                reader.onerror = function (e) {
+                    reject(e);
+                };
+
+                reader.readAsText(file);
+            });
+        }
+
+        js('#tipoConsulta').on('change', function () {
+            var tipoConsulta = js(this).val();
+
+            if (tipoConsulta == '2') {  // Masiva
+                js('#cveRastreoDiv').hide();     // Ocultar campo de Clave de Rastreo
+                js('#fileInputDiv').show();      // Mostrar campo de carga de archivo
+            } else {
+                js('#cveRastreoDiv').show();     // Mostrar campo de Clave de Rastreo
+                js('#fileInputDiv').hide();      // Ocultar campo de carga de archivo
+            }
+        });
+
+        js('#ExecuteRequest').on('click', async function () {
+            event.preventDefault();
+
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+
+            var tipoConsulta = js('#tipoConsulta').val();
+            var data = new Object();
+            data.fecha = fch.value;
+            data.tipoOperacion = tipoOperacion.value;
+
+            if (tipoConsulta == '2') { // Masiva
+                var file = js('#txtFile')[0].files[0];
+                if (!file) {
+                    alert('Por favor selecciona un archivo .txt.');
+                    return;
+                }
+                data.cveRastreo = await readFile(file);
+            } else { // Por Operación
+                data.cveRastreo = [js('#cveRastreo').val()];
+            }
+
+            js.ajax({
+                type: "POST",
+                url: '@Url.Action("GetOperaciones", "BO_ConsultaOperaciones")',
+                dataType: "json",
+                data: data,
+                success: function (data) {
+                    js("#spin").addClass("visually-hidden");
+                    js("#ExecuteRequest").attr('disabled', false);
+
+                    if (data.result.codigo == 1) {
+                        //clearFields();
+                        table.clear();
+                        table.rows.add(data.result.data);
+                        table.draw();
+                    }
+                    else if (data.result.codigo == -1) {
+                        console.error('Error:', data.result.mensaje);
+                    }
+                    else {
+                        swal({
+                            title: "Error",
+                            text: data.result.mensaje,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+
+        js('#downloadCsv').on('click', function (e) {
+            e.preventDefault();
+            table.button('.buttons-csv').trigger();
+        });
+    });
+</script>

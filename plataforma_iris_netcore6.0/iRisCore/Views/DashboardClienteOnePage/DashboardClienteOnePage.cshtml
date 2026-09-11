@@ -1,0 +1,351 @@
+﻿@using iRisModel;
+@{
+    ViewData["Title"] = "Dashboard OnePage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Estilos {
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+@*     <link href="~/css/icons.css" rel="stylesheet" /> *@
+}
+
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Nuevo Cliente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Nombre Comercial" maxlength="60">
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="razonSocial" id="razonSocial" placeholder="Razón Social" maxlength="100">
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="rfc" id="rfc" placeholder="RFC" maxlength="15">
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="direccionFiscal" id="direccionFiscal" placeholder="Dirección Fiscal" maxlength="100">
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <select class="form-select" name="idIdioma" id="idIdioma" aria-label="Default select example">
+                                <option selected>Seleccione Idioma</option>
+                                @if (ViewBag.Idioma != null)
+                                {
+                                    List<IdiomaModel> oNivel = (List<IdiomaModel>)ViewBag.Idioma;
+                                    foreach (IdiomaModel item in oNivel)
+                                    {
+                                        <option value=@item.idIdioma>@item.descripcion</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="horarioFinal" id="horarioFinal" placeholder="Horario de Atención" maxlength="60">
+                        </div>
+                    </div>
+
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="tieneTraductor" id="tieneTraductor">
+                                <label class="form-check-label" for="flexCheckDefault">
+                                    Traductor
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="numeroCliente" id="numeroCliente" placeholder="Número de Cliente" maxlength="10">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="numeroCuenta" id="numeroCuenta" placeholder="Número de Cuenta" maxlength="10">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="cuentaClabe" id="cuentaClabe" placeholder="Cuenta CLABE" maxlength="18">
+                        </div>
+                    </div>
+                </div>
+                <br />
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <div class="form-group">
+                                <select class="form-select" name="tipoCliente" id="tipoCliente" aria-label="Default select example">
+                                    <option selected>Tipo de Cliente</option>
+                                    @if (ViewBag.TipoCliente != null)
+                                    {
+                                        List<TipoClienteSpeiModel> oNivel = (List<TipoClienteSpeiModel>)ViewBag.TipoCliente;
+                                        foreach (TipoClienteSpeiModel item in oNivel)
+                                        {
+                                            <option value=@item.idTipoCliente>@item.descripcionTipoCliente</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <select class="form-select" name="estatusCliente" id="estatusCliente" aria-label="Default select example">
+                                <option selected>Estatus</option>
+                                <option value="OPE">Operando</option>
+                                <option value="IMP">Implementación</option>
+                                <option value="INA">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="modeloNegocio" id="modeloNegocio" placeholder="URL Modelo de Negocio" maxlength="100">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="ExecuteSaveInfo">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<h5>Dashboard OnePage B2B</h5>
+
+
+<button type="button" id="ExecuteNew" data-bs-toggle="modal" data-bs-target="#staticBackdrop" class="btn btn-success waves-effect waves-light">+ Nuevo Participante Spei</button>
+<button type="button" id="ExecuteExport" class="btn btn-warning waves-effect waves-light">Exportar XLS</button>
+<p />
+@* <div class="card-box">
+    <div class="row gx-5" id="tabla">
+
+        <table id="example" class="display" style="width:100%">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>RFC</th>
+                    <th>Nombre</th>
+                    <th>Cuenta Clabe</th>
+                    <th>Producto</th>
+                    <th>Estatus</th>
+                    <th></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div> *@
+
+<div class='row' id="divcolectivas"></div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+    js(document).ready(function () {
+
+        $('[data-toggle="tooltip"]').tooltip({
+            placement: 'top'
+        });
+
+
+
+        var url = "@Url.Action("getClientesB2B","DashboardClienteOnePage")";
+        js.ajax({
+            type: "POST",
+            url: url,
+            dataType: "json",
+            data: null,
+            success: function (data) {
+
+                console.log(data);
+
+                var div = "";
+                for (i = 0; i < data.length; i++) {
+                    div = div + "<div class='col-lg-4'>\n\
+                                        <div class='card-box  p-0' >\n\
+                                        <div class='profile-widget text-center' >\n\
+                                            <div class='bg-danger bg-profile' > </div>\n\
+                                                    <h5>" + data[i].nombre + "</h5>\n\
+                                                    <i class='fa fa-map-marker' > </i><small> " + data[i].direccionFiscal + "</small>\n\
+                                                        <p class='m-t-10 text-muted p-20'><strong>" + data[i].rfc + "</strong></p>\n\
+                                        </div>\n\
+                                        <ul class='list-unstyled transaction-list'>\n\
+                                                <li>\n\
+                                                        <i class='ti-download text-success'></i>\n\
+                                                        <span class='tran-text'>Tipo de Cliente</span>\n\
+                                                        <span class='pull-right' style='padding-right:25px;'>" + data[i].descripcionTipoCliente + "</span>\n\
+                                                </li>\n\
+                        		    	        <li>\n\
+                        		    		        <i class='ti-download text-success'></i>\n\
+                        		    		        <span class='tran-text'>Cliente</span>\n\
+                                                    <span class='pull-right' style='padding-right:25px;'>" + data[i].numeroCliente + "</span>\n\
+                              		            </li>\n\
+                                                <li>\n\
+                                                    <i class='ti-download text-success'></i>\n\
+                                                    <span class='tran-text'>Cuenta</span>\n\
+                                                    <span class='pull-right' style='padding-right:25px;'>" + data[i].numeroCuenta + "</span>\n\
+                                                    </li>\n\
+                                                <li>\n\
+                                                    <i class='ti-download text-success'></i>\n\
+                                                    <span class='tran-text'>CLABE</span>\n\
+                                                    <span class='pull-right' style='padding-right:25px;'>" + data[i].cuentaClabe + "</span>\n\
+                                                </li>\n\
+                                                <li>\n\
+                                                    <i class='ti-download text-success'></i>\n\
+                                                    <span class='tran-text'>Idioma</span>\n\
+                                                    <span class='pull-right' style='padding-right:25px;'>" + data[i].numeroCliente + "</span>\n\
+                                                </li>\n\
+                                                <li>\n\
+                        		    		        <i class='ti-download text-success'></i>\n\
+                        		    		        <span class='tran-text'>Horario de atención</span>\n\
+                                                    <span class='pull-right' style='padding-right:25px;'>" + data[i].horarioAtencion + "</span>\n\
+                              		            </li>\n\
+                                        </ul>\n\
+                                        <div class='feature-card-footer'>\n\
+                                                <a href ='/DashboardClienteOnePage/DashboardB2B/id=" + data[i].idCliente + "' >Detalles...</a>\n\
+                                        </div>\n\
+                                    </div>\n\
+                                </div>";
+
+                       $("#divcolectivas").html(div);
+                }
+
+
+
+
+
+                // js('#example').dataTable({
+                //     destroy: true,
+                //     responsive: true,
+                //     scrollX: true,
+                //     ordering: true,
+                //     paging: true,
+                //     language: {
+                //         "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+                //     },
+                //     data: data,
+                //     columns: [
+                //         {
+                //             'data': null, title: '', wrap: true, "render": function (item) {
+                //                 return '<i  class="fa fa-dashboard dashboard" style="cursor: pointer" data-toggle="tooltip" data-placement="left" title="Dashboard"><span class="visually-hidden"> ' + item.idCliente + ' </span> </i>';
+                //             }
+                //         },
+
+                //         { 'data': 'rfc' },
+                //         { 'data': 'nombre' },
+                //         { 'data': 'cuentaClabe' },
+                //         { 'data': 'descripcionTipoCliente' },
+                //         { 'data': 'estatusCliente' },
+                //         {
+                //             'data': null, title: '', wrap: true, "render": function (item) {
+                //                 return '<i  class="fa fa-book" style="cursor: pointer" data-toggle="tooltip" data-placement="left" title="Contrato"><span class="visually-hidden"> ' + item.idCliente + ' </span> </i>' +
+                //                     ' &nbsp<i  class="fa fa-cogs" style="cursor: pointer" data-toggle="tooltip" data-placement="left" title="Condiciones"><span class="visually-hidden"> ' + item.idCliente + ' </span> </i>' +
+                //                     ' &nbsp<i  class="fa fa-code-fork" style="cursor: pointer" data-toggle="tooltip" data-placement="left" title="Web Services"><span class="visually-hidden"> ' + item.idCliente + ' </span> </i>' +
+                //                     ' &nbsp<i  class="fa fa-folder" style="cursor: pointer" data-toggle="tooltip" data-placement="left" title="Documentación"><span class="visually-hidden"> ' + item.idCliente + ' </span> </i>' +
+                //                     ' &nbsp<i  class="fa fa-users" style="cursor: pointer" data-toggle="tooltip" data-placement="left" title="Contactos"><span class="visually-hidden"> ' + item.idCliente + ' </span> </i>';
+
+                //             }
+                //         }
+                //     ]
+                // });
+            }
+        });
+
+
+        js(document).on('click', '.dashboard', function () {
+            var id = $(this).parent().text().trim();
+            var url = "/DashboardClienteOnePage/DSB2B?id=" + id;
+            window.location.href = url;
+
+
+
+            //var url = "Url.Action("DSB2B","DashboardClienteOnePage")";
+            //js.ajax({
+            //    type: "POST",
+            //    url: url,
+            //    dataType: "json",
+            //    data: { numCliente : id},
+            //    success: function (data) {
+            //        console.log(data);
+            //    }
+            //});
+        });
+
+        js('#ExecuteSaveInfo').on("click", function (event) {
+            event.preventDefault();
+
+            var url = "@Url.Action("SaveClienteB2B","DashboardClienteOnePage")";
+
+            var data = new Object();
+            data.Rfc = js("#rfc").val();
+            data.razonSocial = js("#razonSocial").val();
+            data.Nombre = js("#nombre").val();
+            data.DireccionFiscal = js("#direccionFiscal").val();
+            data.idIdioma = js("#idIdioma").val();
+            data.tieneTraductor = js("#tieneTraductor").val();
+            data.horarioFinal = js("#horarioFinal").val();
+            data.numeroCliente = js("#numeroCliente").val();
+            data.numeroCuenta = js("#numeroCuenta").val();
+            data.cuentaClabe = js("#cuentaClabe").val();
+            data.idTipoCliente = js("#tipoCliente").val();
+            data.estatusCliente = js("#estatusCliente").val();
+            data.modeloNegocio = js("#modeloNegocio").val();
+            console.log(data);
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: data,
+                success: function (data) {
+                    console.log(data);
+
+
+                }
+            });
+
+        });
+
+    });
+
+</script>
+

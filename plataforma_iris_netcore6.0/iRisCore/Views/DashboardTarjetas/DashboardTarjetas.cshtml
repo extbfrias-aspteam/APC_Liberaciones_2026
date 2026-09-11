@@ -1,0 +1,114 @@
+﻿@using iRisModel;
+
+@{
+    ViewData["Title"] = "DashboardTarjetas";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Estilos {
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+}
+
+<h5>Inventario de Tarjetas</h5>
+<div id="emailHelp" class="form-text"> Módulo que permitirá conocer la información de las Tarjetas Físicas/Virtuales asignadas a una empresa (B2B)</div>
+<div class="card-box">
+    <div class="card-body">
+        <form>
+            <div class="row g-1">
+                <div class="col-sm-6">
+                    <select class="form-select" name="empresaId" id="empresaId" aria-label="Default select example">
+                        <option selected>Seleccione la empresa</option>
+                        @if (ViewBag.Empresas != null)
+                        {
+                            List<EmpresaModel> oEmpresa = (List<EmpresaModel>)ViewBag.Empresas;
+                            foreach (EmpresaModel item in oEmpresa)
+                            {
+                                <option value=@item.id>@item.nombre</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-sm-6">
+                    <button type="submit" id="ExecuteRequest" class="btn btn-success">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Operación
+                    </button>
+                    <a class="visually-hidden" id="urlExcel" href="@Url.Action("GenerateExcel","DashBoardTarjetas")">Download Excel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<br />
+
+<div class="row gx-5 visually-hidden" id="tabla">
+
+    <table id="example" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>PAN</th>
+                <th>Tipo Tarjeta</th>
+                <th>Estatus</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+
+    js(document).ready(function () {
+
+        js('#ExecuteRequest').on("click", function (event) {
+            event.preventDefault();
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+
+            var url = "@Url.Action("DashBoardTarjetas","DashBoardTarjetas")";
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: { empresaId: js("#empresaId").val() },
+                success: function (data) {
+
+                    js("#tabla").removeClass("visually-hidden");
+                    js('#example').dataTable({                        
+                        destroy: true,
+                        responsive: true,
+                        scrollX: true,
+                        ordering: true,
+                        paging: true,
+                        language: {
+                            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+                        },
+                        data: data,
+                        columns: [
+                            { 'data': 'pan' },
+                            { 'data': 'tipoTarjeta' },
+                            { 'data': 'estatus' }
+                        ]                       
+                    });
+                    js("#ExecuteRequest").attr('disabled', false);
+                    js("#spin").addClass("visually-hidden");
+                    js("#urlExcel").removeClass("visually-hidden");
+                }
+            });
+
+        });
+
+    });
+</script>
+
+
+
+

@@ -1,0 +1,142 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="ExcelFiles\**" />
+    <Compile Remove="Logs\**" />
+    <Compile Remove="Logs_Seg\**" />
+    <Compile Remove="wwwroot\lib\datatables\**" />
+    <Content Remove="ExcelFiles\**" />
+    <Content Remove="Logs\**" />
+    <Content Remove="Logs_Seg\**" />
+    <Content Remove="wwwroot\lib\datatables\**" />
+    <EmbeddedResource Remove="ExcelFiles\**" />
+    <EmbeddedResource Remove="Logs\**" />
+    <EmbeddedResource Remove="Logs_Seg\**" />
+    <EmbeddedResource Remove="wwwroot\lib\datatables\**" />
+    <None Remove="ExcelFiles\**" />
+    <None Remove="Logs\**" />
+    <None Remove="Logs_Seg\**" />
+    <None Remove="wwwroot\lib\datatables\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Views\Shared\_LayoutNewLogin.cshtml" />
+    <Content Remove="wwwroot\css\jquery.dataTables.min.css" />
+    <Content Remove="wwwroot\images\CC2.jpg" />
+    <Content Remove="wwwroot\images\CC3.jpg" />
+    <Content Remove="wwwroot\images\CC4.jpg" />
+    <Content Remove="wwwroot\images\CC5.jpg" />
+    <Content Remove="wwwroot\images\CC6.jpg" />
+    <Content Remove="wwwroot\images\CC7.jpg" />
+    <Content Remove="wwwroot\images\new1.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Data\OnePageClientes" />
+    <None Remove="Data\OnePageClientes.db" />
+    <None Remove="ExcelTemplate\MovimientoTarjeta.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="bootstrapvalidator" Version="1.0.0" />
+    <PackageReference Include="EPPlus" Version="7.0.7" />
+    <PackageReference Include="Fingers10.ExcelExport" Version="3.0.1" />
+    <PackageReference Include="itext7" Version="8.0.4" />
+    <PackageReference Include="itext7.bouncy-castle-adapter" Version="8.0.4" />
+    <PackageReference Include="jQuery" Version="3.7.0" />
+    <PackageReference Include="jQuery.Validation" Version="1.19.5" />
+    <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.2.9" />
+    <PackageReference Include="Microsoft.AspNet.WebPages" Version="3.2.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.32" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.11" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.16" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="RestSharp" Version="110.2.0" />
+    <PackageReference Include="System.Text.Json" Version="7.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\datepicker\" />
+    <Folder Include="wwwroot\Uploads\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Views\BO_ConfigFormularios\BO_ConfigFormularios.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\iRisLog\iRisLog.csproj" />
+    <ProjectReference Include="..\iRisModel\iRisModel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="C:\Users\ASP USUARIO\.nuget\packages\datatables.net-bs5\1.13.4\contentFiles\any\any\wwwroot\css\dataTables.bootstrap5.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\css\pages.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\css\site.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\css\style.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\css\sweetalert.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\images\CallCenter-ASP.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\images\Card-ASP.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\images\cardBank.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\images\cardMC.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\images\Dashboard-ASP.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\images\digitalCard.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\images\Internet.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\images\iris.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\images\login.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\images\logo_banderasinmarco.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\images\operacion-img.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\images\Reportes-ASP.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\images\Soporte-ASP.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\js\jquery.sweet-alert.init.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\js\sweetalert.min.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,22 @@
+# User-specific files
+*.suo
+
+# Visual Studio 2015 cache/options directory
+.vs/
+
+/iRisCore/.vs
+/iRisCore/obj
+/iRisCore/bin
+/iRisCore/Properties
+/iRisCore/Logs/
+/iRisCore/Logs_Seg/
+
+/iRisCoreApis/obj
+/iRisCoreApis/bin
+
+/iRisLog/bin
+/iRisLog/obj
+
+/iRisModel/bin
+/iRisModel/obj
+

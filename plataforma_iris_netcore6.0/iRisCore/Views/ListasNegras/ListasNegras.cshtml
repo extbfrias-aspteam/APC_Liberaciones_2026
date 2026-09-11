@@ -1,0 +1,718 @@
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor
+@using Microsoft.AspNetCore.Http
+@using iRisModel
+@{
+    var ipFromClaim = (httpContextAccessor.HttpContext.User?.Claims?.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Uri)?.Value) ?? "";
+}
+@{
+    ViewData["Title"] = "ListasNegras";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Estilos {
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+}
+
+<h5>Listas Negras</h5>
+<div id="emailHelp" class="form-text">Información de las listas negras.</div>
+<div id="cardProtejido" style="display: none;">
+    <div class="card-box">
+        <div class="card-body">
+           
+            <form>
+                <div class="row g-3">
+                    <div class="col-sm-3">
+                        <select class="form-select" name="tipoTarjeta" id="tipoTarjeta" aria-label="Default select example">
+                            <option value="" selected>Seleccione el tipo</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-3">
+                        <input class="form-control"
+                               type="text"
+                               name="numeroTarjeta"
+                               id="numeroTarjeta"
+                               placeholder="Seleccióna un tipo"
+                               inputmode="numeric"
+                               pattern="\d*"
+                               maxlength="18"
+                               aria-label="default input example"
+                               autocomplete="off">
+                    </div>
+                    <div class="col-sm-3">
+                        <input class="form-control"
+                               type="text"
+                               name="motivoAlta"
+                               id="motivoAlta"
+                               placeholder="Motivo"                             
+                               autocomplete="off">
+                    </div>
+                    <div class="col-sm-3">
+                        <button type="submit" class="btn btn-success" id="ExecuteRequest">
+                            <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                            Ejecutar Operación
+                        </button>
+                    </div>
+                    
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="card-box">
+
+
+
+        <div class="card-body">
+
+
+            <table id="example2" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Valor</th>
+                        <th>Tipo</th>
+                        <th>Estatus</th>
+                        <th>Motivo Alta</th>
+                        <th>Motivo Baja</th>
+                        <th>Acciones</th>
+                      
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal LOGIN para Listas Negras -->
+<div class="modal fade" id="modalLoginListasNegras" tabindex="-1" aria-labelledby="modalLoginLNLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLoginLNLabel">Autenticación requerida</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="usuarioListasNegras" class="form-label">Usuario</label>
+                    <input type="text" class="form-control" id="usuarioListasNegras" autocomplete="username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="passwordListasNegras" class="form-label">Contraseña</label>
+                    <input type="password" class="form-control" id="passwordListasNegras" autocomplete="current-password" required>
+                </div>
+                <div id="loginLNError" class="text-danger small"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btnCancelarLoginLN">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnAceptarLoginLN">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal LOGIN para Listas Negras bajas con codigo -->
+<div class="modal fade" id="modalLoginListasNegrasBajas" tabindex="-1" aria-labelledby="modalLoginLNLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLoginLNLabelBajas">Autenticación requerida</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form autocomplete="on">
+                    <div class="mb-3">
+                        <label for="usuarioListasNegrasBajas" class="form-label">Usuario</label>
+                        <input type="text" class="form-control" id="usuarioListasNegrasBajas" name="username" autocomplete="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="passwordListasNegrasBajas" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="passwordListasNegrasBajas" name="password" autocomplete="current-password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="codigoListasNegrasBajas" class="form-label">Código</label>
+                        <input type="text" class="form-control" id="codigoListasNegrasBajas" name="codigo" autocomplete="off" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btnCancelarLoginLNBajas">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnAceptarLoginLNBajas">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de baja para autorizacion  -->
+
+<div class="modal fade" id="modalbajaPorautorizacion" tabindex="-1" aria-labelledby="modalbajaPorautorizacion" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalbajaPorautorizacion">Baja </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form autocomplete="on">
+                    <div class="mb-3">
+                        <label for="motiNegrasBajas" class="form-label">Motivo</label>
+                        <input type="text" class="form-control" id="motivobajaPorautorizacion" name="motivo" required>
+                    </div>
+                    
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btnCancelarbajaPorautorizacion">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnbajaPorautorizacion">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+
+
+
+
+<script type="text/javascript">
+        var usuarioActual = '@(httpContextAccessor.HttpContext.Session.GetString("UserName") ?? "")';
+        var clientIp = '@ipFromClaim';
+      
+    $(document).ready(function () {
+        $('#modalLoginListasNegras').modal('show');
+    });
+
+        let permisoValdio = null
+        $(document).ready(function () {
+            // Abre modal de login y oculta el contenido protegido
+            function showLoginModal() {
+                $('#usuarioListasNegras').val('');
+                $('#passwordListasNegras').val('');
+                $('#loginLNError').text('');
+                $('#modalLoginListasNegras').modal('show');
+                $('#cardProtejido').hide(); // tu div/card/table a proteger
+            }
+            showLoginModal();
+            // Al autenticar...
+            $('#btnAceptarLoginLN').on('click', function () {
+                var usuario = $('#usuarioListasNegras').val().trim();
+                var contrasena = $('#passwordListasNegras').val();
+                var vista = 5;
+                if (!usuario) { $('#loginLNError').text('Ingresa el usuario.'); return; }
+                if (!contrasena) { $('#loginLNError').text('Ingresa la contraseña.'); return; }
+                $('#loginLNError').text('');
+
+                $.ajax({
+                    url: '@Url.Action("LoginModal", "ListasNegras")',
+                    type: 'POST',
+                    data: { usuario, contrasena, vista },
+                    success: function (result) {
+                        if (result && result.success) {
+                            $('#modalLoginListasNegras').modal('hide');
+                            $('#cardProtejido').show();
+                            validarPermisoUsuario(result.usuario);
+                        } else {
+                            swal(
+                                'Acceso denegado',
+                                result && result.message ? result.message : 'Error en la autenticación',
+                                'error'
+                            );
+                            setTimeout(function () {
+                                window.location = '/Home/Salir';
+                            }, 2000);
+                        }
+                    },
+                    error: function () {
+                        swal('Error', 'Ocurrió un error al autenticar. Intenta de nuevo.', 'error');
+                        setTimeout(function () {
+                            window.location = '/Home/Salir';
+                        }, 2000);
+                    }
+                });
+            });
+            $('#btnCancelarLoginLN').on('click', function () { window.location = '/Account/Login'; });
+
+
+            
+          
+        });
+
+       
+
+        $(document).ready(function () {
+
+            $('#tipoTarjeta').on('change', function () {
+                $('#numeroTarjeta').val('');
+                var tipo = $(this).val();
+                var $input = $('#numeroTarjeta');
+                if (tipo == "1") $input.attr('maxlength', 18).attr('placeholder', 'CLABE de 18 dígitos');
+                else if (tipo == "3") $input.attr('maxlength', 16).attr('placeholder', 'Tarjeta de 16 dígitos');
+                else if (tipo == "2") $input.attr('maxlength', 11).attr('placeholder', 'Cuenta 10 u 11 dígitos');
+                else if (tipo == "4") $input.attr('maxlength', 10).attr('placeholder', 'Teléfono de 10 dígitos');
+                else $input.attr('maxlength', 18).attr('placeholder', 'Selecciona un tipo');
+            });
+
+            $('form').on('submit', function (e) {
+                e.preventDefault();
+                $('#spin').removeClass('visually-hidden');
+                $('#ExecuteRequest').prop('disabled', true);
+
+                var tipo = $('#tipoTarjeta').val();
+                var numero = $('#numeroTarjeta').val().trim();
+                var motivoAlta = $('#motivoAlta').val().trim();
+
+                if (!tipo) {
+                    swal('Dato inválido', 'Selecciona un tipo de tarjeta.', 'warning');
+                    $('#spin').addClass('visually-hidden');
+                    $('#ExecuteRequest').prop('disabled', false);
+                    return;
+                }
+                if (!/^\d+$/.test(numero)) {
+                    swal('Dato inválido', 'Solo se permiten dígitos numéricos.', 'warning');
+                    $('#spin').addClass('visually-hidden');
+                    $('#ExecuteRequest').prop('disabled', false);
+                    return;
+                }
+                if (tipo == "1" && numero.length !== 18) {
+                    swal('Dato inválido', 'La CLABE debe contener exactamente 18 dígitos.', 'warning');
+                    $('#spin').addClass('visually-hidden');
+                    $('#ExecuteRequest').prop('disabled', false);
+                    return;
+                }
+                if (tipo == "3" && numero.length !== 16) {
+                    swal('Dato inválido', 'La tarjeta debe tener 16 dígitos.', 'warning');
+                    $('#spin').addClass('visually-hidden');
+                    $('#ExecuteRequest').prop('disabled', false);
+                    return;
+                }
+                if (tipo == "2" && !(numero.length === 10 || numero.length === 11)) {
+                    swal('Dato inválido', 'Cuenta debe tener 10 u 11 dígitos.', 'warning');
+                    $('#spin').addClass('visually-hidden');
+                    $('#ExecuteRequest').prop('disabled', false);
+                    return;
+                }
+                if (tipo == "4" && numero.length !== 10) {
+                    swal('Dato inválido', 'El teléfono debe tener 10 dígitos.', 'warning');
+                    $('#spin').addClass('visually-hidden');
+                    $('#ExecuteRequest').prop('disabled', false);
+                    return;
+                }               
+                    if  (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ0-9 ]+$/.test(motivoAlta)) {
+                    swal('Dato inválido', 'El motivo solo debe contener letras, números y espacios.', 'warning');
+                    $('#spin').addClass('visually-hidden');
+                    $('#ExecuteRequest').prop('disabled', false);
+                    return;
+                }
+
+                var requestData = {
+                    valor: numero,
+                    tipoId: parseInt(tipo),
+                    motivoAlta: motivoAlta 
+                };
+
+                $.ajax({
+                    url: '/ListasNegras/Listas',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(requestData),
+                    success: function (res) {
+                        $('#spin').addClass('visually-hidden');
+                        $('#ExecuteRequest').prop('disabled', false);
+                        if (res.success) {
+                            swal('Éxito', res.message, 'success');
+                            $('#tipoTarjeta').val('').trigger('change');
+                            $('#numeroTarjeta').val('');
+                            $('#motivoAlta').val('');
+
+                            setTimeout(function () {
+
+
+                                validarPermisoUsuario(usuarioActual);
+                            }, 1200);
+;                        } else {
+                            swal('Error', res.message, 'error');
+                        }
+                    },
+                    error: function () {
+                        $('#spin').addClass('visually-hidden');
+                        $('#ExecuteRequest').prop('disabled', false);
+                        swal('Error', 'Error de conexión con el servidor.', 'error');
+                    }
+                });
+            });
+
+            $('#numeroTarjeta').on('input', function () {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+
+        });
+
+    $(document).ready(function () {
+        let codigoABaja = null; // almacena el código del registro actual
+
+        // Cuando hacen clic en "Baja", abre el modal y guarda el código en una variable
+        $(document).on('click', '.btnBaja', function () {
+            codigoABaja = $(this).data('codigo') || '';
+            // Limpiar campos del modal
+            $('#usuarioListasNegrasBajas').val('');
+            $('#passwordListasNegrasBajas').val('');
+            $('#codigoListasNegrasBajas').val(codigoABaja); // si quieres que el código aparezca ya llenado, si no, bórralo
+            $('#loginLNError').text('');
+            $('#modalLoginListasNegrasBajas').modal('show');
+        });
+
+        
+
+     
+    });
+        $(document).ready(function () {
+            // Llenar el select de catálogo dinámicamente
+            $.ajax({
+                url: '@Url.Action("ObtenerCatalogosListasNegras", "ListasNegras")',
+                type: 'GET',
+                success: function (res) {
+                    if (res && res.success && res.catalogos) {
+                        var $select = $('#tipoTarjeta');
+                        $select.empty().append('<option value="" selected>Seleccione el tipo</option>');
+                        $.each(res.catalogos, function (i, item) {
+                            if (item.estatus && item.estatus.toUpperCase() === "ACTIVO") {
+                                $select.append('<option value="' + item.id + '" data-nombre="' + item.nombre + '">' + item.descripcion + '</option>');
+                            }
+                        });
+                    } else {
+                        swal('Aviso', res.message || 'No se pudo obtener el catálogo.', 'warning');
+                    }
+                },
+                error: function (xhr) {
+                    swal('Error', 'Error al solicitar el catálogo.', 'error');
+                }
+            });
+
+          
+        });
+
+     
+
+        let idBajaSeleccionado = null;
+
+        // Al hacer clic en el botón, abrir modal y guardar el id a bajar
+        $(document).on('click', '.btnBajaSinPermiso', function () {
+            idBajaSeleccionado = $(this).data('codigo');  // por ejemplo, 4
+            $('#motivobajaPorautorizacion').val('');
+            $('#modalbajaPorautorizacion').modal('show');
+        });
+        $('#btnbajaPorautorizacion').on('click', function () {
+            var motivo = $('#motivobajaPorautorizacion').val().trim();
+
+            if (!motivo) {
+                swal('Dato requerido', 'Debe ingresar el motivo.', 'warning');
+                return;
+            }
+            if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ0-9 ]+$/.test(motivo)) {
+                swal('Dato inválido', 'El motivo solo debe contener letras y números.', 'warning');
+                $('#spin').addClass('visually-hidden');
+                $('#ExecuteRequest').prop('disabled', false);
+                return;
+            }
+            if (!idBajaSeleccionado) {
+                swal('Error interno', 'No se encontró el registro seleccionado.', 'error');
+                return;
+            }
+
+            var requestData = {
+                estatus: "PENDIENTEBAJA",
+                motivo: motivo
+            };
+
+            $.ajax({
+                url: '/ListasNegras/BajaPorAutorizacion/' + idBajaSeleccionado,
+                type: 'PATCH',
+                contentType: 'application/json',
+                data: JSON.stringify(requestData),
+                success: function (res) {
+                    // Si respuesta es string, intenta parsear a objeto
+                    if (typeof res === "string") {
+                        try { res = JSON.parse(res); }
+                        catch (e) {
+                            swal('Error', 'Respuesta inesperada: ' + res, 'error');
+                            return;
+                        }
+                    }
+                    if (res && typeof res.code !== "undefined") {
+                        if (res.code === 0) {
+                            swal('Éxito', res.message || 'Baja solicitada correctamente.', 'success');
+                            $('#modalbajaPorautorizacion').modal('hide');
+                            setTimeout(function () {                                
+                                validarPermisoUsuario(usuarioActual);
+                            }, 1200);
+                        } else if (res.code === 1) {
+                            swal('Error', res.message || '', 'error');
+                        } else if (res.code === 2) {
+                            swal('Advertencia', res.message || '', 'warning');
+                        } else {
+                            swal('Error', res.message || '', 'error');
+                        }
+                    } else {
+                        swal('Error', res.message || 'Respuesta inesperada.', 'error');
+                    }
+                },
+                error: function () {
+                    swal('Error', 'Error de comunicación con el servidor.', 'error');
+                }
+            });
+        });
+
+
+
+        let idRegistroBaja = null;
+
+        // Confirmar baja y abrir modal
+        $(document).on('click', '.btnBaja', function () {
+            idRegistroBaja = $(this).data('codigo');
+            swal({
+                title: '¿Confirmar baja?',
+                text: `¿Seguro que desea dar de baja el registro?`,
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, continuar',
+                cancelButtonText: 'No, cancelar'
+            }, function (isConfirm) {
+                if (isConfirm) {
+                    $('#usuarioListasNegrasBajas, #passwordListasNegrasBajas, #codigoListasNegrasBajas').val('');
+                    $('#loginLNErrorBajas').text('');
+                    $('#modalLoginListasNegrasBajas').modal('show');
+                    registrarBitacora(
+                        {
+                            usuario: usuarioActual,
+                            accionId: 7,
+                            resultado: 'Aceptar',
+                            ip: clientIp
+                        },
+                        function (result) { console.log('Bitácora registrada', result); },
+                        function (err) { console.error('Error en bitácora', err); }
+                    );
+                } else {
+                    registrarBitacora(
+                        {
+                            usuario: usuarioActual,
+                            accionId: 8,
+                            resultado: 'Cancelar',
+                            ip: clientIp
+                        },
+                        function (result) { console.log('Bitácora registrada', result); },
+                        function (err) { console.error('Error en bitácora', err); }
+                    );
+
+                    $('#modalLoginListasNegrasBajas').modal('hide'); // cierro el modal por si está abierto
+                   
+                }
+            });
+        });
+
+        $('#btnAceptarLoginLNBajas').on('click', function () {
+            var usuario = $('#usuarioListasNegrasBajas').val().trim();
+            var contrasena = $('#passwordListasNegrasBajas').val();
+            var codigo = $('#codigoListasNegrasBajas').val();
+            var vista = 6;
+            if (!usuario || !contrasena || !codigo) {
+                let campos = [];
+                if (!usuario) campos.push("usuario");
+                if (!contrasena) campos.push("contraseña");
+                if (!codigo) campos.push("código");
+                swal("Campos requeridos", "Debe ingresar: " + campos.join(", "), "warning");
+                return;
+            }
+
+            $('#loginLNErrorBajas').text('');
+
+            // 1. Validar usuario/contraseña
+            $.ajax({
+                url: '/ListasNegras/LoginModal',
+                type: 'POST',
+                data: { usuario, contrasena, vista },
+                success: function (result) {
+                    if (result && result.success) {
+                        // 2. Si login OK, mandamos PATCH con id y código
+                        var requestData = { estatus: "BAJA", token: codigo };
+                        $.ajax({
+                            url: '/ListasNegras/BajaAutorizadaCodigo/' + idRegistroBaja,
+                            type: 'PATCH',
+                            contentType: 'application/json',
+                            data: JSON.stringify(requestData),
+                            success: function (res) {
+                                if (typeof res === "string") {
+                                    try { res = JSON.parse(res); } catch (e) { swal('Error', 'Respuesta inesperada: ' + res, 'error'); return; }
+                                }
+                                if (res && typeof res.code !== "undefined") {
+                                    if (res.code === 0) {
+                                        swal('Éxito', res.message , 'success');
+                                        setTimeout(function () {
+                                            $('#modalLoginListasNegrasBajas').modal('hide');
+                                            validarPermisoUsuario(usuarioActual);
+                                        }, 1200);
+
+
+                                    } else if (res.code === 1) {
+                                        swal('Error', res.message , 'error');
+                                     
+                                    } else if (res.code === 2) {
+                                        swal('Advertencia', res.message , 'warning');
+                                    } else {
+                                        swal('Error', res.message , 'error');
+                                    }
+                                } else {
+                                    swal('Error', res.message, 'error');
+                                }
+                            },
+                            error: function () {
+                                swal('Error', 'Error de comunicación con el servidor.', 'error');
+                            }
+                        });
+                    } else {
+                        $('#loginLNErrorBajas').text(result && result.message ? result.message : 'Error en la autenticación');
+                    }
+                },
+                error: function () {
+                    $('#loginLNErrorBajas').text('Error en la autenticación, intenta de nuevo.');
+                }
+            });
+        });
+
+        $('#btnCancelarLoginLNBajas').on('click', function () {
+            $('#modalLoginListasNegrasBajas').modal('hide');
+        });
+        function validarPermisoUsuario(usuario) {
+            $.ajax({
+                url: '/ListasNegras/ValidarPermisoUsuario?usuario=' + encodeURIComponent(usuario),
+                type: 'GET',
+                success: function (res) {
+                    if (res && res.success && res.tienePermiso) {
+                        cargarTablaListasNegras(true);   // Puede ver botones true
+
+                    } else if (res && res.success && !res.tienePermiso) {
+                        cargarTablaListasNegras(false);  // Solo ver datos false
+
+                    } else {
+                        swal('Sin permiso', 'El usuario no tiene permisos.', 'error');
+                        setTimeout(function () {
+                            window.location = '/Account/Login';
+                        }, 2000);
+                    }
+                },
+                error: function () {
+                    swal('Error', 'No se pudo consultar permiso', 'error');
+                    setTimeout(function () {
+                        window.location = '/Account/Login';
+                    }, 2000);
+                }
+            });
+        }
+
+
+        // Función para reinicializar la tabla con o sin botones de acción
+        function cargarTablaListasNegras(mostrarBoton) {
+            if ($.fn.DataTable.isDataTable('#example2')) {
+                $('#example2').DataTable().destroy();
+            }
+            $('#example2').DataTable({
+                language: { url: "../lib/Spanish.json" },
+                pageLength: 25,
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        text: '<i class="bi bi-file-earmark-excel"></i> Exportar a Excel',
+                        className: 'btn btn-success',
+                        action: function (e, dt, node, config) {
+                            dt.button('.buttons-excel').trigger(); // Dispara el export REAL
+                            registrarBitacora(
+                                { usuario: usuarioActual, accionId: 2, resultado: 'Exportar a Excel', ip: clientIp },
+                                function (res) { console.log("Bitácora ok", res); }
+                            );
+                        }
+                    },
+                    // Botón excelHtml5, SOLO para el trigger, pero OCULTO del usuario
+                    {
+                        extend: 'excelHtml5',
+                        className: 'd-none' // (d-none es BootStrap, puedes usar 'display:none' también)
+                    }
+                ],
+                ajax: {
+                    url: '/ListasNegras/ObtenerListasNegras',
+                    type: 'GET',
+                    dataSrc: function (json) {
+                        if (json && json.success && Array.isArray(json.data)) {
+                            return json.data;
+                        }
+                        return [];
+                    }
+                },
+                columns: [
+                    { data: null, render: function (data, type, row, meta) { return meta.row + 1; } },
+                    { data: 'valor' },
+                    {
+                        data: 'tipoId', render: function (data) {
+                            if (data == 1) return "CLABE";
+                            if (data == 3) return "TARJETA";
+                            if (data == 2) return "CUENTA";
+                            if (data == 4) return "TELÉFONO";
+                            return data;
+                        }
+                    },
+                    { data: 'estatus' },
+                    { data: 'motivoAlta' },
+                    { data: 'motivoBaja' },
+                    {
+                        data: null, orderable: false, render: function (data, type, row) {
+                            if (mostrarBoton) {
+                                // dependiendo el estatus si ya se realizo un solicitar baja 
+                                let disabled = (row.estatus.trim().toUpperCase() !== "PENDIENTE AUTORIZAR") ? 'disabled' : '';
+                                let disabled2 = (row.estatus.trim().toUpperCase() !== "ALTA") ? 'disabled' : '';
+                                return `<button type="button" class="btn btn-success btnBaja" data-codigo="${row.id}"  ${disabled}>Autorizar Baja</button> <button type="button" class="btn btn-danger btnBajaSinPermiso" data-codigo="${row.id}" ${disabled2} >Solicitar baja</button>`;
+
+                            } else {
+                                // el estatus de alta es nuevo botin enabled si es pendiente o diferente disabled
+                                let disabled = (row.estatus.trim().toUpperCase() !== "ALTA") ? 'disabled' : '';
+                                return `<button type="button" class="btn btn-danger btnBajaSinPermiso" data-codigo="${row.id}" ${disabled} >Solicitar baja</button>`;
+                            }
+                        }
+                    }
+                ]
+            });
+        }
+
+        function registrarBitacora({ usuario, accionId, resultado, ip }, callbackOK, callbackError) {
+            const payload = {
+                usuario: usuario,
+                accionId: accionId,
+                resultado: resultado,
+                ip: ip
+            };
+
+
+            var url = '/ListasNegras/RegistrarBitacora';
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(payload),
+                success: function (res) {
+                    if (typeof callbackOK === "function") callbackOK(res);
+                },
+                error: function (xhr) {
+                    if (typeof callbackError === "function") callbackError(xhr);
+                }
+            });
+        }
+</script>
+
+}
+

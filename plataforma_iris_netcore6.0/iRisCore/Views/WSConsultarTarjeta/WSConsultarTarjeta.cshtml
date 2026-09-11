@@ -1,0 +1,160 @@
+﻿
+@{
+    ViewData["Title"] = "WSConsultarTarjeta";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h5>Consultar Tarjeta - [Física/Virtual]</h5>
+<div id="emailHelp" class="form-text"> WebService que permitirá conocer la información general de la Tarjeta Física o Virtual.</div>
+
+<div class="card-box">
+    <div class="card-body">
+
+        <form>
+            <div class="row g-3">
+                <div class="col-sm-4">
+                    <select class="form-select" name="tipoTarjeta" id="tipoTarjeta" aria-label="Default select example">
+                        <option selected>Seleccione el tipo de Tarjeta</option>
+                        <option value="F">Física</option>
+                        <option value="V">Virtual</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <input class="form-control" type="password" name="numeroTarjeta" id="numeroTarjeta" placeholder="Número de Tarjeta" aria-label="default input example">
+                </div>
+                <div class="col-sm-4">
+                    <button type="submit" class="btn btn-success" id="ExecuteRequest">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Operación</button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+<br />
+
+<div class="card visually-hidden" id="tabla" >
+    <div class="card-header"><strong>Información de la Tarjeta: </strong> &nbsp;&nbsp;&nbsp; <span id="tarjeta"></span>&nbsp;&nbsp;<span id="nombre"></span></div>
+    
+    <div class="card-body">
+        
+        <div class="row g-12">
+            <div class="col-sm-4">
+                <img style="" width="90%" src="~/images/cardmc.png" alt="Image">
+            </div>
+            <div class="col-sm-8">
+                <div class="row g-6">
+                    <div class="col-sm-3">
+                        <strong><label>Tipo Tarjeta</label></strong>
+                    </div>
+                    <div class="col-sm-3">
+                        <span id="tipo"></span>
+                    </div>
+                    <div class="col-sm-3">
+                        <strong><label>Vigencia</label></strong>
+                    </div>
+                    <div class="col-sm-3">
+                        <span id="vigencia"></span>
+                    </div>
+                </div>
+                <br />
+                <div class="row g-6">                  
+                    <div class="col-sm-3">
+                        <strong><label>Estatus</label></strong>
+                    </div>
+                    <div class="col-sm-3">
+                        <span id="estatus"></span>
+                    </div>
+                    <div class="col-sm-3">
+                        <strong><label>Cuenta ASP</label></strong>
+                    </div>
+                    <div class="col-sm-3">
+                        <span id="cuentaASP"></span>
+                    </div>
+                </div>
+                <br />
+                <div class="row g-12">
+                    <div class="col-sm-3">
+                        <strong><label>Cuenta CACAO</label></strong>
+                    </div>
+                    <div class="col-sm-3">
+                        <span id="cacao"></span>
+                    </div>
+                    <div class="col-sm-3">
+                        <strong><label>CLABE</label></strong>
+                    </div>
+                    <div class="col-sm-3">
+                        <span id="ctaClabe"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer"><strong><label>Saldo</label></strong> &nbsp; <span id="saldo"></span></div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <script type="text/javascript">
+        var js = jQuery.noConflict(true);
+        js(document).ready(function () {
+
+            js(document).on("change", '#tipoTarjeta', function () {
+                js("#numeroTarjeta").val("");
+                js("#tabla").addClass("visually-hidden");
+            });
+
+            js('#ExecuteRequest').on("click", function (event) {
+                event.preventDefault();
+                js("#spin").removeClass("visually-hidden");
+                js("#ExecuteRequest").attr('disabled', true);
+
+                var url = "@Url.Action("WSConsultarTarjeta","WSConsultarTarjeta")";
+
+                var data = new Object();
+                data.tipoTarjeta = js("#tipoTarjeta").val();
+                data.numeroTarjeta = js("#numeroTarjeta").val();            
+
+                js.ajax({
+                    type: "POST",
+                    url: url,
+                    dataType : "json",
+                    data: data,
+                    success: function (data) {
+                        if (data.codigo != 0) {
+                            swal({
+                                title: "Error",
+                                text: "No existe la información de la tarjeta solicitada",
+                                type: "warning",
+                                showCancelButton: false,
+                                confirmButtonColor: "#DD6B55",                           
+                                closeOnConfirm: false                        
+                            });
+                        }
+                        else {
+                            js("#tabla").removeClass("visually-hidden");
+                            console.log(data);
+                            js("#tarjeta").text(data.numeroTarjeta);
+                            js("#nombre").text(data.nombre);
+                            js("#tipo").text(data.tipoTarjeta);
+                            js("#vigencia").text(data.vigencia);
+                            js("#estatus").text(data.estatus);
+                            js("#cuentaASP").text(data.cuentaASP);
+                            js("#cacao").text(data.cacao);
+                            js("#ctaClabe").text(data.ctaClabe);
+                            js("#saldo").text(data.saldo);
+                        }
+                        js("#ExecuteRequest").attr('disabled', false);
+                        js("#spin").addClass("visually-hidden");
+                    }
+                });
+
+            });
+
+        })
+
+
+    </script>
+

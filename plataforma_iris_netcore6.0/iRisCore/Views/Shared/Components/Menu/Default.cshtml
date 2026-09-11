@@ -1,0 +1,122 @@
+﻿
+@if (ViewBag.Lmodulos != null)
+{
+    List<MenuModel> lmenu = (List<MenuModel>)ViewBag.Lmodulos;
+    List<MenuModel> lSubmenu = new List<MenuModel>();
+
+    if (ViewBag.Lsubmodulos != null)
+    {
+        lSubmenu = (List<MenuModel>)ViewBag.Lsubmodulos;
+    }
+
+    foreach (var item in lmenu)
+    {
+        <li class="nav-item is-parent">
+            <a class="nav-link" href="#" id="megamenu-dropdown-1" aria-haspopup="true" aria-expanded="false">
+                @item.descripcion <i class="fa fa-angle-down"></i>
+            </a>
+            <div class="megamenu-content" aria-labelledby="megamenu-dropdown-1">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-8 pr-5">
+                            <div class="row">                                
+                                @foreach (MenuModel subItem in lSubmenu)  //-- Segundo Nivel
+                                {
+                                    if (subItem.clave.ToString() == item.id.ToString())
+                                    {
+                                        <div class="col-6">
+                                            <h6 class="">@subItem.clase</h6>
+                                            <hr>
+
+                                            <ul class="subnav">
+                                                @foreach (MenuModel item3 in lSubmenu)  //-- Tercer Nivel
+                                                {
+                                                    if (item3.clave == subItem.id.ToString())
+                                                    {
+                                                        if (item3.descripcion == "divider")
+                                                        {
+                                                            @*<hr style="border-top: 1px solid lightgray; margin-top: 2px; margin-bottom: 2px;" />*@
+                                                        }
+                                                        else
+                                                        {
+                                                            var strUrl = @item3.url.Split('/');
+                                                            <li class="subnav-item">
+                                                                <a class="subnav-link" asp-controller=@strUrl[0] asp-action=@strUrl[1]>@item3.descripcion</a>
+                                                            </li>
+                                                        }
+                                                    }
+                                                }
+                                            </ul>
+                                        </div>
+                                     }
+                                 }                         
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            @if (item.descripcion == "Operación") {
+                                <img src="~/images/CallCenter-ASP.jpg" class="img-fluid mb-3" alt="test image">
+                                <p>
+                                    Módulo del Soporte a la operación a través del consumo de Web Services para replicar los escenario reportados.
+                                </p>
+                            }
+                            @if (item.descripcion == "Embozado & Tarjetas")
+                            {
+                                <img src="~/images/Card-ASP.jpg" class="img-fluid mb-3" alt="test image">
+                                <p>
+                                    Módulo de Tarjetas para el seguimiento de la logística de plásticos en sucursal y entrega a domicilio.
+                                </p>
+                            }
+                            @if (item.descripcion == "Soporte")
+                            {
+                                <img src="~/images/operacion-img.jpg" class="img-fluid mb-3" alt="test image">
+                                <p>
+                                    Módulo de apoyo al soporte para la ejecución de funcionalidades que permitirán corregir la operación o prevenir el uso incorrecto del producto de tarjetas.
+                                </p>
+                            }
+                           
+                            @if (item.descripcion == "Reportería / Procesos")
+                            {
+                                <img src="~/images/Reportes-ASP.jpg" class="img-fluid mb-3" alt="test image">
+                                <p>
+                                    Módulo de apoyo para la visualización de la reportería diaria de la operación.
+                                </p>
+                            }
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    }
+
+@* 
+    <li class="nav-item is-parent">
+        <a class="nav-link" href="#" id="megamenu-dropdown-1" aria-haspopup="true" aria-expanded="false">
+            Log In <i class="fa fa-angle-down"></i>
+        </a>
+        <div class="megamenu-content" aria-labelledby="megamenu-dropdown-1">
+            <div class="container">
+                <div class="row">
+                    <div class="col-8 pr-5">
+                        <div class="row">                           
+                            <div class="col-6">                                    
+                                <ul class="subnav">                                         
+                                    <li class="subnav-item">
+                                        <a class="subnav-link" asp-controller="" asp-action="">Cambiar Contraseña</a>
+                                    </li>
+                                    <li class="subnav-item">
+                                        <a class="subnav-link" asp-controller="Home" asp-action="Salir">Cerrar Sesión</a>
+                                    </li>
+
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+ *@
+
+}

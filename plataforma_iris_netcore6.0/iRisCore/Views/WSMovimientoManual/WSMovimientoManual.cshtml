@@ -1,0 +1,152 @@
+﻿@using iRisModel
+
+@{
+    ViewData["Title"] = "WSMovimientoManual";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h5>Movimiento Manual</h5>
+<div id="emailHelp" class="form-text">WebService que permitirá realizar Movimientos manuales de Cargo o Abono.</div>
+
+@if (ViewBag.Movimientos != null)
+ {
+    List<CatalogoMovimientoManual> oMovimientos = (List<CatalogoMovimientoManual>)ViewBag.Movimientos;
+
+        <div class="card-box">
+    <div class="card-body">
+        <form class="" id="Formulario">
+
+            <div class="row g-1">
+                <div class="form-floating">
+                    <select class="form-select" id="claveMovimiento" name="claveMovimiento" aria-label="Floating label select example">
+                        <option selected>Seleccione...</option>
+                            @foreach (CatalogoMovimientoManual item in oMovimientos)  //-- Segundo Nivel
+                        {
+                            <option value=@item.claveMovimiento>@item.claveMovimiento - @item.descripcionMovimiento</option>
+                        }
+                    </select>
+                    <label for="floatingSelect">Movimiento Manual</label>
+                </div>                
+            </div>
+            <br />
+            <div class="row g-3">                    
+                    
+                <div class="col-sm-4">
+                        <div class="form-floating mb-3">
+                            <input class="form-control" type="password" name="tarjeta" id="tarjeta" placeholder=" Número de Tarjeta" aria-label="default input example">
+                            <label for="floatingInput">Número de Tarjeta</label>
+                        </div>
+                </div>
+                <div class="col-sm-4">
+                        <div class="form-floating">
+                            <input class="form-control" type="text" name="importe" id="importe" placeholder="Importe" aria-label="default input example">
+                            <label for="floatingPassword">Importe</label>
+                        </div>
+                </div>
+                <div class="col-sm-4">                        
+                    <div class="form-floating">
+                            <input class="form-control" type="text" name="refNumerica" id="refNumerica" placeholder="Referencia" aria-label="default input example">
+                        <label for="floatingPassword">Referencia</label>
+                    </div>                     
+                </div>
+            </div>
+
+            <br />
+
+            <div class="row g-2">
+                <div class="col-sm-6">
+                    <div class="form-floating">
+                            <input class="form-control" type="text" name="conceptoPago" id="conceptoPago" placeholder="Concepto" aria-label="default input example">
+                        <label for="floatingPassword">Concepto</label>
+                    </div>                   
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="form-floating">
+                            <input class="form-control" type="text" name="observaciones" id="observaciones" placeholder="Observaciones" aria-label="default input example">
+                        <label for="floatingPassword">Observaciones</label>
+                    </div>                    
+                </div>                
+            </div>
+            <br />
+
+            <div class="row g-2">
+                <div class="col-sm-4">
+                        <button type="button" id="ExecuteRequest" class="btn btn-success waves-effect waves-light">
+                            <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                            Ejecutar Operación</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+}
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+
+    js(document).ready(function () {
+
+        js(document).on('click', '.confirm', function () {
+            var myH2 = document.getElementsByTagName('h2')[0].innerHTML;
+            if (myH2 == 'Exito') {
+                js("#Formulario")[0].reset();
+            }
+        });
+
+
+        js('#ExecuteRequest').on("click", function (event) {
+            event.preventDefault();
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+
+            var url = "@Url.Action("WSMovimientoManual","WSMovimientoManual")";
+
+            var info = new Object();
+            info.claveMovimiento = js("#claveMovimiento").val();
+            info.tarjeta = js("#tarjeta").val();
+            info.importe = js("#importe").val();
+            info.refNumerica = js("#refNumerica").val();
+            info.conceptoPago = js("#conceptoPago").val();
+            info.observaciones = js("#observaciones").val();
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: info,
+                success: function (data) {
+                    if (data.codigo != 0) {
+                        swal({
+                            title: "Error",
+                            text: data.mensaje,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+                    else {
+
+                        swal({
+                            title: "Exito",
+                            text: "Movimiento Manual Aplicado. Id Solicitud:" + data.idSolicitud + " - Tarjeta: " + data.tarjeta + " - Importe Movmiento: " + data.importe + ' - Saldo Final: ' + data.saldoFinal,
+                            type: "success",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+                    js("#ExecuteRequest").attr('disabled', false);
+                    js("#spin").addClass("visually-hidden");
+                }
+            });
+
+        });
+
+
+    });
+</script>

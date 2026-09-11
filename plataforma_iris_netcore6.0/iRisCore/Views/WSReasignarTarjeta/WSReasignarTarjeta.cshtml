@@ -1,0 +1,94 @@
+﻿
+@{
+    ViewData["Title"] = "WSReasignarTarjeta";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h5>Reasignar Tarjeta</h5>
+<div id="emailHelp" class="form-text">WebService que permitirá sustituir una Tarjeta Física o Virtual.</div>
+
+<div class="card-box">
+    <div class="card-body">
+        <form class="" id="Formulario">
+            <div class="row g-3">
+                <div class="col-sm">
+                    <input class="form-control" name="numeroTarjetaAnterior" id="numeroTarjetaAnterior"  type="password" placeholder="Número de Tarjeta Anterior" aria-label="default input example">
+                </div>
+                <div class="col-sm">
+                    <input class="form-control" type="password" name="numeroTarjetaNueva" id="numeroTarjetaNueva" placeholder="Número de Tarjeta Actual" aria-label="default input example">
+                </div>
+                <div class="col-sm">
+                    <button type="submit" id="ExecuteRequest" class="btn btn-success">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Operación</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+
+
+
+<script type="text/javascript">
+    var js = jQuery.noConflict(true);
+
+    js(document).ready(function () {
+
+        js(document).on('click', '.confirm', function () {
+            var myH2 = document.getElementsByTagName('h2')[0].innerHTML;
+            if (myH2 == 'Exito') {
+                js("#Formulario")[0].reset();
+            }
+        });
+
+
+        js('#ExecuteRequest').on("click", function (event) {
+            event.preventDefault();
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+
+            var url = "@Url.Action("WSReasignarTarjeta","WSReasignarTarjeta")";
+
+            var info = new Object();
+            info.numeroTarjetaAnterior = js("#numeroTarjetaAnterior").val();
+            info.numeroTarjetaNueva = js("#numeroTarjetaNueva").val();
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: info,
+                success: function (data) {
+                    console.log(data);
+                    if (data.codigo != 0) {
+                        swal({
+                            title: "Error",
+                            text: data.mensaje,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+                    else {
+                        swal({
+                            title: "Exito",
+                            text: "Reasignación Tarjeta Nueva: " + data.tarjetaNueva,
+                            type: "success",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+                    js("#ExecuteRequest").attr('disabled', false);
+                    js("#spin").addClass("visually-hidden");
+                }
+            });
+
+        });
+
+
+    });
+</script>

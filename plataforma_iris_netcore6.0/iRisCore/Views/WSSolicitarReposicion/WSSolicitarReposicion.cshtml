@@ -1,0 +1,111 @@
+﻿
+@{
+    ViewData["Title"] = "WSSolicitarReposicion";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h5>Solicitar Reposición [TV]</h5>
+<div id="emailHelp" class="form-text">WebService que permitirá solicitar una repossición de una Tarjeta Virtual.</div>
+
+<div class="card-box">
+    <div class="card-body">
+        <form class="" id="Formulario">
+
+            <div class="row g-1">
+                <div class="col-sm-12">
+                    <select class="form-select" name="razonReposicion" id="razonReposicion" aria-label="Default select example">
+                        <option selected>Seleccione la Razón de la Reposición </option>
+                        <option value="1">Perdida</option>
+                        <option value="2">Robada</option>
+                        <option value="3">Deterioro de la Tarjeta</option>
+                        <option value="5">Reposición por Fraude</option>
+                    </select>
+                </div>               
+            </div>
+            <br />
+            <div class="row g-3">
+                <div class="col-sm-4">
+                    <input class="form-control" type="password" name="numeroTarjeta" id="numeroTarjeta" placeholder="Número de Tarjeta" aria-label="default input example">
+                </div>
+                <div class="col-sm-4">
+                    <input class="form-control" type="text" name="nombreEmbozado" id="nombreEmbozado" placeholder="Nombre de Embozado" aria-label="default input example">
+                </div>
+                <div class="col-sm-4">
+                    <button type="submit" id="ExecuteRequest" class="btn btn-success">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Operación</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+
+    js(document).ready(function () {
+
+        js(document).on('change', '#razonReposicion', function () {
+            js("#numeroTarjeta").val();
+            js("#nombreEmbozado").val();
+        });
+
+        js(document).on('click', '.confirm', function () {
+            var myH2 = document.getElementsByTagName('h2')[0].innerHTML;
+            if (myH2 == 'Exito') {                
+                js("#Formulario")[0].reset();
+            }
+        });
+
+
+        js('#ExecuteRequest').on("click", function (event) {
+            event.preventDefault();
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+
+            var url = "@Url.Action("WSSolicitarReposicion","WSSolicitarReposicion")";
+
+            var info = new Object();
+            info.numeroTarjeta = js("#numeroTarjeta").val();
+            info.razonReposicion = js("#razonReposicion").val();
+            info.nombreEmbozado = js("#nombreEmbozado").val();           
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: info,
+                success: function (data) {
+                    console.log(data);
+                    if (data.codigo != 0) {
+                        swal({
+                            title: "Error",
+                            text: data.mensaje,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+                    else {                        
+                        swal({
+                            title: "Exito",
+                            text: "Tarjeta Nueva: " + data.tarjetaNueva,
+                            type: "success",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+                    js("#ExecuteRequest").attr('disabled', false);
+                    js("#spin").addClass("visually-hidden");
+                }
+            });
+
+        });
+
+
+    });
+</script>

@@ -1,0 +1,1032 @@
+﻿
+@{
+    ViewData["Title"] = "Bo_Formulario";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Bo_Formulario";
+
+
+
+}
+
+@section Estilos {
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css" rel="stylesheet">
+}
+
+<style>
+    .form-label {
+        min-height: 3rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .button-row {
+        display: flex;
+        justify-content: flex-start;
+        margin-bottom: 1rem;
+    }
+
+        .button-row button {
+            margin-right: 0.5rem;
+        }
+
+</style>
+
+
+    <div id="1">
+    <h5>
+          Apendíce AN 1.1
+    </h5>
+
+   
+    <div id="emailHelp" class="form-text">
+      Formulario para reportar al Administrador la celebración de contratos de Servicios de PI.
+    </div>
+    <div class="card-box">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="form-group">
+                        <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" placeholder="fechaInicio" />
+                        <label style="font-size:14px; color: dimgrey" for="inicio">Fecha inicial</label>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="form-group">
+                        <input type="date" class="form-control" id="fechaFinal" name="fechaFinal" placeholder="fechaFinal" />
+                        <label style="font-size:14px; color:darkgrey" for="final">Fecha final</label>
+                    </div>
+                </div>
+                <div class="col-md-2 d-flex align-items-start">
+                    <button type="submit" id="btnConsultarFiltro" class="btn btn-success  ">
+                        <span id="spin" class="spinner-border spinner-border-sm d-none"></span>
+                        Ejecutar operación
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="card-box">
+    <div class="card-body">
+            <table id="exampleFor1" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Id Participante</th>
+                        <th>CLABE</th>
+                        <th>Razón Social</th>
+                        <th>Estatus</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  
+                </tbody>
+            </table>
+    </div>
+</div>
+
+    <div class="modal fade" id="participanteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="width=300px">
+        <div class="modal-dialog  modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Validación de información del contrato</h5>
+                    <input type="hidden" id="participanteId" name="participanteId" />
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="participanteForm">
+
+                        <div class="row">
+                            <div class="col-8">
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                      
+                                        <input type="text" class="form-control" id="razonSocial" name="razonSocial"  placeholder="Denominación o Razón Social">
+                                      
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="mb-3">
+
+                                    <input type="text" class="form-control" id="rfc" name="rfc" placeholder="RFC con homoclave">
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" id="fechaCelebracion" name="fechaCelebracion" placeholder="mm/dd/yyyy">
+                                    <label class="form-label" style="font-size:12px; color:darkgrey ;margin-top: -14px;">*Celebración del contrato</label>
+
+
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" id="inicioServicio" name="inicioServicio" placeholder="mm/dd/yyyy">
+                                    <label class="form-label" style="font-size:12px; color:darkgrey; margin-top: -14px;">*Inicio de prestación de servicios</label>
+
+
+
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" id="terminoServicio" name="terminoServicio" placeholder="mm/dd/yyyy">
+                                    <label class="form-label" style="font-size:12px; color:darkgrey; margin-top: -14px;">*Término de prestación de servicios</label>
+
+
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="mb-3">
+
+                                    <input type="text" class="form-control" id="duracionContrato" name="duracionContrato" placeholder="Duración del contrato">
+
+                                    <label class="form-label" style="font-size:12px; color:darkgrey; margin-top: -14px;">*En días hábiles bancarios</label>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="mb-3">
+
+                                    <input type="text" class="form-control" id="clabe" name="clabe" placeholder="CLABE Asignada">
+
+                                  
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="mb-3">
+
+                                    <input type="text" class="form-control" id="tercia" name="tercia" placeholder="Tercia de dígitos identificadores">
+                                
+
+
+                                </div>
+                            </div>
+
+
+                        </div>
+
+
+
+                        <div class="mb-3">
+
+
+                            <input type="text" class="form-control" id="nomComerciaMarca" name="nomComerciaMarca" placeholder="Nombre Comercial o marca">
+           
+
+                        </div>
+                        <div class="mb-3">
+
+                            <input type="text" class="form-control" id="proveedor" name="proveedor" placeholder="Proveedor de Servicios de Participación Indirecta">
+                    
+
+                        </div>
+                       
+                       
+
+
+
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="confirmar" type="button" class="btn btn-primary  btn-sm"  >Confirmar información</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div id="2">
+
+   <h5>
+        Apendíce AN 1.2
+    </h5>
+
+    <div id="emailHelp" class="form-text">
+        Formulario para reportar al Administrador la información de los conjuntos CLABE que hayan sido asignados bajo el esquema de PI.
+    </div>
+
+    <div class="card-box">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="form-group">
+                       
+                        <select class="form-select" id="Trimestre" name="Trimestre">
+                            <option selected>Seleccione un trimestre...</option>
+                            <option value="1">Enero - Marzo</option>
+                            <option value="2">Abril - Junio</option>
+                            <option value="3">Julio - Septiembre</option>
+                            <option value="4">Octubre - Diciembre</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" id="btnConsultarTrimestre" class="btn btn-success">
+                        <span id="spin" class="spinner-border spinner-border-sm d-none"></span>
+                        Consultar participantes indirectos
+                    </button>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                </div>
+            </div>
+        </div>
+    </div>
+
+  
+<div class="d-flex justify-content-end flex-wrap mb-3" style="margin-right: -2%; position: sticky; top: 10px; z-index: 10;">
+    <button type="submit" id="btnGenerar" class="btn btn-warning mr-3"> <!-- Ajuste en el margen derecho -->
+        Generar formulario grupal
+    </button>
+        <div style="width: 3px;"></div>
+    <!-- Espaciado entre botones -->
+        <a id="word" style="border-right-width: 0px;border-right-style: solid;margin-right: -22px;">
+        <img src="../images/BO_imagenes/word.png" style="width:60%;">
+    </a>
+
+    <a id="pdf">
+        <img src="../images/BO_imagenes/pdf.png" style="width:60%;">
+    </a>
+</div>
+
+<style>
+    /* Efecto hover para los íconos de Word y PDF */
+    #word:hover, #pdf:hover {
+        background-color: white; /* Cambia el color de fondo al pasar el cursor */
+        cursor: pointer;
+    }
+
+    /* Estilos para asegurar que los botones se alineen correctamente */
+     (max-width: 768px) {
+        .d-flex {
+            flex-direction: column; /* Los botones se apilan en dispositivos pequeños */
+            align-items: center; /* Centra los botones en dispositivos más pequeños */
+        }
+        #word img, #pdf img {
+            width: 80%; /* Ajusta el tamaño de las imágenes en pantallas pequeñas */
+        }
+    }
+</style>
+
+    <div class="card-box">
+
+
+
+        <div class="card-body">
+
+
+            <table id="example2" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Id Participante</th>
+                        <th>CLABE</th>
+                        <th>Razón Social</th>
+                        <th># Cuentas asignadas CI</th>
+                     
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+<div id="3">
+    <h5>
+        Apendíce AN 1.3
+    </h5>
+        
+
+    <div id="emailHelp" class="form-text">
+        Formulario para reportar al Administrador la información de los conjuntos CLABE que hayan sido dados de  baja el esquema de PI.
+    </div>
+
+    <div class="card-box">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="form-group">
+                      
+                        <select class="form-select" id="Trimestre3" name="Trimestre">
+                            <option selected>Seleccione un trimestre...</option>
+                            <option value="1">Enero - Marzo</option>
+                            <option value="2">Abril - Junio</option>
+                            <option value="3">Julio - Septiembre</option>
+                            <option value="4">Octubre - Diciembre</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" id="btnConsultarTrimestreBaja" class="btn btn-success ">
+                        <span id="spin" class="spinner-border spinner-border-sm d-none"></span>
+                        Consultar participantes indirectos
+                    </button>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="d-flex justify-content-end flex-wrap mb-3" style="margin-right: -2%; position: sticky; top: 10px; z-index: 10;">
+        <button type="submit" id="btnGenerar3" class="btn btn-warning">
+            <!-- Ajuste en el margen derecho -->
+            Generar formulario grupal
+        </button>
+        <div style="width: 3px;"></div>
+        <a id="word3" style="border-right-width: 0px;border-right-style: solid;margin-right: -22px;">
+            <img src="../images/BO_imagenes/word.png" style="width:60%;">
+        </a>
+
+        <a id="pdf3">
+            <img src="../images/BO_imagenes/pdf.png" style="width:60%;">
+        </a>
+    </div>
+
+    <style>
+        /* Efecto hover para los íconos de Word y PDF */
+        #word3:hover, #pdf3:hover {
+            background-color: white; /* Cambia el color de fondo al pasar el cursor */
+            cursor: pointer;
+        }
+
+        /* Estilos para asegurar que los botones se alineen correctamente */
+        (max-width: 768px) {
+            .d-flex
+
+        {
+            flex-direction: column; /* Los botones se apilan en dispositivos pequeños */
+            align-items: center; /* Centra los botones en dispositivos más pequeños */
+        }
+
+        #word3 img, #pdf3 img {
+            width: 80%; /* Ajusta el tamaño de las imágenes en pantallas pequeñas */
+        }
+
+        }
+    </style>
+    <div class="card-box">
+
+
+
+        <div class="card-body">
+
+
+            <table id="example3" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Id Participante</th>
+                        <th>CLABE</th>
+                        <th>Razón Social</th>
+                        <th># Cuentas de Baja CI</th>
+                       
+                    </tr>
+                </thead>
+                <tbody>
+                   
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div id="6"></div>
+
+@section Scripts {
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  
+  
+    <script>
+        $(document).ready(function () {
+            var opcionSeleccionada = '@ViewBag.OpcionSeleccionada';
+            $('#1, #2, #3, #6').hide();
+            $('#' + opcionSeleccionada).show();
+        });
+    </script>
+
+
+        
+    <!-- formulario uno   -->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Inicializar DataTable
+            var table = $('#exampleFor1').DataTable({
+                language: {
+                    "url": "../lib/Spanish.json"
+                },
+                columns: [
+                    { data: "idParticipantes" },
+                    { data: "clabe" },
+                    { data: "razonSocial" },
+                    { data: "estatus" },
+                    {
+                        data: null,
+                        render: function (data, type, row) {
+                            var generateWordUrl = '/BO_Formulario/GenerateWord?idParticipante=' + row.idParticipantes;
+                            var generaPdfUrl = '/BO_Formulario/GeneraPdfFormulario1?idParticipante=' + row.idParticipantes;
+
+                            // Inicializar las variables con los botones
+                            var lapizButton = '<i type="button" id="lapiz" class="bi bi-pencil btn-modal" data-id="' + row.idParticipantes + '" data-descripcion="' + row.razonSocial + '" style="margin-right: 10px;"></i>';
+                            var wordButton = '<a id="word" href="' + generateWordUrl + '"><img src="../images/BO_imagenes/word.png" style="width:12%; margin-right: 10px;"></a>';
+                            var pdfButton = '<a id="pdf" href="' + generaPdfUrl + '"><img src="../images/BO_imagenes/pdf.png" style="width:12%;"></a>';
+
+                            // Ocultar botones basados en el estatus
+                            if (row.estatus === "Validado") {
+                                // Si está validado, mostrar solo los botones Word y PDF
+                                return wordButton + pdfButton;
+                            } else {
+                                // Si no está validado, mostrar solo el botón de edición (lapiz)
+                                return lapizButton;
+                            }
+                        }
+                    }
+                ]
+            });
+
+       
+            // Al presionar el botón de consulta
+            $('#btnConsultarFiltro').click(function () {
+                var fechaInicio = $('#fechaInicio').val();
+                var fechaFinal = $('#fechaFinal').val();
+
+                // Mostrar spinner
+                $('#spin').removeClass('d-none');
+
+                // Validar que las fechas no estén vacías
+                if (!fechaInicio || !fechaFinal) {
+                    swal({
+                        title: "Fechas requeridas",
+                        text: "Por favor, selecciona ambas fechas.",
+                        icon: "warning",
+                        button: "Aceptar"
+                    });
+                    $('#spin').addClass('d-none');
+                    return;
+                }
+
+                // Realizar la solicitud AJAX al controlador
+                $.ajax({
+                    url: '/BO_Formulario/parIndirectosFiltro',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        FechaInicio: fechaInicio,
+                        FechaActual: fechaFinal
+                    }),
+                    success: function (response) {
+                        // Limpiar la tabla antes de llenarla
+                        table.clear().draw();
+
+                        // Verificar si la respuesta tiene datos
+                        if (response.data && response.data.length > 0) {
+                            // Llenar la tabla con los nuevos datos
+                            table.rows.add(response.data).draw();
+                        } else {
+                            swal({
+                                title: "Sin registros",
+                                text: "No se encontraron registros para las fechas seleccionadas.",
+                                icon: "info",
+                                button: "Aceptar"
+                            });
+                        }
+
+                        // Ocultar spinner
+                        $('#spin').addClass('d-none');
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error en la solicitud:', error);
+                        swal({
+                            title: "Error",
+                            text: "Ocurrió un error al consultar los datos.",
+                            icon: "error",
+                            button: "Aceptar"
+                        });
+
+                        // Ocultar spinner
+                        $('#spin').addClass('d-none');
+                    }
+                });
+            });
+
+        });
+        $(document).on('click', '.btn-modal', function () {
+            var participanteId = $(this).data('id');
+            $('#participanteId').val(participanteId);
+
+            $.ajax({
+                url: '/BO_Formulario/ParticipanteId',
+                method: 'POST',
+                data: { id: participanteId },
+                success: function (response) {
+                    if (response.data && response.data.length > 0) {
+
+                        var participante = response.data[0];
+
+                        // Asignar valores a los campos del formulario
+                        $('#clabe').val(participante.clabe);
+                        $('#razonSocial').val(participante.razonSocial);
+                        $('#rfc').val(participante.rfc);
+
+                        // Formatear 'fechaCelebracion' a mm/dd/yyyy
+                        if (participante.fechaCelebracion) {
+                            let fechaPartes = participante.fechaCelebracion.split(" ")[0]; // "YYYY-MM-DD"
+                            let [anio, mes, dia] = fechaPartes.split("-");
+                            $('#fechaCelebracion').val(`${mes}/${dia}/${anio}`); // Formato mm/dd/yyyy
+                        }
+
+                        // Formatear 'inicioServicio' a mm/dd/yyyy
+                        if (participante.inicioServicio) {
+                            let fechaPartes = participante.inicioServicio.split(" ")[0]; // "YYYY-MM-DD"
+                            let [anio, mes, dia] = fechaPartes.split("-");
+                            $('#inicioServicio').val(`${mes}/${dia}/${anio}`);
+                        }
+
+                        // Formatear 'terminoServicio' a mm/dd/yyyy
+                        if (participante.terminoServicio) {
+                            let fechaPartes = participante.terminoServicio.split(" ")[0]; // "YYYY-MM-DD"
+                            let [anio, mes, dia] = fechaPartes.split("-");
+                            $('#terminoServicio').val(`${mes}/${dia}/${anio}`);
+                        }
+
+                        // Obtener solo los días de 'duracionContrato'
+                        if (participante.duracionContrato) {
+                            let dias = participante.duracionContrato.split(" ")[0]; // Extrae solo el número de días
+                            $('#duracionContrato').val(dias);
+                        }
+
+                        $('#tercia').val(participante.tercia);
+                        $('#nomComerciaMarca').val(participante.nomComerciaMarca);
+                        $('#proveedor').val(participante.proveedor);
+
+                        // Mostrar el modal
+                        $('#participanteModal').modal('show');
+                    } else {
+                        alert("No se encontraron datos para este participante.");
+                    }
+                },
+                error: function () {
+                    alert("Ocurrió un error al obtener los datos del participante.");
+                }
+            });
+        });
+
+
+
+        $(document).on('click', '#confirmar', function () {
+            var participanteId = $('#participanteId').val();
+
+            $.ajax({
+                url: '/BO_Formulario/ActualizarId',
+                method: 'POST',
+                data: { id: participanteId },
+                success: function (response) {
+                    if (response.success) {
+                        swal({
+                            title: "Éxito",
+                            text: response.message,
+                            type: "success",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: true
+                        }, function () {
+                            // Cerrar el modal después de confirmar el mensaje de éxito
+                            $('#participanteModal').modal('hide');
+
+                            // Ejecutar la acción del botón btnConsultarFiltro para actualizar la tabla
+                            $('#btnConsultarFiltro').click();
+                        });
+                    } else {
+                        swal("Error", response.message, "error");
+                    }
+                },
+                error: function () {
+                    swal("Error", "Ocurrió un error al realizar la actualización.", "error");
+                }
+            });
+        });
+
+
+
+    
+    
+    </script>
+    <!-- formulario fin uno   -->
+    <!-- formulario dos   -->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var table = $('#example2').DataTable({
+                language: {
+                    url: "../lib/Spanish.json"
+                },
+                columns: [
+                    { data: "idParticipante" },
+                    { data: "clabe" },
+                    { data: "razonSocial" },
+                    { data: "cuentasAsignadas" }
+                ]
+            });
+
+            $('#btnConsultarTrimestre').click(function () {
+                var Trimestre = $('#Trimestre').val();
+                $('#spin').removeClass('d-none');
+
+                $.ajax({
+                    url: '/BO_Formulario/parIndirectosCuentasFiltro',
+                    method: 'Post',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ Trimestre: Trimestre }),
+                    success: function (response) {
+                        table.clear().draw();
+
+                        if (response.data && response.data.length > 0) {
+                            table.rows.add(response.data).draw();
+                        } else {
+                            swal({
+                                title: "Sin registros",
+                                text: "No se encontraron registros para las fechas seleccionadas.",
+                                type: "error",
+                                confirmButtonColor: "#DD6B55",
+                                closeOnConfirm: true
+                            });
+                        }
+
+                        $('#spin').addClass('d-none');
+                    },
+                    error: function (xhr, status, error) {
+                        swal({
+                            title: "Error",
+                            text: "Ocurrió un error al consultar los datos.",
+                            type: "error",
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: true
+                        });
+                        $('#spin').addClass('d-none');
+                    }
+                });
+            });
+
+          
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            function generarArchivo(tipo) {
+                var trimestreSeleccionado = $('#Trimestre').val();
+
+                if (trimestreSeleccionado === "Selecciona un trimestre") {
+                    swal("Advertencia", "Por favor selecciona un trimestre", "warning");
+                    return;
+                }
+
+                var requestData = {
+                    Trimestre: trimestreSeleccionado, // Asegúrate que el campo coincide
+                    Tipo: tipo                        // Asegúrate que el campo coincide
+                };
+                $.ajax({
+                    type: 'POST',
+                    url: '/BO_Formulario/GenerarArchivo',
+                    data: JSON.stringify(requestData),
+                    contentType: 'application/json',
+                    xhrFields: {
+                        responseType: 'blob'  // Para manejar la descarga de archivos binarios
+                    },
+                    beforeSend: function () {
+                        $('#spin').removeClass('d-none');
+                    },
+                    success: function (blob, status, xhr) {
+                        $('#spin').addClass('d-none');
+
+                        var filename = "";
+                        var disposition = xhr.getResponseHeader('Content-Disposition');
+                        if (disposition && disposition.indexOf('attachment') !== -1) {
+                            var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                            var matches = filenameRegex.exec(disposition);
+                            if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+                        }
+
+                        var link = document.createElement('a');
+                        var url = window.URL.createObjectURL(blob);
+                        link.href = url;
+                        link.download = filename || 'archivo_generado';
+                        document.body.appendChild(link);
+                        link.click();
+                        window.URL.revokeObjectURL(url);
+                        link.remove();
+                    },
+                    error: function (xhr, status, error) {
+                        $('#spin').addClass('d-none');
+                        swal("Error", "Hubo un problema al generar el archivo", "error");
+                    }
+                });
+            }
+
+            // Generar Word
+            $('#word').click(function (e) {
+                e.preventDefault();
+                generarArchivo('word');
+  
+            });
+
+            // Generar PDF
+            $('#pdf').click(function (e) {
+                e.preventDefault();
+                generarArchivo('pdf');
+           
+            });
+        });
+    </script>
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#btnGenerar').click(function (e) {
+                e.preventDefault();
+          
+                // Obtener el trimestre seleccionado
+                var trimestreSeleccionado = $('#Trimestre').val();
+
+                if (trimestreSeleccionado === "Selecciona un trimestre") {
+                    swal("Advertencia", "Por favor selecciona un trimestre", "warning");
+                    return;
+                }
+
+                // Obtener los datos de la tabla
+                var tableData = [];
+                $('#example2 tbody tr').each(function () {
+                    var idParticipante = $(this).find('td:eq(0)').text();
+                    var clabe = $(this).find('td:eq(1)').text();
+                    var razonSocial = $(this).find('td:eq(2)').text();
+
+                    // Solo añadir si hay datos válidos
+                    if (idParticipante && clabe && razonSocial) {
+                        tableData.push({
+                            idParticipante: idParticipante
+                        });
+                    }
+                });
+
+                // Validar si hay datos
+                if (tableData.length > 0) {
+                    // Añadir el trimestre al objeto que se enviará
+                    var requestData = {
+                        trimestre: trimestreSeleccionado,  // Añadir trimestre
+                        participantes: tableData           // Añadir datos de la tabla
+                    };
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '/BO_Formulario/parIndirtoGeneraGrupo',
+                        contentType: 'application/json',
+                        data: JSON.stringify(requestData),  // Enviar trimestre y datos de la tabla
+                        beforeSend: function () {
+                            $('#spin').removeClass('d-none');
+                        },
+                        success: function (response) {
+                            $('#spin').addClass('d-none');
+
+                            // Procesar la respuesta del backend
+                            if (response.responseCode === "ERROR") {
+                                // Mostrar mensaje de error con la descripción
+                                swal("Error", response.descripcion, "error");
+                            } else {
+                                // Mostrar mensaje de éxito
+                                swal("Éxito", "Grupo generado correctamente", "success");
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            $('#spin').addClass('d-none');
+                            // Mensaje de error genérico
+                            swal("Error", "Hubo un problema al generar el grupo", "error");
+                        }
+                    });
+                } else {
+                    swal("Advertencia", "No hay datos en la tabla para enviar", "warning");
+                }
+            });
+        });
+    </script>
+    <!-- formulario fin dos   -->
+    <!-- formulario inicio 3   -->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var table = $('#example3').DataTable({
+                language: {
+                    url: "../lib/Spanish.json"
+                },
+                columns: [
+                    { data: "idParticipante" },
+                    { data: "clabe" },
+                    { data: "razonSocial" },
+                    { data: "cuentasBajas" }
+                ]
+            });
+
+            $('#btnConsultarTrimestreBaja').click(function () {
+                var Trimestre = $('#Trimestre3').val();
+                $('#spin').removeClass('d-none');
+
+                $.ajax({
+                    url: '/BO_Formulario/parIndirectosCuentasFiltroBajas',
+                    method: 'Post',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ Trimestre: Trimestre }),
+                    success: function (response) {
+                        table.clear().draw();
+
+                        if (response.data && response.data.length > 0) {
+                            table.rows.add(response.data).draw();
+                        } else {
+                            swal({
+                                title: "Sin registros",
+                                text: "No se encontraron registros para las fechas seleccionadas.",
+                                type: "error",
+                                confirmButtonColor: "#DD6B55",
+                                closeOnConfirm: true
+                            });
+                        }
+
+                        $('#spin').addClass('d-none');
+                    },
+                    error: function (xhr, status, error) {
+                        swal({
+                            title: "Error",
+                            text: "Ocurrió un error al consultar los datos.",
+                            type: "error",
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: true
+                        });
+                        $('#spin').addClass('d-none');
+                    }
+                });
+            });
+
+
+        });
+    </script>
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#btnGenerar3').click(function (e) {
+                e.preventDefault();
+
+                // Obtener el trimestre seleccionado
+                var trimestreSeleccionado = $('#Trimestre3').val();
+
+                if (trimestreSeleccionado === "Selecciona un trimestre") {
+                    swal("Advertencia", "Por favor selecciona un trimestre", "warning");
+                    return;
+                }
+
+                // Obtener los datos de la tabla
+                var tableData = [];
+                $('#example3 tbody tr').each(function () {
+                    var idParticipante = $(this).find('td:eq(0)').text();
+                    var clabe = $(this).find('td:eq(1)').text();
+                    var razonSocial = $(this).find('td:eq(2)').text();
+
+                    // Solo añadir si hay datos válidos
+                    if (idParticipante && clabe && razonSocial) {
+                        tableData.push({
+                            idParticipante: idParticipante
+                        });
+                    }
+                });
+
+                // Validar si hay datos
+                if (tableData.length > 0) {
+                    // Añadir el trimestre al objeto que se enviará
+                    var requestData = {
+                        trimestre: trimestreSeleccionado,  // Añadir trimestre
+                        participantes: tableData           // Añadir datos de la tabla
+                    };
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '/BO_Formulario/parIndirtoGeneraGrupoBajas',
+                        contentType: 'application/json',
+                        data: JSON.stringify(requestData),  // Enviar trimestre y datos de la tabla
+                        beforeSend: function () {
+                            $('#spin').removeClass('d-none');
+                        },
+                        success: function (response) {
+                            $('#spin').addClass('d-none');
+
+                            // Procesar la respuesta del backend
+                            if (response.responseCode === "ERROR") {
+                                // Mostrar mensaje de error con la descripción
+                                swal("Error", response.descripcion, "error");
+                            } else {
+                                // Mostrar mensaje de éxito
+                                swal("Éxito", "Grupo generado correctamente", "success");
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            $('#spin').addClass('d-none');
+                            // Mensaje de error genérico
+                            swal("Error", "Hubo un problema al generar el grupo", "error");
+                        }
+                    });
+                } else {
+                    swal("Advertencia", "No hay datos en la tabla para enviar", "warning");
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            function generarArchivo3(tipo) {
+                var trimestreSeleccionado = $('#Trimestre3').val();
+
+                if (trimestreSeleccionado === "Selecciona un trimestre") {
+                    swal("Advertencia", "Por favor selecciona un trimestre", "warning");
+                    return;
+                }
+
+                var requestData = {
+                    Trimestre: trimestreSeleccionado, // Asegúrate que el campo coincide
+                    Tipo: tipo                        // Asegúrate que el campo coincide
+                };
+                $.ajax({
+                    type: 'POST',
+                    url: '/BO_Formulario/GenerarArchivo3',
+                    data: JSON.stringify(requestData),
+                    contentType: 'application/json',
+                    xhrFields: {
+                        responseType: 'blob'  // Para manejar la descarga de archivos binarios
+                    },
+                    beforeSend: function () {
+                        $('#spin').removeClass('d-none');
+                    },
+                    success: function (blob, status, xhr) {
+                        $('#spin').addClass('d-none');
+
+                        var filename = "";
+                        var disposition = xhr.getResponseHeader('Content-Disposition');
+                        if (disposition && disposition.indexOf('attachment') !== -1) {
+                            var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                            var matches = filenameRegex.exec(disposition);
+                            if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+                        }
+
+                        var link = document.createElement('a');
+                        var url = window.URL.createObjectURL(blob);
+                        link.href = url;
+                        link.download = filename || 'archivo_generado';
+                        document.body.appendChild(link);
+                        link.click();
+                        window.URL.revokeObjectURL(url);
+                        link.remove();
+                    },
+                    error: function (xhr, status, error) {
+                        $('#spin').addClass('d-none');
+                        swal("Error", "Hubo un problema al generar el archivo", "error");
+                    }
+                });
+            }
+
+            // Generar Word
+            $('#word3').click(function (e) {
+                e.preventDefault();
+                generarArchivo3('word');
+
+            });
+
+            // Generar PDF
+            $('#pdf3').click(function (e) {
+                e.preventDefault();
+                generarArchivo3('pdf');
+
+            });
+        });
+    </script>
+
+
+
+}
+

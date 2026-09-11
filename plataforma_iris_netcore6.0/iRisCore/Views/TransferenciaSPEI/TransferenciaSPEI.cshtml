@@ -1,0 +1,153 @@
+﻿
+@{
+    ViewData["Title"] = "TransferenciaSPEI";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h5>Transferencia de SpeiOut</h5>
+<div id="emailHelp" class="form-text">Generación de Operaciones SpeiOut.</div>
+  <div class="card-box">
+    <div class="card-body">
+        <form class="" id="Formulario">
+           
+            <div class="row g-1">
+
+                <div class="col-sm-12">
+                    <div class="form-floating mb-3">
+                        <input class="form-control" type="text" name="cuentaOrigen" id="cuentaOrigen" placeholder=" Cuenta Origen" maxlength="18">
+                        <label for="floatingInput">Cuenta Origen</label>
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="row g-3">
+                <div class="col-sm-3">
+                    <div class="form-floating">
+                        <input class="form-control" type="text" name="cuentaBeneficiaria" id="cuentaBeneficiaria" placeholder="Cuenta Beneficiaria" maxlength="18">
+                        <label for="floatingInput">Cuenta Beneficiaria</label>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-floating">
+                        <input class="form-control" type="text" name="monto" id="monto" placeholder="Referencia" maxlength="10">
+                        <label for="floatingPassword">Monto</label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-floating">
+                        <input class="form-control" type="text" name="nombreBenefSpeiDestino" id="nombreBenefSpeiDestino" placeholder="Beneficiario" maxlength="40">
+                        <label for="floatingPassword">Nombre del Beneficiario</label>
+                    </div>
+                </div>
+            </div>
+
+            <br />
+
+            <div class="row g-3">
+                <div class="col-sm-3">
+                    <div class="form-floating">
+                        <input class="form-control" type="text" name="rfcBenefSpeiDestino" id="rfcBenefSpeiDestino" placeholder="RFC Beneficiario" maxlength="13">
+                        <label for="floatingPassword">RFC Beneficiario</label>
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="form-floating">
+                        <input class="form-control" type="text" name="conceptoPago" id="conceptoPago" placeholder="Concepto Spei" maxlength="40">
+                        <label for="floatingPassword">Concepto Spei Out</label>
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="form-floating">
+                        <input class="form-control" type="text" name="correoBenefSpeiDestino" id="correoBenefSpeiDestino" placeholder="eMail Beneficiario" >
+                        <label for="floatingPassword">e-mail Beneficiario</label>
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="row g-2">
+                <div class="col-sm-4">
+                    <button type="button" id="ExecuteRequest" class="btn btn-success waves-effect waves-light">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Operación
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    </div>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+
+    js(document).ready(function () {
+
+        js(document).on('click', '.confirm', function () {
+            var myH2 = document.getElementsByTagName('h2')[0].innerHTML;
+            if (myH2 == 'Exito') {
+                js("#Formulario")[0].reset();
+            }
+        });
+
+
+        js('#ExecuteRequest').on("click", function (event) {
+            event.preventDefault();
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+
+            var url = "@Url.Action("TransferenciaSPEI","TransferenciaSPEI")";
+
+            var info = new Object();
+            info.cuentaOrigen = js("#cuentaOrigen").val();
+            info.cuentaBeneficiaria = js("#cuentaBeneficiaria").val();
+            info.monto = js("#monto").val();
+            info.nombreBenefSpeiDestino = js("#nombreBenefSpeiDestino").val();
+            info.rfcBenefSpeiDestino = js("#rfcBenefSpeiDestino").val();
+            info.conceptoPago = js("#conceptoPago").val();
+            info.correoBenefSpeiDestino = js("#correoBenefSpeiDestino").val();
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: info,
+                success: function (data) {                   
+                    if (data.codigo != 0) {
+                        swal({
+                            title: "Error",
+                            text: data.mensaje,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+                    else {
+
+                        swal({
+                            title: "Exito",
+                            text: "Cuenta Origen:" + data.cuentaOrigen + " - Cuenta Beneficiario: " + data.cuentaBeneficiario + " - Importe: " + data.monto + " - Banco Destino: " + data.bancoDestino + " - Clave Rastreo: " + data.claveRastreo,
+                            type: "success",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+                    js("#ExecuteRequest").attr('disabled', false);
+                    js("#spin").addClass("visually-hidden");
+                }
+            });
+
+        });
+
+
+    });
+</script>

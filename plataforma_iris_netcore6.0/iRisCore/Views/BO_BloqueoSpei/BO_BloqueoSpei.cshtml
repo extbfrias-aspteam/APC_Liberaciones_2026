@@ -1,0 +1,159 @@
+﻿
+@{
+    ViewData["Title"] = "BO_BloqueoSpei";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div>
+    <h3>Bloqueo y Desbloqueo del Servicio SPEI</h3>
+    Servicio que permite bloquear el servicio del SPEI por participante.
+</div>
+
+<div class="card-box">
+    <div class="card-body">
+
+        <form id="formulario">
+            <div class="row g-3">
+                <div class="col-sm-3">
+                    <select class="form-select" name="participantes" id="participantes" disabled>
+                        <option value="-1" selected disabled>Seleccione al participante...</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <select class="form-select" name="tipoBloqueo" id="tipoBloqueo" aria-label="Default select example">
+                        <option selected>Seleccione</option>
+                        <option value="BLOQUEO">Bloquear Servicio</option>
+                        <option value="DESBLOQUEO">Desbloquear Servicio</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <select class="form-select" name="tipoSpei" id="tipoSpei" aria-label="Default select example">
+                        <option value="TODOS" selected>TODOS</option>
+                        <option value="SPEI_IN">SPEI IN</option>
+                        <option value="SPEI_OUT">SPEI OUT</option>
+                    </select>
+                </div>
+                <div class="col-sm-3" id="dCuentaMotivo">
+                    <input class="form-control" type="text" name="bloqueoMotivo" id="bloqueoMotivo" placeholder="Motivo" aria-label="default input example">
+                </div>
+                <div class="col-sm-2">
+                    <button type="submit" class="btn btn-success" id="ExecuteRequest">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Operación
+                    </button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts{
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script>
+
+    var js = jQuery.noConflict(true);
+
+    $(document).ready(function () {
+
+        js("#participantes").attr('disabled', true);
+
+        js.ajax({
+            type: "GET",
+            url: '@Url.Action("GetParticipantes", "BO_BloqueoSpei")',
+            dataType: "json",
+            success: function (data) {
+                if (data.result.codigo > 0) {
+                    var select = js('#participantes');
+                    select.empty();
+                    select.append('<option value="-1" selected disabled>Seleccione al participante...</option>');
+                    js.each(data.result.data, function (index, udn) {
+                        select.append(js('<option>', {
+                            value: udn.id,
+                            text: udn.descripcion.trim(),
+                        }));
+                    });
+
+                    js("#participantes").attr('disabled', false);
+                }
+                else if (data.result.codigo == -1) {
+                    console.error('Error:', data.result.mensaje);
+                }
+                else {
+                    swal({
+                        title: "Error",
+                        text: data.result.mensaje,
+                        type: "warning",
+                        showCancelButton: false,
+                        confirmButtonColor: "#DD6B55",
+                        closeOnConfirm: false
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+
+        js('#ExecuteRequest').on("click", function (event) {
+            event.preventDefault();
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+
+            if ($('#participantes').val() != 'Seleccione al participante...' && $("#tipoBloqueo").val() != 'Seleccione' && $("#bloqueoMotivo").val() != '') {
+
+                var url = "@Url.Action("BloqueoSpei","BO_BloqueoSpei")";
+
+                var data = new Object();
+
+                data.tipoOperacion = js("#tipoSpei").val();
+                data.idPblu = js("#participantes").val();
+                data.descripcion = js("#bloqueoMotivo").val();
+                data.accion =js("#tipoBloqueo").val();
+
+                console.log(data);
+
+                js.ajax({
+                    type: "POST",
+                    url: url,
+                    dataType: "json",
+                    data: data,
+                    success: function (data) {
+                        if (data.eiyuResponseCode == "OK") {
+                            swal({
+                                title: "Exito",
+                                text: data.descripcion,
+                                type: "success",
+                                showCancelButton: false,
+                                confirmButtonColor: "#DD6B55",
+                                closeOnConfirm: false
+                            });
+                        }
+                        else {
+                            swal({
+                                title: "ERROR_CLABE",
+                                text: data.descripcion,
+                                type: "warning",
+                                showCancelButton: false,
+                                confirmButtonColor: "#DD6B55",
+                                closeOnConfirm: false
+                            });
+                        }
+                        js("#ExecuteRequest").attr('disabled', false);
+                        js("#spin").addClass("visually-hidden");
+                        var inputMotivo = document.getElementById("bloqueoMotivo");
+                        inputMotivo.value = "";
+                    }
+                });
+            }
+            else {
+                alert('Llene los campos necesarios');
+                js("#ExecuteRequest").attr('disabled', false);
+                js("#spin").addClass("visually-hidden");
+            }
+        });
+    });
+</script>
+}

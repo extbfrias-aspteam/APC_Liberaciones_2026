@@ -1,0 +1,80 @@
+﻿
+@{
+    ViewData["Title"] = "WSConsultaCVV";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h5>Consulta CVV</h5>
+<div id="emailHelp" class="form-text">WebService que permitirá obtener el CVV una Tarjeta Virtual.</div>
+<div class="card-box">
+    <div class="card-body">
+        <form class="">
+            <div class="row g-2">
+                <div class="col-sm-6">
+                    <input class="form-control" type="password" id="numeroTarjeta" name="numeroTarjeta" placeholder="Número de Tarjeta" aria-label="default input example">
+                </div>
+
+                <div class="col-sm-6">
+                    <button type="submit" id="ExecuteRequest" class="btn btn-success">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Operación</button>
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+
+    js(document).ready(function () {
+        js('#ExecuteRequest').on("click", function (event) {
+            event.preventDefault();
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+
+            var url = "@Url.Action("WSConsultaCVV","WSConsultaCVV")";
+
+            var data = new Object();           
+            data.tarjeta = js("#numeroTarjeta").val();
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: data,
+                success: function (data) {                    
+                    if (data.codigo != 0) {
+                        swal({
+                            title: "Error",
+                            text: data.mensaje,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+                    else {                       
+                        
+                        swal({
+                            title: "Exito",
+                            text: "CVV: " + data.valorD2,
+                            type: "success",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+                    js("#ExecuteRequest").attr('disabled', false);
+                    js("#spin").addClass("visually-hidden");
+                }
+            });
+
+        });
+    });
+</script>

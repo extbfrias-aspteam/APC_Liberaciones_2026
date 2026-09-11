@@ -1,0 +1,199 @@
+﻿
+@{
+    ViewData["Title"] = "WSFondeoTarjeta";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h5>Abono [Fondeo] a Tarjeta</h5>
+<div id="emailHelp" class="form-text">WebService que permitirá realizar un abono o fondeo a la cuenta.</div>
+
+<div class="card-box">
+    <div class="card-body">
+        <form id="Formulario" class="">
+
+            <div class="row g-1">
+                <div class="col-sm-12">
+                    <select class="form-select" name="tipoMedio" id="tipoMedio" aria-label="Default select example">
+                        <option selected>Seleccione el Medio</option>
+                        <option value="T">Tarjeta</option>
+                        <option value="O">Otro Medio de Disposición</option>
+                    </select>
+                </div>
+            </div>
+            <div id="salto1">
+                <br />
+            </div>
+            <div class="row g-1" id="tipTarjeta">
+                <div class="col-sm-12">
+                    <input type="password" name="numeroTarjeta" id="numeroTarjeta" class="form-control" placeholder="Número de tarjeta" maxlength="16" value="">
+                </div>               
+            </div>
+            <div id="salto2">
+                <br />
+            </div>
+
+            <div class="row g-2" id="tipMedioAcceso">
+                <div class="col-sm-4">
+                    <input type="text" name="tipoMedioAcceso" id="tipoMedioAcceso" class="form-control" placeholder="Tipo medio de acceso" maxlength="5" value="">
+                </div>
+                <div class="col-sm-8">
+                    <input type="text" name="medioAcceso" id="medioAcceso" class="form-control" placeholder="Clave medio de acceso" maxlength="50" value="">
+                </div>
+            </div>
+            <div id="salto3">
+                <br />
+            </div>
+
+            <div class="row g-3" id="info">
+                <div class="col-sm-2">
+                    <input type="text" name="importe" id="importe" class="form-control" placeholder="Importe del fondeo" maxlength="6">
+                </div>
+                <div class="col-sm-2">
+                    <input type="text" name="referenciaNumerica" id="referenciaNumerica" class="form-control" placeholder="Referencia" maxlength="10">
+                </div>
+                <div class="col-sm-8">
+                    <input type="text" name="observaciones" id="observaciones" class="form-control" placeholder="Concepto" maxlength="50">
+                </div>                
+            </div>
+            <div id="salto4">
+                <br />
+            </div>
+
+            <div class="row g-3" id="btnEjecutar">
+                <div class="col-sm-2">
+                    <button type="submit" id="ExecuteRequest" class="btn btn-success">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Operación</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+
+    js(document).ready(function () {
+
+        limpiarView();
+
+        function limpiarView() {
+            js("#tipMedioAcceso").addClass("visually-hidden");
+            js("#tipTarjeta").addClass("visually-hidden");
+            js("#numTarjeta").addClass("visually-hidden");
+            js("#info").addClass("visually-hidden");
+            js("#btnEjecutar").addClass("visually-hidden");
+            js("#salto1").addClass("visually-hidden");
+            js("#salto2").addClass("visually-hidden");
+            js("#salto3").addClass("visually-hidden");
+            js("#salto4").addClass("visually-hidden");
+        }
+
+        js(document).on('change', '#tipoMedio', function () {
+            js("#tabla").addClass("visually-hidden");
+
+            if (js("#tipoMedio").val() == 'T') {
+                js("#salto1").removeClass("visually-hidden");
+                js("#salto2").removeClass("visually-hidden");
+                js("#salto3").addClass("visually-hidden");
+                js("#salto4").removeClass("visually-hidden");
+
+
+                js("#tipMedioAcceso").addClass("visually-hidden");
+                js("#tipTarjeta").removeClass("visually-hidden");
+                js("#numTarjeta").removeClass("visually-hidden");
+                js("#info").removeClass("visually-hidden");
+                js("#btnEjecutar").removeClass("visually-hidden");
+
+            } else if (js("#tipoMedio").val() == 'O') {
+                js("#salto1").addClass("visually-hidden");
+                js("#salto2").removeClass("visually-hidden");
+                js("#salto3").removeClass("visually-hidden");
+                js("#salto4").removeClass("visually-hidden");
+                js("#tipMedioAcceso").removeClass("visually-hidden");
+                js("#tipTarjeta").addClass("visually-hidden");
+                js("#numTarjeta").addClass("visually-hidden");
+                js("#info").removeClass("visually-hidden");
+                js("#btnEjecutar").removeClass("visually-hidden");
+            } else {
+                js("#salto1").addClass("visually-hidden");
+                js("#salto2").addClass("visually-hidden");
+                js("#salto3").addClass("visually-hidden");
+                js("#salto4").addClass("visually-hidden");
+                js("#tipMedioAcceso").addClass("visually-hidden");
+                js("#tipTarjeta").addClass("visually-hidden");
+                js("#numTarjeta").addClass("visually-hidden");
+                js("#info").addClass("visually-hidden");
+                js("#btnEjecutar").addClass("visually-hidden");
+            }
+        });
+
+        js(document).on('click', '.confirm', function () {
+            var myH2 = document.getElementsByTagName('h2')[0].innerHTML;
+            if (myH2 == 'Exito')
+            {
+                limpiarView();
+                js("#Formulario")[0].reset();
+            }
+        });
+
+
+        js('#ExecuteRequest').on("click", function (event) {
+            event.preventDefault();
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+
+            var url = "@Url.Action("WSFondeoTarjeta","WSFondeoTarjeta")";
+
+            var info = new Object();
+            info.numeroTarjeta = js("#numeroTarjeta").val();
+            info.tipoMedioAcceso = js("#tipoMedioAcceso").val();
+            info.MedioAcceso = js("#medioAcceso").val();
+            info.importe = js("#importe").val();
+            info.referenciaNumerica = js("#referenciaNumerica").val();
+            info.observaciones = js("#observaciones").val();
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: { model: info, tipoMedio: js("#tipoMedio").val() },
+                success: function (data) {  
+                    console.log(data);
+                    if (data.codigo != 0) {
+                        swal({
+                            title: "Error",
+                            text: data.mensaje,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+                    else {
+
+                        swal({
+                            title: "Exito",
+                            text: "Abono aplicado con éxito. Id Solicitud:" + data.idSolicitud + " - Tarjeta: " + data.tarjeta + " - Importe Abonado: " + data.importe + ' - Saldo Final: ' + data.saldoFinal,
+                            type: "success",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+                    js("#ExecuteRequest").attr('disabled', false);
+                    js("#spin").addClass("visually-hidden");
+                }                
+            });
+
+        });
+
+
+    });
+</script>

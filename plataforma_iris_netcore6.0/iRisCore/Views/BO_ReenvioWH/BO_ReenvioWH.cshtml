@@ -1,0 +1,455 @@
+﻿@{
+    ViewData["Title"] = "BO_ReenvioWH";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Estilos {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.3.1/css/select.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <style>
+        .dt-button {
+            display: none !important;
+            /* Oculta el botón de exportación */
+        }
+    </style>
+}
+
+<h5>Reenvío de WH</h5>
+<div class="form-text">Servicio que permite consultar y realizar el envío de los WB.</div>
+
+<div class="card-box">
+    <div class="card-body">
+        <form id="Formulario" class="">
+            <div class="row g-2">
+                <div class="col-sm-4">
+                    <select class="form-select" name="participantes" id="participantes">
+                        <option value="-1" selected disabled>Participante</option>
+                        <option value="0">Todos</option>
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <select class="form-select" name="operaciones" id="operaciones">
+                        <option value="-1" selected disabled>Tipo Operación</option>
+                        <option value="SPEI IN">SPEI IN</option>
+                        <option value="SPEI OUT">SPEI OUT</option>
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <input id="fchIni" name="fchIni" class="form-control" type="date" />
+                </div>
+                <div class="col-sm-2">
+                    <input id="fchFin" name="fchFin" class="form-control" type="date" />
+                </div>
+                <div class="col-sm-2">
+                    <select class="form-select" name="estatus" id="estatus">
+                        <option value="-1" selected disabled>Estatus</option>
+                        <option value="true">Confirmado</option>
+                        <option value="false">No Confirmado</option>
+                    </select>
+                </div>
+                <div class="col-sm-12">
+                    <button type="submit" id="ExecuteRequest" class="btn btn-success" disabled>
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Operación
+                    </button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-2">
+        <button type="button" id="ReenviarWH" class="btn btn-warning" disabled>
+            <span id="spinWH" class="spinner-border spinner-border-sm visually-hidden"></span>
+            Reenviar
+        </button>
+    </div>
+    <div class="col-2 d-flex align-items-center">
+        <div class="form-group">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="selTodo" id="selTodo" disabled>
+                <label class="form-check-label" for="selTodo">
+                    Seleccionar todo
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="col-8 d-flex justify-content-end align-items-center">
+        <a href="#" id="downloadCsv">Descargar Resultado</a>
+    </div>
+</div>
+
+<div class="row gx-5 " id="tabla" style="white-space: nowrap">
+    <table id="example" class="display" style="width: 100%;">
+        <thead>
+            <tr>
+                <th>Sel</th>
+                <th>Clave de Rastreo</th>
+                <th>Tipo de operación</th>
+                @* <th>Request</th>
+                <th>Response</th> *@
+                <th>Estatus</th>
+                <th>Monto</th>
+                <th>Respuesta</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.1.0/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.1.0/js/buttons.html5.min.js"></script>
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+
+    js(document).ready(function () {
+        var table = js('#example').DataTable({
+            destroy: true,
+            responsive: true,
+            scrollX: true,
+            ordering: true,
+            paging: true,
+            language: {
+                "url": "../lib/Spanish.json"
+            },
+            columns: [
+                {
+                    data: null,
+                    defaultContent: '',
+                    orderable: false,
+                    className: 'select-checkbox',
+                    targets: 0
+                },
+                { data: 'clave' },
+                {
+                    data: 'tipoOperacion',
+                    render: function (data, type, row, meta) {
+                        return data === 'IN' ? 'SPEI IN' : 'SPEI OUT';
+                    }
+                },
+                // { data: 'jsonRequest' },
+                // { data: 'jsonResponse' },
+                {
+                    data: 'estatus',
+                    render: function (data, type, row, meta) {
+                        return data ? 'Confirmado' : 'No confirmado';
+                    }
+                },
+                { data: 'monto' },
+                { data: 'respuesta' },
+            ],
+            dom: 'lfrtipB', // Incluye el selector de longitud de registros (l), filtro (f), información (i), paginación (p) y botones (B)
+            buttons: [
+                {
+                    extend: 'csvHtml5',
+                    text: 'Descargar resultado',
+                    exportOptions: {
+                        columns: ':not(:first-child)', // Excluye la primera columna (checkbox)
+                        modifier: {
+                            search: 'applied', // Exportar solo los datos filtrados
+                            order: 'applied', // Exportar en el orden aplicado
+                            page: 'all' // Exportar todos los datos sin paginación
+                        },
+                        format: {
+                            body: function (data, row, column, node) {
+                                // Convertir true/false a Confirmado/No confirmado
+                                return data === 'true' ? 'Confirmado' : (data === 'false' ? 'No confirmado' : data);
+                            }
+                        }
+                    }
+                }
+            ],
+            select: {
+                style: 'multi',
+                selector: 'td:first-child'
+            },
+        });
+
+
+        js.ajax({
+            type: "GET",
+            url: '@Url.Action("GetParticipantes", "BO_ConfigNotif")',
+            dataType: "json",
+            success: function (data) {
+                if (data.result.codigo > 0) {
+                    var select = js('#participantes');
+                    select.empty();
+                    select.append('<option value="-1" selected disabled>Participante</option>');
+                    select.append(js('<option>', {
+                        value: 0,
+                        text: "Todos",
+                    }));
+
+                    if (data.result.data.length > 0) {
+                        data.result.data.sort((a, b) => {
+                            const nombreA = a.descripcion?.toLowerCase() || a.nombreComercial?.toLowerCase() || "";
+                            const nombreB = b.descripcion?.toLowerCase() || b.nombreComercial?.toLowerCase() || "";
+                            return nombreA.localeCompare(nombreB);
+                        });
+                    }
+
+                    js.each(data.result.data, function (index, udn) {
+                        select.append(js('<option>', {
+                            value: udn.id,
+                            text: udn.descripcion.trim(),
+                        }));
+                    });
+
+                }
+                else if (data.result.codigo == -1) {
+                    console.error('Error:', data.result.mensaje);
+                }
+                else {
+                    swal({
+                        title: "Error",
+                        text: data.result.mensaje,
+                        type: "warning",
+                        showCancelButton: false,
+                        confirmButtonColor: "#DD6B55",
+                        closeOnConfirm: false
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+
+        function validFields() {
+            js("#ExecuteRequest").attr('disabled', true);
+            if (participantes.value != "-1")
+                if (operaciones.value != "-1")
+                    if (fchIni.value != "" || fchFin.value != "")
+                        if (estatus.value != "-1")
+                            js("#ExecuteRequest").attr('disabled', false);
+        }
+
+        function convertirFecha(fechaInput) {
+            let fecha = new Date(fechaInput + "T00:00:00");
+
+            let dia = fecha.getDate();
+            let mes = fecha.getMonth() + 1;
+            let año = fecha.getFullYear();
+
+            dia = dia < 10 ? '0' + dia : dia;
+            mes = mes < 10 ? '0' + mes : mes;
+            return dia + '/' + mes + '/' + año;
+        }
+
+        js('#participantes').on('change', function () { validFields(); table.clear(); table.draw() });
+        js('#operaciones, #fchIni, #fchFin, #estatus').on('change', function () { validFields(); });
+
+        function enableRowSelection() {
+            js('#example tbody').on('click', 'tr', function () {
+                if (!js(event.target).hasClass("select-checkbox")) {
+                    var row = table.row(this);
+                    if (js(this).hasClass('selected')) {
+                        row.deselect();
+                    } else {
+                        row.select();
+                    }
+                }
+            });
+        }
+
+        function disableRowSelection() {
+            table.select.style('api');
+            js('#example tbody').off('click', 'tr');
+        }
+
+        js('#selTodo').on('click', function () {
+            if (this.checked) {
+                table.rows({ search: 'applied' }).select();
+            } else {
+                table.rows({ search: 'applied' }).deselect();
+            }
+        });
+
+        table.on('select deselect', function () {
+            var allSelected = table.rows({ search: 'applied' }).count() === table.rows({ search: 'applied', selected: true }).count();
+            js('#selTodo').prop('checked', allSelected);
+            updateReenviarButton();
+        });
+
+        function updateReenviarButton() {
+            var anySelected = table.rows({ selected: true }).count() > 0;
+            js('#ReenviarWH').prop('disabled', !anySelected);
+        }
+
+        function actualizarTabla() {
+            table.clear();
+            table.draw();
+
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest, #participantes, #operaciones, #fchIni, #fchFin, #estatus, #ReenviarWH, #selTodo").attr('disabled', true);
+            js('#selTodo').prop('checked', false);
+
+            var data = new Object();
+            data.idPblu = participantes.value;
+            data.tipoOperacion = operaciones.value;
+            data.fchInicio = fchIni.value;
+            data.fchFin = fchFin.value;
+            data.estatus = estatus.value;
+
+            js.ajax({
+                type: "POST",
+                url: '@Url.Action("GetListWH", "BO_ReenvioWH")',
+                dataType: "json",
+                data: data,
+                success: function (data) {
+                    if (data.result.codigo == 1) {
+                        table.rows.add(data.result.data);
+                        table.draw();
+                        if (data.result.data.length > 0)
+                            js("#selTodo").attr('disabled', false);
+                    }
+                    else if (data.result.codigo == -1) {
+                        console.error('Error:', data.result.mensaje);
+                    }
+                    else {
+                        swal({
+                            title: "Error",
+                            text: data.result.mensaje,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                },
+                complete: function (xhr, status) {
+                    js("#spin").addClass("visually-hidden");
+                    js("#ExecuteRequest, #participantes, #operaciones, #fchIni, #fchFin, #estatus").attr('disabled', false);
+                }
+            });
+        }
+
+        js('#ExecuteRequest').on('click', function (event) {
+            event.preventDefault();
+            actualizarTabla();
+        });
+
+        js('#ReenviarWH').on('click', function (event) {
+            event.preventDefault();
+
+            var selectedData = table.rows({ selected: true }).data().toArray();
+
+            js("#spinWH").removeClass("visually-hidden");
+            js("#ReenviarWH, #selTodo").attr('disabled', true);
+            disableRowSelection();
+
+            var data = selectedData.map(function (row) {
+                return {
+                    idPblu: participantes.value,
+                    cveRastreo: row.clave,
+                    tipoOperacion: "SPEI " + row.tipoOperacion
+                };
+            });
+
+            console.log('Selected rows data:', data);
+
+            js.ajax({
+                type: "POST",
+                url: '@Url.Action("ReenviarWH", "BO_ReenvioWH")',
+                contentType: "application/json",
+                dataType: "json",
+                data: JSON.stringify(data),
+                success: function (data) {
+                    if (data.result.codigo == 1) {
+                        swal({
+                            title: "Exito",
+                            text: data.result.mensaje,
+                            type: "success",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+                    else if (data.result.codigo == -1) {
+                        console.error('Error:', data.result.mensaje);
+                    }
+                    else {
+                        console.error('Error:', data.result.data);
+                        // Construir el HTML para la tabla
+                        let tableHtml = `
+                                    <p>` + data.result.mensaje + `</p>
+                                    <div style="white-space: nowrap; overflow-x: scroll;">
+                                        <table class="table" style="width: 100%;">
+                                            <thead>
+                                                <tr>
+                                                    <th>IdPblu</th>
+                                                    <th>CveRastreo</th>
+                                                    <th>TipoOperacion</th>
+                                                    <th>EiyuResponseCode</th>
+                                                    <th>Content</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                    `;
+
+                        data.result.data.forEach(result => {
+                            tableHtml += `
+                                            <tr>
+                                                <td>${result.idPblu}</td>
+                                                <td>${result.cveRastreo}</td>
+                                                <td>${result.tipoOperacion}</td>
+                                                <td>${result.response.eiyuResponseCode}</td>
+                                                <td>${result.response.content}</td>
+                                            </tr>
+                                        `;
+                        });
+
+                        tableHtml += `
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    `;
+
+                        swal({
+                            title: "Error",
+                            text: tableHtml,
+                            html: true,
+                            type: "error",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+
+                    setTimeout(function () {
+                        actualizarTabla();
+                    }, 500);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                },
+                complete: function (xhr, status) {
+                    js("#spinWH").addClass("visually-hidden");
+                    js("#ReenviarWH, #selTodo").attr('disabled', false);
+                    enableRowSelection();
+                    table.select.style('multi');
+                }
+
+            });
+
+        });
+
+        js('#downloadCsv').on('click', function (e) {
+            e.preventDefault();
+            table.button('.buttons-csv').trigger();
+        });
+
+        enableRowSelection();
+    });
+
+</script>

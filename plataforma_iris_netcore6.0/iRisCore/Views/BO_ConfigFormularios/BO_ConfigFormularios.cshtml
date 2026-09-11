@@ -1,0 +1,256 @@
+﻿@{
+    ViewData["Title"] = "BO_ConfigFormulario";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Estilos {
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css" rel="stylesheet"> 
+}
+
+<h5>
+    Configuración de firmas formularios NA
+</h5>
+<div id="emailHelp" class="form-text">
+    CRUD para la administración de los nombres y puestos quienes firmarán los formularios NA de PI
+</div>
+<div class="card-box">
+    <div class="card-body">
+        <div class="row">
+            <!-- Campo oculto para almacenar el ID del firmante -->
+            <input type="hidden" id="idFirmante" name="idFirmante" />
+
+            <div class="col-md-5">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre" />
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="Cargo" name="Cargo" placeholder="Cargo o Puesto" />
+                </div>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" id="btnConsultar" class="btn btn-success w-100">
+                    Ejecutar operación
+                </button>
+            </div>
+        </div>
+
+        <!-- Nueva fila para el botón Cancelar -->
+        <div class="row mt-2">
+            <div class="col-md-2 offset-md-10">
+                <button type="button" id="btnCancelar" class="btn btn-danger w-100" style="display: none;">
+                    Cancelar Actualización
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-2">
+                    <input type="checkbox" id="Sigmatario" name="Sigmatario" />
+                    <label>¿Es Signatario actual?</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<table class="display" id="tablaEjercicios">
+    <thead>
+        <tr>
+            <th>Signatario actual</th>
+            <th>Nombre</th>
+            <th>Puesto</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var firmante in Model)
+        {
+            <tr>
+                <td>@(firmante.EsSignatario ? "Sí" : "No")</td>
+                <td>@firmante.Nombre</td>
+                <td>@firmante.Puesto</td>
+                <td>
+                    <i class="bi bi-pencil"
+                       data-id="@firmante.IdFirmante"
+                       data-nombre="@firmante.Nombre"
+                       data-puesto="@firmante.Puesto"
+                       data-essignatario="@(firmante.EsSignatario ? "Sí" : "No")"
+                       style="cursor: pointer;">
+                    </i>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var tablaEjercicios = $('#tablaEjercicios').DataTable({
+                language: {
+                    "url": "../lib/Spanish.json"
+                },
+                lengthMenu: [10, 20, 50, 100],
+                ajax: {
+                    url: '/BO_ConfigFormularios/ObtenerFirmantes',
+                    dataSrc: 'data'
+                },
+                columns: [
+                    {
+                        data: 'esSignatario',
+                        render: function (data, type, row) {
+                            return data ? "Sí" : "No";
+                        }
+                    },
+                    { data: 'nombre' },
+                    { data: 'puesto' },
+                    {
+                        data: null,
+                        render: function (data, type, row) {
+                            return `<i class="bi bi-pencil"
+                                       data-id="${data.idFirmante}"
+                                       data-nombre="${data.nombre}"
+                                       data-puesto="${data.puesto}"
+                                       data-essignatario="${data.esSignatario ? "Sí" : "No"}"
+                                       style="cursor: pointer;">
+                                    </i>`;
+                        }
+                    }
+                ]
+            });
+
+            // Evento click en el ícono de lápiz
+            $('#tablaEjercicios').on('click', '.bi-pencil', function () {
+                var idFirmante = $(this).data('id');
+                var nombre = $(this).data('nombre');
+                var puesto = $(this).data('puesto');
+                var esSignatario = $(this).data('essignatario');
+
+                $('#idFirmante').val(idFirmante);
+                $('#nombre').val(nombre);
+                $('#Cargo').val(puesto);
+
+                if (esSignatario === "Sí") {
+                    $('#Sigmatario').prop('checked', true);
+                } else {
+                    $('#Sigmatario').prop('checked', false);
+                }
+
+                // Mostrar el botón de Cancelar Actualización
+                $('#btnCancelar').show();
+            });
+
+            // Manejar la actualización o creación del firmante
+            $('#btnConsultar').click(function (e) {
+                e.preventDefault();  // Prevenir el comportamiento por defecto del botón
+
+                var idFirmante = $('#idFirmante').val();
+                var nombreFirmante = $('#nombre').val();
+                var puesto = $('#Cargo').val();
+
+                // Validar que los campos no estén vacíos
+                if (nombreFirmante.trim() === '' || puesto.trim() === '') {
+                    swal({
+                        title: "Campos Vacíos",
+                        text: "Por favor, complete todos los campos antes de continuar.",
+                        type: "warning",
+                        showCancelButton: false,
+                        confirmButtonColor: "#DD6B55",
+                        closeOnConfirm: true
+                    });
+                    return;  // Detener la ejecución si hay campos vacíos
+                }
+
+                var data = {
+                    nombreFirmante: nombreFirmante,
+                    usuario: 'Juan Vital',  // Coloca el usuario actual aquí
+                    puesto: puesto,
+                    sigmatario: $('#Sigmatario').is(':checked')
+                };
+
+                var url, method;
+                if (idFirmante) {
+                    // Si hay un ID de firmante, actualizamos
+                    data.idFirmante = idFirmante;
+                    url = '/BO_ConfigFormularios/ActualizarFirmante';
+                    method = 'PUT';
+                } else {
+                    // Si no hay ID, creamos un nuevo firmante
+                    url = '/BO_ConfigFormularios/AgregarFirmante2';
+                    method = 'POST';
+                }
+
+                $.ajax({
+                    url: url,
+                    type: method,
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success: function (response) {
+                        if (response.success) {
+                            swal({
+                                title: "Éxito",
+                                text: response.message,
+                                type: "success",
+                                showCancelButton: false,
+                                confirmButtonColor: "#DD6B55",
+                                closeOnConfirm: false
+                            });
+                            tablaEjercicios.ajax.reload();
+
+                            // Limpiar los campos del formulario después de recargar la tabla
+                            $('#idFirmante').val('');
+                            $('#nombre').val('');
+                            $('#Cargo').val('');
+                            $('#Sigmatario').prop('checked', false);
+
+                            // Ocultar el botón de Cancelar Actualización
+                            $('#btnCancelar').hide();
+                        } else {
+                            swal({
+                                title: "Error",
+                                text: response.message,
+                                type: "warning",
+                                showCancelButton: false,
+                                confirmButtonColor: "#DD6B55",
+                                closeOnConfirm: false
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                        alert('Error al realizar la operación: ' + error);
+                        swal({
+                            title: "Error en la operación",
+                            text: xhr.responseText,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+                });
+            });
+
+            // Manejar el evento click en el botón Cancelar Actualización
+            $('#btnCancelar').click(function () {
+                // Limpiar los campos del formulario
+                $('#idFirmante').val('');
+                $('#nombre').val('');
+                $('#Cargo').val('');
+                $('#Sigmatario').prop('checked', false);
+
+                // Ocultar el botón de Cancelar Actualización
+                $(this).hide();
+            });
+
+            // Ocultar el botón de Cancelar Actualización al cargar la página
+            $('#btnCancelar').hide();
+        });
+    </script>
+}

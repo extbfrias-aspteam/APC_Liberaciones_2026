@@ -1,0 +1,1803 @@
+﻿@using iRisModel
+@{
+    ViewData["Title"] = "ConsultaMA";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Estilos {
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+}
+
+<h5>Información del Cuentahabiente [Cuenta y Medios de Disposición]</h5>
+<div id="emailHelp" class="form-text">Información de la cuenta y los medios de disposición asociados.</div>
+<div class="card-box">
+    <div class="card-body">
+        <form>
+            <div class="row g-3">
+                <div class="col-sm-3">
+                    <select class="form-select" name="claveProducto" id="claveProducto" aria-label="Default select example">
+                        <option value="N" selected>Seleccione el producto</option>
+                        @if (ViewBag.Productos != null)
+                        {
+                            List<ProductoModel> oProducto = (List<ProductoModel>)ViewBag.Productos;
+                            foreach (ProductoModel item in oProducto)
+                            {
+                                <option value=@item.claveProducto>@item.descProducto</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="col-sm-3">
+                    <select class="form-select" name="tipoBusqueda" id="tipoBusqueda" aria-label="Default select example">
+                        <option selected>Tipo de búsqueda</option>
+                        <option value="RFC">RFC</option>
+                        <option value="CURP">CURP</option>
+                        <option value="Tel">Teléfono</option>
+                        <option value="ASP">Cuenta ASP</option>
+                        <option value="CLABE">Cuenta Clabe</option>
+                        <option value="PAN">PAN</option>
+                        <option value="correo">Correo</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <input class="form-control" type="text" name="valorBusqueda" id="valorBusqueda" placeholder="Valor..." aria-label="default input example">
+                </div>
+                <div class="col-sm-3">
+                    <button type="submit" class="btn btn-success" id="ExecuteRequest" disabled>
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Operación
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<br />
+
+<div class="card visually-hidden" id="cuentahabiente">
+    <div class="card-header"><strong>Información del Cuentahabiente </strong></div>
+
+    <div class="card-body">
+
+        <div class="row g-12">
+            <div class="col-sm-3">
+                <strong><label>Nombre Completo</label></strong>
+            </div>
+            <div class="col-sm-3">
+                <span id="nombreCompleto"></span>
+                <span id="numero" style="display: none;"></span>
+
+                <span id="modalDireccion1" style="display: none;"></span>
+            </div>
+            <div class="col-sm-3">
+                <strong><label>Fecha de Nacimiento</label></strong>
+            </div>
+            <div class="col-sm-3">
+                <span id="fechaNacimiento"></span>
+            </div>
+        </div>
+        <br />
+        <div class="row g-12">
+            <div class="col-sm-3">
+                <strong><label>Dirección</label></strong>
+            </div>
+            <div class="col-sm-8 d-flex justify-content-between align-items-center">
+                <span id="direccion" class="" style="max-width: 100%;"></span>
+            </div>
+            <div class="col-sm-1 d-flex justify-content-between align-items-center">
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modifyDireccion" ><i class="bi bi-pencil"></i> </button>
+            </div>
+
+        </div>
+        <br />
+
+        <div class="row g-12">
+            <div class="col-sm-3 d-flex justify-content-between align-items-center">
+                <strong><label>CURP</label></strong>
+            </div>
+            <div class="col-sm-3 d-flex justify-content-between align-items-center">
+                <span id="curp"></span>&nbsp;<button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modifyCurp"><i class="bi bi-pencil"></i></button>
+            </div>
+            <div class="col-sm-3 d-flex justify-content-between align-items-center">
+                <strong><label>RFC</label></strong>
+            </div>
+            <div class="col-sm-3 d-flex justify-content-between align-items-center">
+                <span id="rfc"></span>&nbsp;<button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modifyRfc"><i class="bi bi-pencil"></i></button>
+            </div>
+        </div>
+        <br />
+
+        <div class="row g-12">
+            <div class="col-sm-3">
+                <strong><label>Ocupación</label></strong>
+            </div>
+            <div class="col-sm-3">
+                <span id="ocupacion"></span>
+            </div>
+            <div class="col-sm-3">
+                <strong><label>e-Mail</label></strong>
+            </div>
+            <div class="col-sm-3 d-flex justify-content-between align-items-center">
+                <span id="email"></span>&nbsp;<button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modifyEmail"><i class="bi bi-pencil"></i></button>
+            </div>
+        </div>
+        <br />
+
+        <div class="row g-12">
+            <div class="col-sm-3">
+                <strong><label>Teléfono</label></strong>
+            </div>
+            <div class="col-sm-3 d-flex justify-content-between align-items-center">
+
+                <span id="telefono"></span>&nbsp;<button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modifyTelefono"><i class="bi bi-pencil"></i></button>
+            </div>
+            <div class="col-sm-3">
+                <strong><label>Sexo</label></strong>
+            </div>
+            <div class="col-sm-3">
+                <span id="sexo"></span>
+            </div>
+        </div>
+        <br />
+        <div class="row g-12">
+            <div class="col-sm-3">
+                <strong><label>Lugar de Nacimiento</label></strong>
+            </div>
+            <div class="col-sm-3">
+                <span id="lugarNacimiento"></span>
+            </div>
+            <div class="col-sm-3">
+                <strong><label>Nivel Cuenta</label></strong>
+            </div>
+            <div class="col-sm-3">
+                <span id="nivelCuenta"></span>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="card-footer"><strong><label>Saldo</label></strong> &nbsp; <span id="saldo"></span></div>
+</div>
+<br />
+
+<div class="row gx-5 visually-hidden" id="tabla">
+    <table id="example" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>Medio</th>
+                <th>Card_ID</th> 
+                <th>Clave</th>
+                <th>Estatus</th>
+                <th>Manufactura</th>
+                <th>Producto</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modifyCurp" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modifyCurplLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modifyCurpLabel">Modificar CURP</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <input type="text" class="form-control text-uppercase" id="curpCH" placeholder="CURP" maxlength="18">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button id="guardarCurp" type="button" class="btn btn-success">
+                    <span id="spinCurp" class="spinner-border spinner-border-sm visually-hidden"></span>Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modifyRfc" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modifyRfcLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modifyRfcLabel">Modificar RFC</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <input type="text" class="form-control text-uppercase" id="rfcCH" placeholder="RFC" maxlength="13">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button id="guardarRfc" type="button" class="btn btn-success">
+                    <span id="spinRfc" class="spinner-border spinner-border-sm visually-hidden"></span>Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal para Teléfono -->
+<div class="modal fade" id="modifyTelefono" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modifyTelefonoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modifyTelefonoLabel">Modificar Teléfono</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <input type="tel" class="form-control" id="telefonoCH" placeholder="Teléfono (10 dígitos)" maxlength="10" pattern="[0-9]{10}">
+                    <span id="lblErrorTel" style="color:red"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button id="guardarTelefono" type="button" class="btn btn-success">
+                    <span id="spinTelefono" class="spinner-border spinner-border-sm visually-hidden"></span>Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal para Email -->
+<div class="modal fade" id="modifyEmail" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modifyEmailLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modifyEmailLabel">Modificar Email</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="mb-3">
+                  
+                    <input type="email" class="form-control" id="emailCH" placeholder="Correo electrónico" required>
+                     <span id="lblError" style="color:red"></span>
+                    <div id="emailError" class="invalid-feedback" style="display: none;">Por favor ingrese un correo electrónico válido</div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button id="guardarEmail" type="button" class="btn btn-success">
+                    <span id="spinEmail" class="spinner-border spinner-border-sm visually-hidden"></span>Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Dirección -->
+<div class="modal fade" id="modifyDireccion" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modifyDireccionLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modifyDireccionLabel">Modificar Dirección</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-3">
+                               
+                                <select class="form-select" id="tipoCallePrincipal">
+                                    <option value="" selected disabled>Cargando...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" id="direccionCH" placeholder="Descripción" maxlength="100"
+                                       oninput="validarEntreCalle(this)">
+                                <div id="direccionCH-error-caracteres" class="text-danger small mt-1" style="display: none;">
+                                    Solo se permiten letras, números y los siguientes caracteres especiales: . , - #
+                                </div>
+                                <div id="direccionCH-error-longitud" class="text-danger small mt-1" style="display: none;">
+                                    Máximo 100 caracteres permitidos
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-3">
+                              
+                                <select class="form-select" id="tipoEntreCalle1">
+                                    <option value="" selected disabled>Cargando...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" id="entreCalle1" placeholder="Descripción" maxlength="100"
+                                       oninput="validarEntreCalle(this)">
+                                <div id="entreCalle1-error-caracteres" class="text-danger small mt-1" style="display: none;">
+                                    Solo se permiten letras, números y los siguientes caracteres especiales: . , - #
+                                </div>
+                                <div id="entreCalle1-error-longitud" class="text-danger small mt-1" style="display: none;">
+                                    Máximo 100 caracteres permitidos
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-3">
+                              
+                                <select class="form-select" id="tipoEntreCalle2">
+                                    <option value="" selected disabled>Cargando...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-9">
+                              
+                                <input type="text" class="form-control" id="entreCalle2" placeholder="Descripción" maxlength="100"
+                                       oninput="validarEntreCalle(this)">
+                                <div id="entreCalle2-error-caracteres" class="text-danger small mt-1" style="display: none;">
+                                    Solo se permiten letras, números y los siguientes caracteres especiales: . , - #
+                                </div>
+                                <div id="entreCalle2-error-longitud" class="text-danger small mt-1" style="display: none;">
+                                    Máximo 100 caracteres permitidos
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-3">
+
+                                <select class="form-select" id="tipoNumExt">
+                                    <option value="" selected disabled>Cargando...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+
+                                <input type="text" class="form-control" id="numExt" placeholder="Descripción" maxlength="100"
+                                       oninput="validarEntreCalle(this)">
+                                <div id="numExt-error-caracteres" class="text-danger small mt-1" style="display: none;">
+                                    Solo se permiten letras, números y los siguientes caracteres especiales: . , - #
+                                </div>
+                                <div id="numExt-error-longitud" class="text-danger small mt-1" style="display: none;">
+                                    Máximo 100 caracteres permitidos
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-3">
+
+                                <select class="form-select" id="tipoNumInt">
+                                    <option value="" selected disabled>Cargando...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+
+                                <input type="text" class="form-control" id="numInterior" placeholder="Descripción " maxlength="100"
+                                       oninput="validarEntreCalle(this)">
+                                <div id="numInterior-error-caracteres" class="text-danger small mt-1" style="display: none;">
+                                    Solo se permiten letras, números y los siguientes caracteres especiales: . , - #
+                                </div>
+                                <div id="numInterior-error-longitud" class="text-danger small mt-1" style="display: none;">
+                                    Máximo 100 caracteres permitidos
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="cpCH" class="form-label">Codigo postal</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="cpCH" placeholder="Codigo postal" maxlength="5">
+                            <span id="loadingCP" class="input-group-text visually-hidden">
+                                <span class="spinner-border spinner-border-sm"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="estadoCH" class="form-label">Estado</label>
+                        <input type="text" class="form-control" id="estadoCH" readonly>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="municipioCH" class="form-label">Municipio/Alcaldía</label>
+                        <input type="text" class="form-control" id="municipioCH" readonly>
+                    </div>
+                    <div class="col-md-4">
+                        
+                        <label for="localidadCH" class="form-label">Localidad</label>
+                       
+                        <input type="text" class="form-control" id="localidadCH" readonly>
+                    </div>
+                    <div class="col-md-4">
+
+                        <label for="coloniaCH" class="form-label">Colonia</label>
+
+                       
+                        <select class="form-select" id="coloniaCH">
+                            <option value="" selected disabled>Cargando...</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                      
+                                   <span id="coloniaId" style="display: none;"></span>
+                    </div>
+                    <div class="col-md-12">
+                        <label for="direccionConcatenada" class="form-label">Dirección</label>
+                        <input class="form-control" id="direccionConcatenada" rows="3" placeholder="" readonly></input>
+                    </div>
+                    <div class="col-md-12">
+                        <label for="referenciaAdicional" class="form-label">Referencias adicionales</label>
+                        <textarea class="form-control" id="referenciaAdicional" rows="3" placeholder="Ejemplo: Casa color azul con portón negro, al lado de una tienda de abarrotes, frente al parque..."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button id="guardarDireccion" type="button" class="btn btn-success">
+                    <span id="spinDireccion" class="spinner-border spinner-border-sm visually-hidden"></span>
+                    Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script type="text/javascript">
+    var js = jQuery.noConflict(true);
+
+    js(document).ready(function () {
+        js('#claveProducto').on('change', function () {
+            var selectedValue = $(this).val();
+
+            if (selectedValue != 'N') {
+                js("#ExecuteRequest").attr('disabled', false);
+            }
+            else {
+                js("#ExecuteRequest").attr('disabled', true);
+            }
+        });
+
+        const modalCurp = new bootstrap.Modal(document.getElementById('modifyCurp'))
+        const modalRfc = new bootstrap.Modal(document.getElementById('modifyRfc'))
+      
+        const modalTelefono = new bootstrap.Modal(document.getElementById('modifyTelefono'))
+        const modalEmail = new bootstrap.Modal(document.getElementById('modifyEmail'))
+
+
+        const modalDireccion = new bootstrap.Modal(document.getElementById('modifyDireccion'))
+       
+
+
+        modalTelefono._element.addEventListener('hidden.bs.modal', () => {
+            js("#telefonoCH").val("");
+        })
+        modalEmail._element.addEventListener('hidden.bs.modal', () => {
+            js("#emailCH").val("");
+        })
+
+
+        modalDireccion._element.addEventListener('hidden.bs.modal', () => {
+            js("#direccionCH").val("");
+            js("#numInterior").val("");
+            js("#numExt").val("");
+            js("#cpCH").val("");
+            js("#estadoCH").val("");
+            js("#municipioCH").val("");
+            js("#coloniaCH").val("");
+            js("#entreCalle1").val("");
+            js("#codigoPostal").val("");
+            js("#entreCalle2").val("");
+            js("#referenciaAdicional").val("");
+
+            js("#localidadCH").val("");
+            js("#direccionConcatenada").val("");
+
+        })
+
+        modalCurp._element.addEventListener('hidden.bs.modal', () => {
+            js("#curpCH").val("");
+        })
+
+        modalRfc._element.addEventListener('hidden.bs.modal', () => {
+            js("#rfcCH").val("");
+        })
+
+        js(document).on("change", '#tipoBusqueda', function () {
+            js("#valorBusqueda").val("");
+            js("#tabla").addClass("visually-hidden");
+            js("#cuentahabiente").addClass("visually-hidden");
+        });
+        $('#modifyDireccion').on('hidden.bs.modal', function () {
+            $('#ExecuteRequest').click();
+        });
+        let datosDomi = null;
+
+
+
+        function decodeHtmlEntities(text) {
+            var textArea = document.createElement('textarea');
+            textArea.innerHTML = text;
+            return textArea.value;
+        }
+        let solicitanteNum = null;
+        js('#ExecuteRequest').on("click", function (event) {
+            event.preventDefault();
+            js("#spin").removeClass("visually-hidden");
+            js("#ExecuteRequest").attr('disabled', true);
+
+            var url = "@Url.Action("ConsultaMA", "ConsultaMA")";
+
+            var data = new Object();
+            data.claveProducto = js("#claveProducto").val();
+            data.tipoBusqueda = js("#tipoBusqueda").val();
+            data.valorBusqueda = js("#valorBusqueda").val();
+
+            js.ajax({
+            type: "POST",
+            url: url,
+            dataType: "json",
+
+            data: data,
+            success: function (data) {
+                console.log(data);
+
+                if (data.codigo != 0) {
+                    var mensajeLimpio = decodeHtmlEntities(data.mensaje);
+                    swal({
+                        title: "Error",
+                        text: mensajeLimpio,
+                        type: "warning",
+                        showCancelButton: false,
+                        confirmButtonColor: "#DD6B55",
+                        closeOnConfirm: false
+                    });
+                    js("#valorBusqueda").val("");
+                    js("#tabla").addClass("visually-hidden");
+                    js("#cuentahabiente").addClass("visually-hidden");
+                }
+                else {
+                    js("#cuentahabiente").removeClass("visually-hidden");
+                    js("#nombreCompleto").text(data.nombreCompleto);
+                    js("#numero").text(data.numero);
+                     solicitanteNum = data.numero;
+                     var direc =  consultarDomicilioSolicitante(data.numero);
+
+
+                    console.log(" es direc" , direc);
+                  //  $('#direccionCH').val(direc);
+
+
+                    js("#fechaNacimiento").text(data.fechaNacimiento);
+                    js("#direccion").text(direc);
+                    js("#curp").text(data.curp);
+                    js("#lugarNacimiento").text(data.lugarNacimiento);
+                    js("#rfc").text(data.rfc);
+                    js("#ocupacion").text(data.ocupacion);
+                    js("#email").text(data.correoElectronico);
+                    js("#telefono").text(data.telefono);
+                    js("#sexo").text(data.sexo);
+                    js("#nivelCuenta").text(data.nivelCuenta);
+
+
+
+                    var value = data.saldoCuenta;
+                    js("#saldo").text(currencyFormatter({ currency: "USD", value }));
+
+                    js("#tabla").removeClass("visually-hidden");
+
+                    js('#example').dataTable({
+                        destroy: true,
+                        responsive: true,
+                        scrollX: true,
+                        ordering: true,
+                        paging: true,
+                        language: {
+                            "url": "../lib/Spanish.json"
+                        },
+                        data: data.mediosDisposicion,
+                        columns: [
+                            { 'data': 'medio' },
+                            { data: 'cardId', defaultContent: 'N/D' }, 
+                            { 'data': 'clave' },
+                            { 'data': 'estatus' },
+                            { 'data': 'tipo' },
+                            { 'data': 'tipoProducto' }
+                        ]
+                    });
+                }
+                js("#ExecuteRequest").attr('disabled', false);
+                js("#spin").addClass("visually-hidden");
+            }
+        });
+
+        });
+    
+        function consultarDomicilioSolicitante(solicitanteId) {
+            if (!solicitanteId) return;
+
+           
+            var urlDomicilio = '@Url.Action("ConsultaDomicilioSolicitante", "ConsultaMA")?solicitanteId=' + solicitanteId;
+
+           
+
+            console.log("URL de consulta:", urlDomicilio); // Verifica en consola
+
+            $.ajax({
+                type: "GET",
+                url: urlDomicilio,
+                dataType: "json",
+                beforeSend: function () {
+                    $("#direccion").text("Cargando dirección...");
+                },
+                success: function (response) {
+
+                    console.log("dIREC:", response);
+                    datosDomi = response.data;
+                    console.log("Datos del domicilio almacenados:", datosDomi);
+                    if (response && response.codigo === 0 && response.data) {
+                        let direccion = response.data.domicilio || "";
+
+                        if (response.data.observaciones) {
+                            direccion += " (" + response.data.observaciones + ")";
+                        }
+                        $("#direccion").text(direccion);
+                        $('#direccionCH').text(response.data.observaciones);
+                        js("#modalDireccion1").text(response.data.observaciones);
+
+                    } else {
+                        $("#direccion").text("Dirección no disponible");
+                        console.warn("Respuesta inesperada:", response);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $("#direccion").text("Error al cargar dirección");
+                    console.error("Error en la solicitud:", {
+                        URL: urlDomicilio,
+                        Status: xhr.status,
+                        Error: error,
+                        Response: xhr.responseText
+                    });
+                }
+            });
+        }
+
+
+
+
+        js('#guardarCurp').on("click", function (event) {
+            event.preventDefault();
+            js("#spinCurp").removeClass("visually-hidden");
+            js("#guardarCurp").attr('disabled', true);
+
+            var url = "@Url.Action("ActualizaCURP", "ConsultaMA")";
+
+            var data = new Object();
+            data.telefono = js("#telefono")[0].innerText;
+            data.curp = js("#curpCH").val().toUpperCase().trim();
+            data.rfc = js("#rfc")[0].innerText;
+            data.usuarioId = "";
+            data.ip = "";
+
+            if (validaCurp(data.curp)) {
+                js.ajax({
+                    type: "POST",
+                    url: url,
+                    dataType: "json",
+                    data: data,
+                    success: function (data) {
+                        if (data.result.codigo == 1) {
+                            modalCurp.hide();
+                            swal({
+                                title: "Éxito",
+                                text: data.result.mensaje,
+                                type: "success",
+                                showCancelButton: false,
+                                confirmButtonColor: "#DD6B55",
+                                closeOnConfirm: false
+                            });
+                            js('#ExecuteRequest').click();
+                        }
+                        else {
+                            swal({
+                                title: "Error",
+                                text: data.result.mensaje,
+                                type: "warning",
+                                showCancelButton: false,
+                                confirmButtonColor: "#DD6B55",
+                                closeOnConfirm: false
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                    },
+                    complete: function (xhr, status) {
+                        js("#spinCurp").addClass("visually-hidden");
+                        js("#guardarCurp").attr('disabled', false);
+                    }
+                });
+            } else {
+                swal({
+                    title: "Error",
+                    text: "CURP no válida",
+                    type: "warning",
+                    showCancelButton: false,
+                    confirmButtonColor: "#DD6B55",
+                    closeOnConfirm: false
+                });
+
+                js("#spinCurp").addClass("visually-hidden");
+                js("#guardarCurp").attr('disabled', false);
+            }
+        })
+
+        js('#guardarRfc').on("click", function (event) {
+            event.preventDefault();
+            js("#spinRfc").removeClass("visually-hidden");
+            js("#guardarRfc").attr('disabled', true);
+
+            var url = "@Url.Action("ActualizaRFC", "ConsultaMA")";
+
+            var data = new Object();
+            data.telefono = js("#telefono")[0].innerText;
+            data.rfc = js("#rfcCH").val().toUpperCase().trim();
+            data.usuarioId = "";
+            data.ip = "";
+
+            if (validaRfc(data.rfc)) {
+                js.ajax({
+                    type: "POST",
+                    url: url,
+                    dataType: "json",
+                    data: data,
+                    success: function (data) {
+                        if (data.result.codigo == 1) {
+                            modalRfc.hide();
+                            swal({
+                                title: "Éxito",
+                                text: data.result.mensaje,
+                                type: "success",
+                                showCancelButton: false,
+                                confirmButtonColor: "#DD6B55",
+                                closeOnConfirm: false
+                            });
+                            js('#ExecuteRequest').click();
+                        }
+                        else {
+                            swal({
+                                title: "Error",
+                                text: data.result.mensaje,
+                                type: "warning",
+                                showCancelButton: false,
+                                confirmButtonColor: "#DD6B55",
+                                closeOnConfirm: false
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                    },
+                    complete: function (xhr, status) {
+                        js("#spinRfc").addClass("visually-hidden");
+                        js("#guardarRfc").attr('disabled', false);
+                    }
+                });
+            } else {
+                swal({
+                    title: "Error",
+                    text: "RFC no válido",
+                    type: "warning",
+                    showCancelButton: false,
+                    confirmButtonColor: "#DD6B55",
+                    closeOnConfirm: false
+                });
+
+                js("#spinRfc").addClass("visually-hidden");
+                js("#guardarRfc").attr('disabled', false);
+            }
+        });
+      
+    })  ;
+
+    function validaCurp(curp) {
+        const re =
+            /^([A-Z][AEIOUX][A-Z]{2}\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])[HM](?:AS|B[CS]|C[CLMSH]|D[FG]|G[TR]|HG|JC|M[CNS]|N[ETL]|OC|PL|Q[TR]|S[PLR]|T[CSL]|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}[A-Z\d])(\d)$/;
+        const match = curp.match(re);
+
+        if (!match) return false;
+
+        function digitoVerificador(curp17) {
+            const diccionario = "0123456789ABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
+            let lngSuma = 0;
+            let lngDigito = 0;
+
+            for (let i = 0; i < 17; i++) {
+                lngSuma += diccionario.indexOf(curp17.charAt(i)) * (18 - i);
+            }
+
+            lngDigito = 10 - (lngSuma % 10);
+            return lngDigito === 10 ? 0 : lngDigito;
+        }
+
+        if (match[2] !== digitoVerificador(match[1]).toString()) return false;
+
+        return true;
+    };
+
+    function validaRfc(rfc) {
+        const regex = /^([A-Z][AEIOUX][A-Z]{2}\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01]))/i;
+
+        return regex.test(rfc);
+    }
+
+    ///         guardar a telefono
+    js('#guardarTelefono').on("click", function (event) {
+        event.preventDefault();
+
+        // Resetear mensaje de error
+        js("#lblErrorTel").text("").hide();
+
+        // Mostrar spinner y deshabilitar botón
+        js("#spinTelefono").removeClass("visually-hidden");
+        js("#guardarTelefono").attr('disabled', true);
+
+        var telefono = js("#telefonoCH").val().trim();
+
+        // Validación básica (solo esto usa lblErrorTel)
+        if (telefono.length !== 10 || !/^\d+$/.test(telefono)) {
+            js("#lblErrorTel").text("El teléfono debe tener 10 dígitos numéricos").show();
+            js("#spinTelefono").addClass("visually-hidden");
+            js("#guardarTelefono").attr('disabled', false);
+            return;
+        }
+
+        var url = "@Url.Action("ActualizaTelefono", "ConsultaMA")";
+        var data = {
+            solicitanteId: document.getElementById("numero").textContent.trim(),
+            telefono: telefono,
+            usuarioId: "",
+            ip: ""
+        };
+
+        js.ajax({
+            type: "POST",
+            url: url,
+            dataType: "json",
+            data: data,
+            success: function (data) {
+                const modalTelefono = bootstrap.Modal.getInstance(document.getElementById('modifyTelefono'));
+
+                if (data.result.codigo == 0) {
+                    modalTelefono.hide();
+                    swal({
+                        title: "Éxito",
+                        text: data.result.mensaje,
+                        type: "success",
+                        showCancelButton: false,
+                        confirmButtonColor: "#DD6B55",
+                        closeOnConfirm: false
+                    });
+                    js('#ExecuteRequest').click();
+                } else {
+                    swal({
+                        title: "Error",
+                        text: data.result.mensaje,
+                        type: "warning",
+                        showCancelButton: false,
+                        confirmButtonColor: "#DD6B55",
+                        closeOnConfirm: false
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                swal({
+                    title: "Error",
+                    text: "Ocurrió un error al actualizar el teléfono",
+                    type: "error",
+                    showCancelButton: false,
+                    confirmButtonColor: "#DD6B55",
+                    closeOnConfirm: false
+                });
+            },
+            complete: function () {
+                js("#spinTelefono").addClass("visually-hidden");
+                js("#guardarTelefono").attr('disabled', false);
+            }
+        });
+    });
+
+    ///    GUARDAR CORREO
+    // Inicializa el modal
+js('#guardarEmail').on("click", function (event) {
+    event.preventDefault();
+
+    var emailInput = document.getElementById("emailCH");
+    var email = emailInput.value.trim();
+    var lblError = document.getElementById("lblError");
+    lblError.innerHTML = "";
+
+    // Expresión regular para validar email con dominio como .com, .mx, etc.
+        var expr = /^([\w-\.]+)@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+
+
+    if (!expr.test(email)) {
+        lblError.innerHTML = "Por favor ingrese un correo electrónico válido (ej. usuario@dominio.com)";
+        return;
+    }
+
+    // Si pasa la validación, continúa
+    js("#spinEmail").removeClass("visually-hidden");
+    js("#guardarEmail").attr('disabled', true);
+
+        var url = "@Url.Action("ActualizarCorreoSolicitante", "ConsultaMA")";
+
+    var data = {
+        correo: email,
+        solicitanteId: document.getElementById("numero").textContent.trim(),
+        usuarioId: "",
+        ip: ""
+    };
+
+    js.ajax({
+        type: "POST",
+        url: url,
+        dataType: "json",
+        data: data,
+        success: function (data) {
+            const modalEmail = bootstrap.Modal.getInstance(document.getElementById('modifyEmail'));
+            if (data.result.codigo == 0) {
+                modalEmail.hide();
+                swal({
+                    title: "Éxito",
+                    text: data.result.mensaje,
+                    type: "success"
+                });
+                js('#ExecuteRequest').click();
+            } else {
+                swal({
+                    title: "Error",
+                    text: data.result.mensaje,
+                    type: "warning"
+                });
+            }
+        },
+        complete: function () {
+            js("#spinEmail").addClass("visually-hidden");
+            js("#guardarEmail").attr('disabled', false);
+        }
+    });
+});
+
+
+
+
+    
+
+
+    // Consultar colonias al cambiar CP
+
+      js('#cpCH22 ').on('change', function () {
+
+        var cp = js(this).val();
+     
+        if (cp.length === 5) {
+
+            var url = "@Url.Action("ConsultarCodigoPostal", "ConsultaMA")";
+
+
+             js.ajax({
+
+                 type: "POST",
+
+                 url: url,
+
+                   data: { cp: cp },
+
+                 dataType: "json",
+
+                 success: function (data) {
+
+                  if (data.result.codigo === 1) {
+
+                      var colonias = data.result.data;
+
+                      var select = js("#coloniaCH");
+
+                     select.empty();
+
+
+                    if (colonias.length > 0) {
+
+                        select.append('<option selected>Seleccione una colonia...</option>');
+
+                       colonias.forEach(function (colonia) {
+
+                            select.append('<option value="' + colonia.colonia + '">' + colonia.colonia + '</option>');
+
+                      });
+
+                  } else {
+
+                      select.append('<option selected>No se encontraron colonias</option>');
+           
+                  }
+
+              } else {
+
+                   swal("Error", data.result.mensaje, "error");
+          
+               }
+         
+            }
+
+        
+         });
+
+          }
+
+      });
+    // Guardar Dirección
+
+    // Variable para controlar el timeout
+    var cpTimeout = null;
+
+    // Función para buscar datos del CP con auto-refresh
+    js('#cpCH').on('input', function () {
+        var cp = js(this).val().trim();
+
+        // Limpiar timeout anterior si existe
+        if (cpTimeout) {
+            clearTimeout(cpTimeout);
+        }
+
+        // Limpiar campos si no tiene 5 dígitos
+         if (cp.length !== 5) {
+             resetCPFields();
+           return;
+         }
+
+        // Esperar 500ms después de la última tecla para hacer la consulta
+        cpTimeout = setTimeout(function () {
+            consultarDatosCP(cp);
+        }, 500);
+    });
+
+    // Función para resetear campos relacionados al CP
+    function resetCPFields() {
+        js('#estadoCH').val('');
+        js('#municipioCH').val('');
+        js('#codigoPostal').val('');
+        js('#localidadCH').val('');
+        js('#coloniaCH').html('<option selected value="">Ingrese un código postal válido</option>').prop('disabled', true);
+    }
+
+    // Función para buscar datos del CP
+    function consultarDatosCP(cp) {
+        console.log("Iniciando consulta para CP:", cp);
+        js('#loadingCP').removeClass('visually-hidden');
+        resetCPFields();
+
+        $.ajax({
+            url: '@Url.Action("ConsultarCodigoPostal", "ConsultaMA")',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ cp: cp }),
+            success: function (response) {
+                console.log("Respuesta cruda:", response);
+
+                if (!response) {
+                    swal("Error", "No se recibió respuesta del servidor", "error");
+                    return;
+                }
+
+                if (response.codigo === 0 ) {
+                    console.log("Datos recibidos:", response.data);
+
+                    if (!response.data || !response.data.length) {
+                      swal("Advertencia", "No hay colonias para este CP", "warning");
+                      return;
+                    }
+
+                    // Llenar campos
+                    $('#estadoCH').val(response.data[0].estado);
+                    $('#municipioCH').val(response.data[0].municipio);
+                    $('#codigoPostal').val(response.data[0].cp);
+                    $('#localidadCH').val(response.data[0].localidad);
+                    $('#coloniaId').val(response.data[0].clave);
+                  //  $('#coloniaCH').val(response.data[0].colonia);
+                    // Llenar select
+                    var $select = $('#coloniaCH').empty();
+                 $select.append('<option value="">Seleccione...</option>');
+
+                    $.each(response.data, function (i, colonia) {
+                        $select.append($('<option>', {
+                            value: colonia.clave,
+                            text: colonia.colonia
+                        }));
+                    });
+
+                    $select.prop('disabled', false);
+                } else if (response.codigo === 1) {
+                    swal("Advertencia", response.mensaje, "warning");   // <--- arreglado aquí
+                } else {
+                    swal("Error", response.mensaje || "Error desconocido", "error");
+                }
+            },
+            error: function (xhr) {
+                console.error("Error en AJAX:", xhr);
+                swal("Error", "Error al comunicarse con el servidor", "error");
+            },
+            complete: function () {
+                $('#loadingCP').addClass('visually-hidden');
+            }
+        });
+    }
+
+
+    /// GUARDAR DIRECCION
+   js('#guardarDireccion').on("click", function (event) {
+    event.preventDefault();
+
+    // Mostrar loading y deshabilitar botón
+   
+    js("#guardarDireccion").prop('disabled', true);
+
+    // Obtener valores del formulario
+        var formData = {
+            usuarioId: 10,
+            solicitanteId: document.getElementById("numero").textContent.trim(),
+            coloniaId: js("#coloniaCH").val().trim(),
+            domicilio: js("#direccionConcatenada").val().trim(),
+            ip: "192.168.151.127",
+            observaciones: js("#referenciaAdicional").val().trim() || "",
+            catDomicilio1: js("#tipoCallePrincipal").val(),
+            descripcionDomicilio1: js("#direccionCH").val().trim(),
+            catDomicilio2: js("#tipoEntreCalle1").val(),
+            descripcionDomicilio2: js("#entreCalle1").val().trim(),
+            catDomicilio3: js("#tipoEntreCalle2").val(),
+            descripcionDomicilio3: js("#entreCalle2").val().trim(),
+            catDomicilio4: js("#tipoNumExt").val(),
+            descripcionDomicilio4: js("#numExt").val().trim(),
+            catDomicilio5: js("#tipoNumInt").val() || "0",
+            descripcionDomicilio5: js("#numInterior").val().trim() ,
+            colonia: {
+                cp: js("#cpCH").val().trim(),
+                colonia: js("#coloniaCH option:selected").text().trim(),
+                localidad: js("#localidadCH").val().trim(),
+                municipio: js("#municipioCH").val().trim(),
+                estado: js("#estadoCH").val().trim()
+            }
+        };
+
+    // Construir dirección completa para compatibilidad
+     // formData.domicilio2 = [
+     //     (formData.tipoCallePrincipal ? formData.tipoCallePrincipal + " " : "") + formData.callePrincipal,
+     //     (formData.tipoEntreCalle1 && formData.entreCalle1 ? "ENTRE " + formData.tipoEntreCalle1 + " " + formData.entreCalle1 : ""),
+     //     (formData.tipoEntreCalle2 && formData.entreCalle2 ? "Y " + formData.tipoEntreCalle2 + " " + formData.entreCalle2 : ""),
+     //     (formData.tipoNumExt && formData.numExterior ? formData.tipoNumExt + " " + formData.numExterior : ""),
+        //     (formData.tipoNumInt && formData.numInterior ? "INT " + formData.numInterior : ""),
+         //     (formData.referenciaAdicional ? "REF: " + formData.referenciaAdicional : "")
+        // ].filter(Boolean).join(", ");
+
+    // Validar campos requeridos
+        // Validar campos requeridos (ajustado a nueva estructura)
+        let camposRequeridos = [
+            { id: "#tipoCallePrincipal", nombre: "Tipo de calle principal", valor: formData.catDomicilio1 },
+            { id: "#direccionCH", nombre: "Domicilio", valor: formData.descripcionDomicilio1 },
+            { id: "#tipoEntreCalle1", nombre: "Entre calle 1", valor: formData.catDomicilio2 },
+            { id: "#entreCalle1", nombre: "Descripción", valor: formData.descripcionDomicilio2 },
+            { id: "#tipoEntreCalle2", nombre: "Tipo de calle", valor: formData.catDomicilio3 },
+            { id: "#entreCalle2", nombre: "Descripción", valor: formData.descripcionDomicilio3 },
+            { id: "#tipoNumExt", nombre: "Tipo de calle", valor: formData.catDomicilio4 },
+            { id: "#cpCH", nombre: "Codigo postal", valor: formData.colonia.cp },
+            { id: "#numExt", nombre: "Descripción", valor: formData.descripcionDomicilio4 },
+
+            // ---- Validaciones de colonia agregadas ----
+            {
+                id: "#coloniaCH",
+                nombre: "Colonia",
+                valor: (function () {
+                    let val = js("#coloniaCH").val();
+                    return val !== null && val !== undefined && val !== "" && val !== "0" ? val : "";
+                })()
+            },
+            { id: "#localidadCH", nombre: "Localidad", valor: formData.colonia.localidad },
+            { id: "#municipioCH", nombre: "Municipio", valor: formData.colonia.municipio },
+            { id: "#estadoCH", nombre: "Estado", valor: formData.colonia.estado }
+        ];
+
+        let camposInvalidos = camposRequeridos.filter(c => !c.valor || c.valor === "");
+        camposRequeridos.forEach(c => {
+            js(c.id).toggleClass("is-invalid", !c.valor || c.valor === "");
+        });
+
+
+        if (camposInvalidos.length > 0) {
+            Swal.fire({
+                title: "Campos incompletos",
+                text: "Por favor completa todos los campos obligatorios.",
+                icon: "warning"
+            });
+            js("#spinDireccion").addClass("visually-hidden");
+            js("#guardarDireccion").prop('disabled', false);
+            return;
+        }
+
+        console.log("Datos a enviar:", formData);
+
+
+    // Enviar solicitud AJAX
+    js.ajax({
+        type: "POST",
+        url: "@Url.Action("ActualizarDomicilioSolicitante", "ConsultaMA")",
+        contentType: "application/json",
+        data: JSON.stringify(formData),
+        success: function (response) {
+            const modalDireccion = bootstrap.Modal.getInstance(document.getElementById('modifyDireccion'));
+            console.log("Respuesta completa:", response);
+
+            var responseObj = typeof response === 'string' ? JSON.parse(response) : response;
+
+            Swal.fire({
+                title: responseObj.codigo === 0 ? "Éxito" : responseObj.codigo === 2 ? "Información" : "Error",
+                text: responseObj.mensaje,
+                icon: responseObj.codigo === 0 ? "success" : responseObj.codigo === 2 ? "info" : "error",
+                confirmButtonText: "Aceptar"
+            }).then(() => {
+                if (responseObj.codigo === 0) {
+                    modalDireccion.hide();
+                    js('#ExecuteRequest').click();
+                }
+            });
+        },
+        error: function (xhr) {
+            console.error("Error en AJAX:", xhr.responseText);
+            Swal.fire({
+                title: "Error",
+                text: "Error al comunicarse con el servidor",
+                icon: "error"
+            });
+        },
+        complete: function () {
+            js("#spinDireccion").addClass("visually-hidden");
+            js("#guardarDireccion").prop('disabled', false);
+        }
+    });
+});
+
+    
+
+
+
+    let tiposDomicilioCache = null;
+    document.addEventListener('DOMContentLoaded', function () {
+       // let tiposDomicilioCache = null;
+
+        // Elementos a monitorear
+        const elementos = [
+            'tipoCallePrincipal', 'direccionCH',
+            'tipoEntreCalle1', 'entreCalle1',
+            'tipoEntreCalle2', 'entreCalle2',
+            'tipoNumExt', 'numExt',
+            'tipoNumInt', 'numInterior'
+        ];
+
+        // Agregar event listeners a todos los elementos
+        elementos.forEach(id => {
+            const elemento = document.getElementById(id);
+            if (elemento) {
+                elemento.addEventListener('change', actualizarReferencias);
+                elemento.addEventListener('input', actualizarReferencias);
+            }
+        });
+
+        // Función para actualizar la dirección concatenada
+        function actualizarReferencias() {
+            const tipoCalle = js("#tipoCallePrincipal option:selected").text();
+            const calle = document.getElementById('direccionCH').value;
+            const tipoEntre1 = js("#tipoEntreCalle1 option:selected").text();
+            const entre1 = document.getElementById('entreCalle1').value;
+            const tipoEntre2 = js("#tipoEntreCalle2 option:selected").text();
+            const entre2 = document.getElementById('entreCalle2').value;
+            const tipoNum = js("#tipoNumExt option:selected").text();
+            const numExt = document.getElementById('numExt').value;
+            const tipoInt = js("#tipoNumInt option:selected").text();
+            const numInt = document.getElementById('numInterior').value;
+
+            // Actualizar el textarea con la dirección generada
+            document.getElementById('direccionConcatenada').value = generarDomicilioJS(
+                tipoCalle, calle,
+                tipoEntre1, entre1,
+                tipoEntre2, entre2,
+                tipoNum, numExt,
+                tipoInt, numInt
+            );
+        }
+
+        // Función para generar el domicilio completo
+        function generarDomicilioJS(
+            cat_dom1, descrip1,
+            cat_dom2, descrip2,
+            cat_dom3, descrip3,
+            cat_dom4, descrip4,
+            cat_dom5, descrip5
+        ) {
+            // Verificar si tenemos los datos de abreviaciones
+            if (!tiposDomicilioCache || !Array.isArray(tiposDomicilioCache.data)) {
+                console.warn("Datos de tipos de domicilio no disponibles");
+                return "";
+            }
+
+            // Obtener abreviaciones
+            const getAbreviacion = (descripcion) => {
+                const tipo = tiposDomicilioCache.data.find(item => item.descripcion === descripcion);
+                return tipo ? tipo.abreviacion || "" : "";
+            };
+
+            let cat1 = getAbreviacion(cat_dom1);
+            let cat2 = getAbreviacion(cat_dom2);
+            let cat3 = getAbreviacion(cat_dom3);
+            let cat4 = getAbreviacion(cat_dom4);
+            let cat5 = getAbreviacion(cat_dom5);
+
+            let des1 = descrip1.trim();
+            const des2 = descrip2.trim();
+            const des3 = descrip3.trim();
+            let des4 = descrip4 === '0' ? '' : descrip4.trim();
+            let des5 = descrip5 === '0' ? '' : descrip5.trim();
+
+            // S/C o s/c => se omite calle
+            if (des1.toLowerCase() === 's/c') {
+                des1 = '';
+                cat1 = '';
+            }
+
+            // Si cat4 y cat5 están vacíos, se asigna 'S/N' a cat4
+            if (!cat4 && !cat5) {
+                cat4 = 'S/N';
+            }
+
+            let domicilio_final = '';
+
+            if (cat_dom2 && cat_dom3) {
+                domicilio_final = `${cat1} ${des1.toUpperCase()} ENTRE ${cat2} ${des2.toUpperCase()} Y ${cat3} ${des3.toUpperCase()}`;
+                if (cat_dom4 || cat_dom5 || cat4 === 'S/N') {
+                    domicilio_final += `, ${cat4} ${des4.toUpperCase()} ${cat5} ${des5.toUpperCase()}`;
+                }
+            } else if (cat_dom2 && !cat_dom3) {
+                domicilio_final = `${cat1} ${des1.toUpperCase()} Y ${cat2} ${des2.toUpperCase()}`;
+                if (cat_dom4 || cat_dom5 || cat4 === 'S/N') {
+                    domicilio_final += `, ${cat4} ${des4.toUpperCase()} ${cat5} ${des5.toUpperCase()}`;
+                }
+            } else if (!cat_dom2 && !cat_dom3) {
+                domicilio_final = `${cat1} ${des1.toUpperCase()}`;
+                if (cat_dom4 || cat_dom5 || cat4 === 'S/N') {
+                    if (des1) domicilio_final += ',';
+                    domicilio_final += ` ${cat4} ${des4.toUpperCase()} ${cat5} ${des5.toUpperCase()}`;
+                }
+            }
+
+            // Limpiar espacios dobles y al inicio
+            return domicilio_final.replace(/\s+/g, ' ').trim();
+        }
+
+        // Cuando cargues los tipos de domicilio, guarda el cache
+        window.cargarTodosLosTipos = function (data) {
+            tiposDomicilioCache = data;
+            actualizarSelects(data);
+            actualizarReferencias(); // Actualizar dirección al cargar los datos
+ 
+        };
+    });
+
+
+
+    // cargar tipo de calle
+    document.addEventListener('DOMContentLoaded', function () {
+        // Cache para almacenar los datos ya cargados
+      //  let tiposDomicilioCache = null;
+        let cargando = false;
+
+        // Función principal para cargar todos los selects
+        window.cargarTodosLosTipos = function () {
+            // Si ya estamos cargando, no hacer nada
+            if (cargando) return;
+
+            cargando = true;
+
+
+           
+            // Si ya tenemos los datos en cache, usarlos directamente
+            if (tiposDomicilioCache) {
+                actualizarSelects(tiposDomicilioCache);
+                cargando = false;
+                return;
+            }
+
+            // Mostrar estado de carga en todos los selects
+            ['tipoCallePrincipal', 'tipoEntreCalle1', 'tipoEntreCalle2', 'tipoNumExt', 'tipoNumInt'].forEach(id => {
+                const select = document.getElementById(id);
+                if (select) {
+                    select.innerHTML = '<option value="" selected disabled>Cargando...</option>';
+                }
+            });
+
+            fetch('/ConsultaMA/ConsultaTipoDomicilio', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => {
+                    cargando = false;
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.codigo === 0) {
+                        console.log('Datos recibidos:', data);
+                        tiposDomicilioCache = data; // Almacenar en cache
+                        actualizarSelects(data);
+                    } else {
+                        mostrarErrorEnSelects(data.mensaje || "Error en los datos recibidos");
+                    }
+                })
+                .catch(error => {
+                    cargando = false;
+                    console.error('Error al cargar tipos de domicilio:', error);
+                    mostrarErrorEnSelects("Error al conectar con el servidor");
+                });
+        };
+
+        // Función para actualizar todos los selects con los datos
+        function actualizarSelects(data) {
+            try {
+                // Calle principal (clave 3)
+                actualizarSelect('tipoCallePrincipal', data.data, { include: true, clave: 3 });
+                // Calles transversales (clave 3)
+                actualizarSelect('tipoEntreCalle1', data.data, { include: true, clave: 3 });
+                actualizarSelect('tipoEntreCalle2', data.data, { include: true, clave: 3 });
+                // Números (excluir clave 3)
+                actualizarSelect('tipoNumExt', data.data, { include: false, clave: 3 });
+                actualizarSelect('tipoNumInt', data.data, { include: false, clave: 3 });
+
+            } catch (error) {
+                console.error('Error al actualizar selects:', error);
+                mostrarErrorEnSelects("Error al procesar los datos");
+            }
+        }
+
+        // Función mejorada para actualizar un select individual
+        function actualizarSelect(selectId, items, filtro) {
+            const select = document.getElementById(selectId);
+            if (!select) {
+                console.warn(`Select con ID ${selectId} no encontrado`);
+                return;
+            }
+
+            try {
+                // Filtrar los items según el tipo de filtro
+                let tiposFiltrados;
+                if (filtro.include) {
+                    // Incluir solo los items con la clave especificada
+                    tiposFiltrados = items.filter(item => item.clave === filtro.clave);
+                } else {
+                    // Excluir los items con la clave especificada
+                    tiposFiltrados = items.filter(item => item.clave !== filtro.clave);
+                }
+
+                if (tiposFiltrados.length === 0) {
+                    console.warn(`No se encontraron items para el filtro en select ${selectId}`);
+                    select.innerHTML = '<option value="" selected disabled>No hay opciones disponibles</option>';
+                    return;
+                }
+
+                let options = '<option value="" selected disabled>Seleccione tipo</option>';
+                tiposFiltrados.forEach(tipo => {
+                    options += `<option value="${tipo.id}">${tipo.descripcion}</option>`;
+                });
+
+                select.innerHTML = options;
+               
+            } catch (error) {
+                console.error(`Error al actualizar ${selectId}:`, error);
+                select.innerHTML = '<option value="" selected disabled>Error al cargar</option>';
+            }
+        }
+
+        // Función para mostrar error en todos los selects (sin cambios)
+        function mostrarErrorEnSelects(mensaje) {
+            ['tipoCallePrincipal', 'tipoEntreCalle1', 'tipoEntreCalle2', 'tipoNumExt', 'tipoNumInt'].forEach(id => {
+                const select = document.getElementById(id);
+                if (select) {
+                    select.innerHTML = `<option value="" selected disabled>${mensaje}</option>`;
+                }
+            });
+        }
+
+
+
+        const modal = document.getElementById('modifyDireccion');
+
+        if (modal) {
+            modal.addEventListener('shown.bs.modal', function () {
+                // Cargar selects (solo si no están ya llenos)
+                cargarTodosLosTipos();
+
+                // Obtener el valor de #numero
+                var numero = $('#numero').text().trim(); // .trim() quita espacios innecesarios
+
+                // Llama la función con el valor
+                var datosSolicitante = consultarDomicilioSolicitanteModal(numero);
+            });
+        }
+
+       
+        if (modal && modal.classList.contains('show')) {
+            cargarTodosLosTipos();
+  
+            setTimeout(() => {
+              
+
+             
+              
+            }, 150);
+        }
+
+    
+
+    });
+
+    // validar
+
+    function validarEntreCalle(input) {
+        // Obtener el ID del input
+        const inputId = input.id;
+
+        // Obtener elementos de error usando el ID del input
+        const errorCaracteres = document.getElementById(`${inputId}-error-caracteres`);
+        const errorLongitud = document.getElementById(`${inputId}-error-longitud`);
+
+        // Validar que existen los elementos de error
+        if (!errorCaracteres || !errorLongitud) {
+            console.error('No se encontraron los elementos de error para el input:', inputId);
+            return false;
+        }
+
+        // Expresión regular para validación
+        const regex = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ\s\.,\-#]*$/;
+        let valor = input.value;
+        let esValido = true;
+
+        // Resetear mensajes de error
+        errorCaracteres.style.display = 'none';
+        errorLongitud.style.display = 'none';
+        input.classList.remove('is-invalid');
+
+        // Validar caracteres permitidos
+        if (valor && !regex.test(valor)) {
+            input.value = valor.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ\s\.,\-#]/g, '');
+            errorCaracteres.style.display = 'block';
+            input.classList.add('is-invalid');
+            esValido = false;
+        }
+
+        // Validar longitud máxima
+        if (valor.length > 100) {
+            input.value = valor.substring(0, 100);
+            errorLongitud.style.display = 'block';
+            input.classList.add('is-invalid');
+            esValido = false;
+        }
+
+        return esValido;
+    }
+    function consultarDomicilioSolicitanteModal(solicitanteId) {
+        if (!solicitanteId) return;
+
+
+        var urlDomicilio = '@Url.Action("ConsultaDomicilioSolicitante", "ConsultaMA")?solicitanteId=' + solicitanteId;
+
+
+
+        console.log("URL de consulta:", urlDomicilio); // Verifica en consola
+
+        $.ajax({
+            type: "GET",
+            url: urlDomicilio,
+            dataType: "json",
+            beforeSend: function () {
+                $("#direccion").text("Cargando dirección...");
+            },
+            success: function (response) {
+
+                console.log("dIREC:", response);
+                datosDomi = response.data;
+                console.log("Datos del domicilio almacenados:", datosDomi.colonia.cp);
+                if (response && response.codigo === 0 && response.data) {
+                    let direccion = response.data.domicilio || "";
+
+                    if (response.data.observaciones) {
+                        direccion += " (" + response.data.observaciones + ")";
+                    }
+                    $('#direccionCH').val(datosDomi.descripcionDomicilio1 || '');
+                    $('#entreCalle1').val(datosDomi.descripcionDomicilio2 || '');
+                    $('#entreCalle2').val(datosDomi.descripcionDomicilio3 || '');
+                    $('#numExt').val(datosDomi.descripcionDomicilio4 || '');
+                    $('#numInterior').val(datosDomi.descripcionDomicilio5 || '');
+                    $('#cpCH').val(datosDomi.colonia.cp || '');
+                    $('#estadoCH').val(datosDomi.colonia.estado || '');
+                    $('#municipioCH').val(datosDomi.colonia.municipio || '');
+                    $('#localidadCH').val(datosDomi.colonia.localidad || '');
+                    $('#codigoPostal').val(datosDomi.colonia.cp || '');
+
+                    $('#direccionConcatenada').val(datosDomi.direccion || '');
+                    $('#referenciaAdicional').val(datosDomi.observaciones || '');
+
+
+                   // $('#coloniaCH').val(datosDomi.colonia.colonia );
+                    consultarDatosCP(datosDomi.colonia.cp)
+                    setTimeout(() => {
+                        if (datosDomi.catDomicilio1) {
+                            $('#tipoCallePrincipal').val(datosDomi.catDomicilio1);
+                        }
+                        if (datosDomi.catDomicilio3) {
+                            $('#tipoEntreCalle1').val(datosDomi.catDomicilio3);
+                        }
+                        if (datosDomi.catDomicilio3) {  
+                            $('#tipoEntreCalle2').val(datosDomi.catDomicilio3);
+                        }
+                        if (datosDomi.catDomicilio4) {
+                            $('#tipoNumExt').val(datosDomi.catDomicilio4);
+                        }
+                        if (datosDomi.catDomicilio5) {
+                            $('#tipoNumInt').val(datosDomi.catDomicilio5);
+                        }
+                        if (datosDomi.coloniaId ) {
+
+                            cpTimeout = setTimeout(function () {
+                                $('#coloniaCH').val(datosDomi.coloniaId  );
+                            }, 1700);
+                        
+                         
+                        }
+                    
+                      
+                    }, 100);
+
+                    direcTimeout = setTimeout(function () {
+                        actualizarDireccionModal();
+                    }, 1700);
+                   
+
+                } else {
+                    $("#direccion").text("Dirección no disponible");
+                    console.warn("Respuesta inesperada:", response);
+                }
+            },
+            error: function (xhr, status, error) {
+                $("#direccion").text("Error al cargar dirección");
+                console.error("Error en la solicitud:", {
+                    URL: urlDomicilio,
+                    Status: xhr.status,
+                    Error: error,
+                    Response: xhr.responseText
+                });
+            }
+        });
+    }
+    function actualizarDireccionModal() {
+        const tipoCalle = js("#tipoCallePrincipal option:selected").text();
+        const calle = document.getElementById('direccionCH').value;
+        const tipoEntre1 = js("#tipoEntreCalle1 option:selected").text();
+        const entre1 = document.getElementById('entreCalle1').value;
+        const tipoEntre2 = js("#tipoEntreCalle2 option:selected").text();
+        const entre2 = document.getElementById('entreCalle2').value;
+        const tipoNum = js("#tipoNumExt option:selected").text();
+        const numExt = document.getElementById('numExt').value;
+        const tipoInt = js("#tipoNumInt option:selected").text();
+        const numInt = document.getElementById('numInterior').value;
+
+        // Actualizar el textarea con la dirección generada
+        document.getElementById('direccionConcatenada').value = generarDomicilioJS(
+            tipoCalle, calle,
+            tipoEntre1, entre1,
+            tipoEntre2, entre2,
+            tipoNum, numExt,
+            tipoInt, numInt
+        );
+    }
+
+    // Función para generar el domicilio completo
+    function generarDomicilioJS(
+        cat_dom1, descrip1,
+        cat_dom2, descrip2,
+        cat_dom3, descrip3,
+        cat_dom4, descrip4,
+        cat_dom5, descrip5
+    ) {
+        // Verificar si tenemos los datos de abreviaciones
+        if (!tiposDomicilioCache || !Array.isArray(tiposDomicilioCache.data)) {
+            console.warn("Datos de tipos de domicilio no disponibles");
+            return "";
+        }
+
+        // Obtener abreviaciones
+        const getAbreviacion = (descripcion) => {
+            const tipo = tiposDomicilioCache.data.find(item => item.descripcion === descripcion);
+            return tipo ? tipo.abreviacion || "" : "";
+        };
+
+        let cat1 = getAbreviacion(cat_dom1);
+        let cat2 = getAbreviacion(cat_dom2);
+        let cat3 = getAbreviacion(cat_dom3);
+        let cat4 = getAbreviacion(cat_dom4);
+        let cat5 = getAbreviacion(cat_dom5);
+
+        let des1 = descrip1.trim();
+        const des2 = descrip2.trim();
+        const des3 = descrip3.trim();
+        let des4 = descrip4 === '0' ? '' : descrip4.trim();
+        let des5 = descrip5 === '0' ? '' : descrip5.trim();
+
+        // S/C o s/c => se omite calle
+        if (des1.toLowerCase() === 's/c') {
+            des1 = '';
+            cat1 = '';
+        }
+
+        // Si cat4 y cat5 están vacíos, se asigna 'S/N' a cat4
+        if (!cat4 && !cat5) {
+            cat4 = 'S/N';
+        }
+
+        let domicilio_final = '';
+
+        if (cat_dom2 && cat_dom3) {
+            domicilio_final = `${cat1} ${des1.toUpperCase()} ENTRE ${cat2} ${des2.toUpperCase()} Y ${cat3} ${des3.toUpperCase()}`;
+            if (cat_dom4 || cat_dom5 || cat4 === 'S/N') {
+                domicilio_final += `, ${cat4} ${des4.toUpperCase()} ${cat5} ${des5.toUpperCase()}`;
+            }
+        } else if (cat_dom2 && !cat_dom3) {
+            domicilio_final = `${cat1} ${des1.toUpperCase()} Y ${cat2} ${des2.toUpperCase()}`;
+            if (cat_dom4 || cat_dom5 || cat4 === 'S/N') {
+                domicilio_final += `, ${cat4} ${des4.toUpperCase()} ${cat5} ${des5.toUpperCase()}`;
+            }
+        } else if (!cat_dom2 && !cat_dom3) {
+            domicilio_final = `${cat1} ${des1.toUpperCase()}`;
+            if (cat_dom4 || cat_dom5 || cat4 === 'S/N') {
+                if (des1) domicilio_final += ',';
+                domicilio_final += ` ${cat4} ${des4.toUpperCase()} ${cat5} ${des5.toUpperCase()}`;
+            }
+        }
+
+        // Limpiar espacios dobles y al inicio
+        return domicilio_final.replace(/\s+/g, ' ').trim();
+    }
+
+    // Cuando cargues los tipos de domicilio, guarda el cache
+    window.cargarTodosLosTipos = function (data) {
+        tiposDomicilioCache = data;
+        actualizarSelects(data);
+        actualizarReferencias(); // Actualizar dirección al cargar los datos
+
+    };
+
+    
+</script>

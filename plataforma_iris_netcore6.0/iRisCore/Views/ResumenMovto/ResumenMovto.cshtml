@@ -1,0 +1,212 @@
+﻿
+@{
+    ViewData["Title"] = "ResumenMovto";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Estilos { 
+    <link href="~/css/pages.css" rel="stylesheet" />
+}
+
+<h5>Concentrado de Movimientos</h5>
+<div id="emailHelp" class="form-text">WS que permite consultar las operaciones realizadas a través de tu ASP Pago</div>
+
+
+<div class="card-box">
+    <div class="card-body">
+        <form>
+            <div class="row g-1">
+                <div class="col-sm-12">
+                    <select class="form-select" name="tipoBusqueda" id="tipoBusqueda" aria-label="Default select example">
+                        <option value="NONE" selected>Seleccione el tipo de búsqueda</option>
+                        <option value="TEL">Número Telefónico</option>
+                        <option value="ASP">Cuenta ASP</option>
+                    </select>
+                </div>
+            </div>
+            <div id="salto1">
+                <br />
+            </div>
+
+            
+            <div class="row g-1">               
+
+                <div class="col-sm-3">
+                    <div class="form-floating mb-3">
+                        <input name="fechaInicial" id="fechaInicial" class="form-control" type="date" />
+                        <label for="floatingInput">Fecha Inicial</label>
+                    </div>                  
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-floating mb-3">
+                        <input name="fechaFinal" id="fechaFinal" class="form-control" type="date" />
+                        <label for="floatingInput">Fecha Final</label>
+                    </div>                  
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" name="numeroValor" id="numeroValor" placeholder="Valor" maxlength="10" required>
+                        <label for="floatingInput">valor...</label>
+                    </div>
+                </div>
+
+
+                <div class="col-sm-3">
+                    <button type="submit" id="ExecuteRequest" class="btn btn-block btn-success">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Operación
+                    </button>
+                </div>
+
+            </div>
+           
+
+           
+
+
+        </form>
+    </div>
+</div>
+
+
+
+<div class="row visually-hidden" id="detalleMovto">
+    <div class="col-lg-12">
+        <div class="card-box"> 
+            <h5 class="text-dark header-title m-t-0">Detalle de Movimientos</h5>
+             <div id="divcolectivas"></div>
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+
+
+    
+
+
+
+
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/js/jquery.nicescroll.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+
+<script type="text/javascript">
+    var js = jQuery.noConflict(true);
+
+   
+
+    js(document).ready(function () {
+
+        function validaDatos() { 
+           
+        }
+
+
+        js('#ExecuteRequest').on("click", function (event) {
+            event.preventDefault();
+            js("#detalleMovto").addClass("visually-hidden");
+
+            if (js("#tipoBusqueda").val() == "NONE") {
+                swal({
+                    title: "Error",
+                    text: "El tipo de búsqueda no ha sido proporcionado",
+                    type: "warning",
+                    showCancelButton: false,
+                    confirmButtonColor: "#DD6B55",
+                    closeOnConfirm: false
+                });
+                return;
+            }
+
+
+            var info = new Object();
+            info.fechaInicio = js("#fechaInicial").val();
+            info.fechaFin = js("#fechaFinal").val();
+
+            var url = "@Url.Action("getMovimientos", "ResumenMovto")";
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: { model: info, tipoBusqueda: js("#tipoBusqueda").val(), numeroValor: js("#numeroValor").val() },
+                success: function (data) {                  
+
+                    if (data.resultados.data == '' ) {
+                        swal({
+                            title: "Error",
+                            text: data.resultados.mensaje,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+                    }
+                    else {
+
+                        js("#detalleMovto").removeClass("visually-hidden");
+
+                        var div = "";
+                        for (i = 0; i < data.movtos.length; i++) {
+                            var value = data.movtos[i].monto;
+
+                            div = div + "<div class='text-muted'> <span>" + data.movtos[i].fecha + "</span>\n\ <strong>" + data.movtos[i].titulo + "</strong> <span>" + currencyFormatter({ currency: "USD", value }) + "</span>\n\ <span> (" + data.movtos[i].tipo + ")</span>\n\ </div>\n\
+                                                <div class='row g-12'>\n\
+                                                    <div class='col-sm-3'>\n\
+                                                            <strong><label>Emisor</label></strong>\n\
+                                                    </div>\n\
+                                                    <div class='col-sm-4'>\n\
+                                                                 <span>" + data.movtos[i].detalleMovimiento.emisor + "</span>\n\
+                                                    </div>\n\
+                                                    <div class='col-sm-1'>\n\
+                                                          <strong><label>Beneficiario</label></strong>\n\
+                                                    </div>\n\
+                                                    <div class='col-sm-4'>\n\
+                                                          <span>" + data.movtos[i].detalleMovimiento.beneficiario + "</span>\n\
+                                                    </div>\n\
+                                                 </div>\n\
+                                                 <div class='row g-12'>\n\
+                                                        <div class='col-sm-3'>\n\
+                                                            <strong><label>Origen </label></strong >\n\
+                                                        </div>\n\
+                                                        <div class='col-sm-4' >\n\
+                                                            <span>" + data.movtos[i].detalleMovimiento.bancoOrigen + " </span>\n\
+                                                        </div>\n\
+                                                        <div class='col-sm-1'>\n\
+                                                            <strong><label>Destino</label></strong>\n\
+                                                        </div>\n\
+                                                        <div class='col-sm-4'>\n\
+                                                              <span>" + data.movtos[i].detalleMovimiento.bancoDestino + "</span>\n\
+                                                        </div>\n\
+                                                 </div>"
+                            var div2 = "";
+                            var valor = "";
+                            for (ii = 0; ii < data.movtos[i].detalleMovimiento.detalle.length; ii++) {
+                                if (data.movtos[i].detalleMovimiento.detalle[ii].nombre == 'CEP') { valor = "<a href=" + data.movtos[i].detalleMovimiento.detalle[ii].valor + " target='_blank'> Ver </a>"; }
+                                else {
+                                    valor = data.movtos[i].detalleMovimiento.detalle[ii].valor;
+                                }
+
+                                div2 = div2 + "<div class='row g-12'>\n\
+                                                                        <div class='col-sm-3'>\n\
+                                                                                        <strong><label>" + data.movtos[i].detalleMovimiento.detalle[ii].nombre + "</label></strong >\n\
+                                                                        </div>\n\
+                                                                        <div class='col-sm-8'>\n\
+                                                                                    <span>" + valor + "</span>\n\
+                                                                        </div>\n\
+                                                                 <\div>"
+                            }
+                            div = div + div2 + "<hr\>";
+                        }
+                        $("#divcolectivas").html(div);
+                    }
+                }
+            });
+
+        });
+
+    })
+
+
+</script>

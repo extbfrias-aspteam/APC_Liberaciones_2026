@@ -1,0 +1,279 @@
+﻿@{
+    ViewData["Title"] = "BO_ConsultaSaldos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Estilos {
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css" rel="stylesheet" />
+}
+<h5>Consulta Saldos</h5>
+<div id="emailHelp" class="form-text">Esta vista bindará la relación de los saldos los participantes y UDN´s</div>
+<div class="card-box">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="fechaInicio"></label>
+                    <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="descripcion"></label>
+                    <select class="form-select" id="descripcion" name="descripcion">
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+               
+                <button type="submit" id="btnConsultar" class="btn btn-success">
+                    <span id="spin" class="spinner-border spinner-border-sm d-none"></span>
+                    Consultar
+                </button>
+            </div>
+        </div>
+      
+      
+    </div>
+</div>
+
+<br />
+<br />
+<div class="card" id="cardTablaEjercicios" style="display: none; background: none; border: none;">
+    <div class="card-header" style="background: none; color: inherit; border: none;">
+        
+    </div>
+    <div class="card-body" style="background: none;">
+        <table class="display" id="tablaEjercicios">
+            <thead>
+                <tr>
+                    <th>ID Participante</th>
+                    <th>Nombre Participante</th>
+                    <th>Cuenta Clabe</th>
+                    <th>Saldo</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-right"><strong>Total:</strong></td>
+                    <td id="totalSaldos"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<br />
+<br />
+<div class="card" id="cardParticipante" style="display: none; background: none; border: none;">
+    <div class="card-header" style="background: none; color: inherit; border: none;">
+       
+    </div>
+
+    <div class="card-body">
+
+        <div class="row">
+            <div class="col-3 d-flex justify-content-center align-items-center"> <img src="../images/BO_imagenes/person-fill.svg" style="width:50%;" /></div>
+            <div class="col-9">
+               
+                <p><strong>ID:</strong> <span id="cardIdParticipante"></span></p>
+                <p><strong>Nombre Participante:</strong> <span id="cardNomParticipante"></span></p>
+                <p><strong>Cuenta Clabe:</strong> <span id="cardCuentaClabe"></span></p>
+                <p><strong>Saldo:</strong> <span id="cardSaldo"></span></p>
+            </div>
+
+        </div>
+       
+      
+    </div>
+</div>
+<br />
+<br />
+<div class="card" id="cardTablaRelaciones" style="display: none; background: none; border: none;">
+    <div class="card-header" style="background: none; color: inherit; border: none;">
+        
+    </div>
+    <div class="card-body">
+        <table class="display" id="tablaRelaciones">
+            <thead>
+                <tr>
+                    <th>ID UDN</th>
+                    <th>Nombre UDN</th>
+                    <th>Cuenta Clabe</th>
+                    <th>Saldo</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-right"><strong>Total:</strong></td>
+                    <td id="totalSaldosRelaciones"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Inicializar DataTables con opciones de exportación, búsqueda y ordenamiento
+            var tablaEjercicios = $('#tablaEjercicios').DataTable({
+                language: {
+                    "url": "../lib/Spanish.json"
+                },
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'excelHtml5',
+                        text: 'Exportar'
+                    }
+                ]
+            });
+
+            var tablaRelaciones = $('#tablaRelaciones').DataTable({
+                language: {
+                    "url": "../lib/Spanish.json"
+                },
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'excelHtml5',
+                        text: 'Exportar'
+                    }
+                ]
+            });
+
+            // Añadir las opciones "Seleccione una opción" y "Todos"
+            $('#descripcion').append(new Option('Seleccione una opción', ''));
+            $('#descripcion').append(new Option('Todos', 'Todos'));
+
+            // Cargar descripciones en el select al inicio
+            $.ajax({
+                url: '@Url.Action("GetParticipantesSaldoPblu", "BO_SaldosB2B")',
+                type: 'GET',
+                success: function (data) {
+                    $.each(data, function (index, participante) {
+                        $('#descripcion').append(new Option(participante.descripcion, participante.id_pblu));
+                    });
+                },
+                error: function (error) {
+                    console.error("Error al cargar las descripciones:", error);
+                }
+            });
+
+            // Manejar el botón de consulta
+            $('#btnConsultar').click(function () {
+                var fechaInicio = $('#fechaInicio').val();
+                var fechaActual = new Date().toISOString().split('T')[0];
+                var descripcion = $('#descripcion').val();
+
+                var consulta = {
+                    FechaInicio: fechaInicio,
+                    FechaActual: fechaActual,
+                    Descripcion: descripcion
+                };
+
+
+                // Mostrar spinner
+                $('#spin').removeClass('d-none');
+
+                // Consultar la tabla de ejercicios
+                $.ajax({
+                    url: '@Url.Action("ObtenerSaldos", "BO_SaldosB2B")',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(consulta),
+                    success: function (data) {
+
+                        // Limpiar tabla y resetear total
+                        tablaEjercicios.clear();
+                        var totalSaldos = 0;
+
+                        $.each(data, function (index, ejercicio) {
+                            var saldo = parseFloat(ejercicio.saldo);
+                            totalSaldos += saldo;
+
+                            tablaEjercicios.row.add([
+                                ejercicio.idParticipante,
+                                ejercicio.nomParticipante,
+                                ejercicio.cuentaClabe,
+                                saldo.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })
+                            ]).draw();
+                        });
+
+                        $('#totalSaldos').text(totalSaldos.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }));
+
+                        if (descripcion === "Todos") {
+                            // Mostrar la tabla de ejercicios y ocultar las otras
+                            $('#cardTablaEjercicios').show();
+                            $('#cardParticipante').hide();
+                            $('#cardTablaRelaciones').hide();
+                        } else {
+                            // Mostrar los datos en el card del participante
+                            $('#cardParticipante').show();
+                            $('#cardIdParticipante').text(data[0].idParticipante);
+                            $('#cardNomParticipante').text(data[0].nomParticipante);
+                            $('#cardCuentaClabe').text(data[0].cuentaClabe);
+                            $('#cardSaldo').text(parseFloat(data[0].saldo).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }));
+
+                            // Ocultar la tabla de ejercicios y mostrar la tabla de relaciones
+                            $('#cardTablaEjercicios').hide();
+
+                            // Hacer la segunda consulta para obtener los UDNs
+                            $.ajax({
+                                url: '@Url.Action("ObtenerSaldosUdn", "BO_SaldosB2B")',
+                                type: 'POST',
+                                contentType: 'application/json',
+                                data: JSON.stringify(consulta),
+                                success: function (data) {
+
+                                    // Limpiar tabla de relaciones y resetear total
+                                    tablaRelaciones.clear();
+                                    var totalSaldosRelaciones = 0;
+
+                                    $.each(data, function (index, udn) {
+                                        var saldoUdn = parseFloat(udn.saldo);
+                                        totalSaldosRelaciones += saldoUdn;
+
+                                        tablaRelaciones.row.add([
+                                            udn.idUdn,
+                                            udn.nomUdn,
+                                            udn.cuentaClabe,
+                                            saldoUdn.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })
+                                        ]).draw();
+                                    });
+
+                                    $('#totalSaldosRelaciones').text(totalSaldosRelaciones.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }));
+                                    $('#cardTablaRelaciones').show(); // Mostrar la tabla de relaciones
+                                },
+                                error: function (error) {
+                                    console.error("Error al consultar los UDNs:", error); // Log para verificar errores en la solicitud
+                                }
+                            });
+                        }
+
+                        // Ocultar spinner
+                        $('#spin').addClass('d-none');
+                    },
+                    error: function (error) {
+                        console.error("Error al consultar los ejercicios:", error); // Log para verificar errores en la solicitud
+                        // Ocultar spinner
+                        $('#spin').addClass('d-none');
+                    }
+                });
+            });
+        });
+    </script>
+
+}

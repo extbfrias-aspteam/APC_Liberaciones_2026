@@ -1,0 +1,391 @@
+﻿@using iRisModel;
+
+@{
+ViewData["Title"] = "Recepción de Tarjetas";
+Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@section Estilos {
+<link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
+}
+
+
+
+
+<!--Inicio Modal Recibir Tarjetas-->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Motivo de la devolución</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <div class="form-group">
+                                <textarea class="form-control" id="observaciones" name="observaciones" rows="3" placeholder="Comentarios..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" id="ExecuteDevolverTarjetas" class="btn btn-success">Confirmar Devolución</button>
+                <button type="button" id="btnCerrarModal" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Fin Modal Asignar Tarjetas-->
+
+
+<h5>Recepción Tarjeta Física en Sucursal</h5>
+
+<div id="emailHelp" class="form-text">Recepción, devolución y consulta de tarjetas fisicas en sucursal</div>
+<div class="card-box">
+    <div class="card-body">
+        <form>
+            <div class="row g-1">
+                <div class="col-sm-3">
+                    <select class="form-select" name="marcaId" id="marcaId" aria-label="Default select example">
+                        <option selected>Seleccione la marca</option>
+                        @if (ViewBag.Marcas != null)
+                        {
+                        List<MarcaModel> oMarcas = (List<MarcaModel>)ViewBag.Marcas;
+                                foreach (MarcaModel item in oMarcas)
+                                {
+                                <option value=@item.idMarca>@item.Marca</option>
+                                }
+                                }
+                    </select>
+                </div>
+
+                <div class="col-sm-3">
+                    <select class="form-select" name="estatusId" id="estatusId" aria-label="Default select example">
+                        <option selected>Seleccione el estatus</option>
+                        @if (ViewBag.Estatus != null)
+                        {
+                        List<EstatusModel> oEstatus = (List<EstatusModel>)ViewBag.Estatus;
+                                foreach (EstatusModel item in oEstatus)
+                                {
+                                <option value=@item.idEstatus>@item.Estatus</option>
+                                }
+                                }
+
+                    </select>
+                </div>
+                <div class="col-sm-3 visually-hidden" id="divNumeroGuia">
+                    <input type="text" class="form-control" name="numeroGuia" id="numeroGuia" placeholder="Número de Guía" aria-label="Default select example">
+                </div>
+
+                <div class="col-sm-3">
+                    <button type="submit" id="ExecuteRequest" class="btn btn-success">
+                        <span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+                        Ejecutar Consulta
+                    </button>
+                    <a class="visually-hidden" id="urlExcel" href="@Url.Action(" GenerateExcel","DashBoardTarjetas")">Download Excel</a>
+                </div>
+            </div>
+
+            <div class="row g-1" style="margin-top: 5px;">
+                <div class="form-group">
+                    <div class="col-sm-offset-3 col-sm-9">
+                        <div class="checkbox checkbox-primary">
+                            <input id="firstStock" type="checkbox" name="firstStock">
+                            <small><label for="checkbox2">
+                                    Primer Lote de Tarjetas
+                                </label>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div style="text-align:right;">
+    <!-- <button type="button" id="ExecuteRecibirTarjetas" data-bs-toggle="modal" data-bs-target="#staticBackdrop" class="btn btn-warning waves-effect waves-light visually-hidden">Recibir Tarjetas</button>  -->
+    <!-- <button type="button" id="ExecuteRecibirTarjetas" class="btn btn-warning waves-effect waves-light visually-hidden">Recibir Tarjetas</button> -->
+    <button class="btn btn-warning waves-effect waves-light visually-hidden" id="ExecuteRecibirTarjetas">Recibir Tarjetas</button>
+
+    <button type="button" id="ExecuteDevolver" data-bs-toggle="modal" data-bs-target="#staticBackdrop" class="btn btn-danger waves-effect waves-light visually-hidden">Devolver Tarjetas</button>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box">
+            <table id="example" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Folio</th>
+                        <th>PAN</th>
+                        <th>Número de Guía</th>
+                        <th>Cuenta ASP</th>
+                        <th>Observaciones</th>
+                        <th></th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/plug-ins/1.13.6/api/sum().js"></script>
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true);
+
+    js(document).ready(function () {
+
+        var table = js('#example').dataTable({
+            language: {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+            },
+            columnDefs: [
+                {
+                    'targets': 5, // Índice de la columna dinámica
+                    'visible': false
+                }
+            ]
+        });
+
+
+        js('#ExecuteRecibirTarjetas').prop("disabled", true);
+
+        js("#estatusId").on("change", function () {
+
+            if (js("#estatusId").val() == "TRAN") {
+                js("#divNumeroGuia").removeClass("visually-hidden");
+            }
+            else {
+                js("#divNumeroGuia").addClass("visually-hidden");
+            }
+
+        });
+
+        /*****Boton de consulta *****/
+        js('#ExecuteRequest').on("click", function (event) {
+            event.preventDefault();
+            table.destroy();
+
+            var info = new Object();
+
+            if (js("#estatusId").val() == "TRAN") {
+                if (js("#numeroGuia").val() == "") {
+                    swal({
+                        title: "Error",
+                        text: "El número de guía es requerido",
+                        type: "warning",
+                        showCancelButton: false,
+                        confirmButtonColor: "#DD6B55",
+                        closeOnConfirm: false
+                    });
+                    return;
+                }
+                else {
+                    info.guia = js("#numeroGuia").val();
+                }
+            }
+
+            info.marca = js("#marcaId").val();
+            info.estatus = js("#estatusId").val();
+            if ($('#firstStock').prop('checked')) {
+                info.firstStock = true;
+            } else {
+                info.firstStock = false;
+            }
+
+            var url = "@Url.Action("RecepcionEntregaTarjetas","RecepcionEntregaTarjetas")";
+
+            js.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: { model: info },
+                success: function (data) {
+                    //console.log(data);
+                    js('#ExecuteRecibirTarjetas').prop("disabled", false);
+
+                    if (data.result.codigo != 0) {
+                        js("#ExecuteRecibirTarjetas").addClass("visually-hidden");
+                        js("#ExecuteDevolver").addClass("visually-hidden");
+                        swal({
+                            title: "Error",
+                            text: data.result.mensaje,
+                            type: "warning",
+                            showCancelButton: false,
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: false
+                        });
+
+                    }
+                    else {
+                        if (js("#estatusId").val() == "TRAN") {
+                            //-- Habilita botones de recibir/devolver tarjetas
+                            js("#ExecuteRecibirTarjetas").removeClass("visually-hidden");
+                            js("#ExecuteDevolver").removeClass("visually-hidden");
+                        }
+                        else {
+                            js("#ExecuteRecibirTarjetas").addClass("visually-hidden");
+                            js("#ExecuteDevolver").addClass("visually-hidden");
+                        }
+
+                        var columns = [
+                            { 'data': 'id' },
+                            { 'data': 'pan' },
+                            { 'data': 'guia' },
+                            { 'data': 'cuentaASP' },
+                            { 'data': 'observaciones' }
+                        ];
+
+                        // Condiciona las columnas adicionales según el estado
+                        const estado = js("#estatusId").val();
+                        if (estado === "ASIG") {
+                            columns.push({ 'data': 'fechaSolicitud', 'title': 'Fecha de Solicitud' });
+                        } else if (estado === "ENT") {
+                            columns.push({ 'data': 'fechaEntrega', 'title': 'Fecha de Entrega' });
+                        } else if (estado === "TRANS") {
+                            columns.push({ 'data': 'fechaTransito', 'title': 'Fecha de Tránsito' });
+                        }
+
+                        js('#example').dataTable({
+                            destroy: true,
+                            responsive: true,
+                            scrollX: true,
+                            ordering: true,
+                            paging: true,
+                            language: {
+                                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+                            },
+                            data: data.detalle,
+                            columns: columns,
+                            columnDefs: [
+                                {
+                                    'targets': 5, // Índice de la columna dinámica
+                                    'visible': (estado === "ASIG" || estado === "ENT" || estado === "TRANS") // Mostrar solo si coincide con uno de los estados
+                                }
+                            ]
+                        });
+
+                    }
+                }
+            });
+
+        });
+
+        var table = js('#example2').DataTable({
+            language: {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+            }
+        });
+
+        /**** Boton recibir tarjeta ****/
+
+        js("#ExecuteRecibirTarjetas").on("click", function () {
+            var info = new Object();
+
+            info.marca = js("#marcaId").val();
+            info.estatus = js("#estatusId").val();
+            info.guia = js("#numeroGuia").val();
+
+            swal({
+                title: "Estás seguro?",
+                text: "Estarás recibiendo y aceptando el lote de tarjetas asignadas a tu sucursal!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Si, Confirmo de recibido!",
+                closeOnConfirm: false
+            }, function () {
+
+                var url = "@Url.Action("RecepcionTarjetas","RecepcionEntregaTarjetas")";
+                js.ajax({
+                    type: "POST",
+                    url: url,
+                    dataType: "json",
+                    data: { model: info, tipoOperacion: 'receive' },
+                    success: function (data) {
+                        console.log(data);
+                        if (data.codigo != 0) {
+                            swal({
+                                title: "Error",
+                                text: data.mensaje,
+                                type: "warning",
+                                showCancelButton: false,
+                                confirmButtonColor: "#DD6B55",
+                                closeOnConfirm: false
+                            });
+                        }
+                        else {
+                            swal("Tarjetas Asignadas!", "Actualmente cuentas con nuevas tarjetas disponibles.", "success");
+                            js("#ExecuteRecibirTarjetas").addClass("visually-hidden");
+                            js("#ExecuteDevolver").addClass("visually-hidden");
+                            location.reload();
+                        }
+                    }
+                });
+            });
+        });
+
+        /**** Boton devolver tarjeta ****/
+
+        js("#ExecuteDevolverTarjetas").on("click", function () {
+            var info = new Object();
+
+            info.marca = js("#marcaId").val();
+            info.estatus = js("#estatusId").val();
+            info.guia = js("#numeroGuia").val();
+
+            swal({
+                title: "Estás seguro?",
+                text: "Estarás devolviendo el lote de tarjetas!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Si, Confirmo la devolución!",
+                closeOnConfirm: false
+            }, function () {
+
+                var url = "@Url.Action("RecepcionTarjetas", "RecepcionEntregaTarjetas")";
+                js.ajax({
+                    type: "POST",
+                    url: url,
+                    dataType: "json",
+                    data: { model: info, tipoOperacion: 'return', observaciones: js("#observaciones").val() },
+                    success: function (data) {
+                        console.log(data);
+                        if (data.codigo != 0) {
+                            swal({
+                                title: "Error",
+                                text: data.mensaje,
+                                type: "warning",
+                                showCancelButton: false,
+                                confirmButtonColor: "#DD6B55",
+                                closeOnConfirm: false
+                            });
+                        }
+                        else {
+                            swal("¡Tarjetas Devueltas!", "Ha concluido la revolución de las tarjetas.", "success");
+                            location.reload();
+                        }
+                    }
+                });
+            });
+        });
+
+
+    });
+
+</script>

@@ -1,0 +1,561 @@
+﻿﻿@{
+    ViewData["Title"] = "BO_EstadosDeCuenta";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Estilos {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.3.1/css/select.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <style>
+        .dt-button {
+            display: none !important;
+            /* Oculta el botón de exportación */
+        }
+		td {
+			white-space: normal !important;
+			word-wrap: break-word;
+			max-width: 150px; /* Ajusta el ancho máximo de la celda */
+			overflow-wrap: break-word;
+		}
+    </style>
+}
+<h5>Estados de Cuenta</h5>
+<div class="form-text">Esta vista permitirá realizar consulta y generación de los Estados de Cuenta por participante.</div>
+
+<div class="card-box">
+	<div class="card-body">
+		<form id="formulario">
+			<div class="row g-3">
+				<div class="col-sm-4">
+					<select class="form-select" name="participantes" id="participantes">
+						<option value="-1" selected disabled>Seleccione al participante...</option>
+					</select>
+				</div>
+				<div class="col-sm-3">
+					<select class="form-select" name="anio" id="anio">
+						<option value="-1" selected disabled>Seleccione el año...</option>
+					</select>
+				</div>
+				<div class="col-sm-3">
+					<select class="form-select" name="mes" id="mes">
+						<option value="-1" selected disabled>Seleccione el mes...</option>
+					</select>
+				</div>
+				<div class="col-sm-2">
+					<button type="submit" class="btn btn-success rounded-1" id="executeRequest">
+						<span id="spin" class="spinner-border spinner-border-sm visually-hidden"></span>
+						Ejecutar Operación
+					</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+<div class="p-4 bg-white shadow-sm mb-5 rounded table-responsive" id="table" style="white-space: nowrap">
+	<div class="mt-2 d-flex gap-5 align-items-center mb-4">
+		@* <div class="form-check"> *@
+		@* 	<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" /> *@
+		@* 	<label class="form-check-label" for="flexCheckDefault"> Seleccionar todos </label> *@
+		@* </div> *@
+		<button class="btn btn-warning border-0 p-2 rounded-1 px-3" id="descargarEstadosDeCuenta">Descargar</button>
+	</div>
+
+	<table id="tabla" class="display" style="width: 100%">
+		<thead>
+			<tr>
+				<th>Sel</th>
+				<th>Participante</th>
+				<th>Año</th>
+				<th>Mes</th>
+				<th>Concentradora</th>
+				<th>Acciones</th>
+			</tr>
+		</thead>
+	</table>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.1.0/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.1.0/js/buttons.html5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+
+<script type="text/javascript">
+	var js = jQuery.noConflict(true);
+	let table;
+	let data = [];
+	let selectedParticipante = null;
+	let selectedAnio = null;
+	let selectedMes = null;
+	let concentradora = null;
+	let participante = null;
+	let mes = null;
+	let bodyEdos = []; 
+	let auxDataTableRows = []; 
+	let tableData = []; // Datos VISUALES (lo que se muestra en la tabla)
+	let selectedRowIds = []; // IDs seleccionados
+
+	js(document).ready(function () {
+		inicializarTabla();
+		obtenerListaParticipantes();
+		// Sincronizar checkboxes individuales con la selección visual de DataTables
+		js("#tabla tbody").on("change", ".row-checkbox", function () {
+			validarBotonDescarga();
+			let row = $(this).closest("tr");
+			let rowData = table.row(row).data();
+
+			let rowIndex = table.row(row).index(); // Índice real de la fila en la tabla
+			let originalData = bodyEdos[rowIndex]; // Tomamos el dato correcto
+
+			if (!originalData) return;
+
+			let rowId = originalData.pblu; // Obtenemos el ID real del `pblu`
+
+			if (this.checked) {
+				table.row(row).select(); // Marca la fila visualmente
+				if (!selectedRowIds.includes(rowId)) {
+					selectedRowIds.push(originalData); // Agregar solo si no está duplicado
+				}
+			} else {
+				table.row(row).deselect(); // Desmarca la fila visualmente
+				selectedRowIds = selectedRowIds.filter(item => item !== originalData); // Quitar de la lista
+			}
+
+			// Si todas las filas están seleccionadas, marca "Seleccionar todos", si no, lo desmarca
+			let totalRows = table.rows().count();
+			let checkedRows = $(".row-checkbox:checked").length;
+			//js("#flexCheckDefault").prop("checked", totalRows === checkedRows);
+		});
+		// Función para manejar "Seleccionar todos"
+		// js("#flexCheckDefault").on("change", function () {
+		// 	let isChecked = $(this).prop("checked");
+
+		// 	Seleccionar/Deseleccionar todas las filas de todas las páginas
+		// 	js(".row-checkbox").prop("checked", isChecked);
+		// 	if (isChecked) {
+		// 		table.rows().select();
+		// 		selectedRowIds = bodyEdos.map(d => d); Guardamos TODOS los IDs
+		// 	} else {
+		// 		table.rows().deselect();
+		// 		selectedRowIds = [];
+		// 	}
+		// 	validarBotonDescarga();
+		// });
+
+		// Sincronizar selección con checkboxes de cada fila
+		js("#tabla tbody").on("change", ".row-checkbox", function () {
+			let totalRows = table.rows().count();
+			let checkedRows = $(".row-checkbox:checked").length;
+
+			// Marcar o desmarcar "Seleccionar todos" dependiendo de la selección
+			//js("#flexCheckDefault").prop("checked", totalRows === checkedRows);
+		});
+		js("#descargarEstadosDeCuenta").click(function () {
+			// Deshabilitar el botón y los select mientras se ejecuta la consulta
+			js("#descargarEstadosDeCuenta").prop("disabled", true);
+				console.log(selectedRowIds);
+			 let datosAEnviar = bodyEdos.filter(item => selectedRowIds.some(row => item === row));
+			 console.log(bodyEdos)
+			 console.log(datosAEnviar)
+
+			js.ajax({
+					url: '@Url.Action("GetDescargaPDF", "BO_EstadosDeCuenta")',
+					type: "POST",
+					contentType: "application/json", // Asegura que el servidor reconozca el JSON
+					xhrFields: {
+					responseType: "blob"  // Importante: Recibir la respuesta como Blob
+					},
+					data: JSON.stringify(datosAEnviar),
+					success: function (blob, status, xhr) {
+						// Obtener la fecha actual en el formato deseado
+					   let now = new Date();
+					   let yyyy = now.getFullYear();
+					   let mm = String(now.getMonth() + 1).padStart(2, '0');  // Mes con 2 dígitos
+					   let dd = String(now.getDate()).padStart(2, '0');       // Día con 2 dígitos
+					   let hh = String(now.getHours()).padStart(2, '0');      // Hora con 2 dígitos
+					   let min = String(now.getMinutes()).padStart(2, '0');   // Minutos con 2 dígitos
+					   let ss = String(now.getSeconds()).padStart(2, '0');    // Segundos con 2 dígitos
+
+					   // Formato final: Estado-de-cuenta_YYYYMMDD_HHmmss.zip
+					   let filename = `Estado-de-cuenta_${yyyy}${mm}${dd}_${hh}${min}${ss}.zip`;
+
+					   // Crear un enlace de descarga
+					   let link = document.createElement("a");
+					   let url = window.URL.createObjectURL(blob);
+					   link.href = url;
+					   link.download = filename;  // Asignar el nombre dinámico
+					   document.body.appendChild(link);
+					   link.click();
+
+					   // Limpiar recursos
+					   setTimeout(() => {
+						   document.body.removeChild(link);
+						   window.URL.revokeObjectURL(url);
+					   }, 100);
+						// Deseleccionar los checkboxes y filas seleccionadas
+						js(".row-checkbox").prop("checked", false);
+						//js("#flexCheckDefault").prop("checked", false); // Asegurar que "Seleccionar todos" se desmarca
+
+						// Deseleccionar todas las filas en DataTables
+						table.rows().deselect();
+
+						// Vaciar el array de IDs seleccionados
+						selectedRowIds = [];
+					},
+					error: function () {
+						alert("Error al descargar PDF.");
+					},
+					complete: function () {
+						// Vaciar el array de IDs seleccionados
+						selectedRowIds = [];
+						// Volver a habilitar los elementos después de la consulta
+						js("#descargarEstadosDeCuenta").prop("disabled", false);
+									validarBotonDescarga();
+
+					}
+			});
+		});
+		
+			// Remover la clase de error cuando el usuario cambia la selección
+		js("#participantes, #anio, #mes").change(function() {
+			if ($(this).val() !== "-1") {
+				$(this).removeClass("is-invalid");
+			}
+		});
+		js("#participantes").change(function() {
+			js("#participantes, #anio, #mes").each(function() {
+				$(this).removeClass("is-invalid"); // Quita la clase si ya fue corregido
+			});
+			selectedParticipante = $(this).val();
+			let selectedOption = $(this).find(":selected");
+			concentradora = selectedOption.data("concentradora"); // Obtener el valor del atributo personalizado
+			participante = selectedOption.data("participante"); // Obtener el valor del atributo personalizado
+
+			// Reiniciar selección de año y mes
+			$("#anio").empty().append('<option value="-1" selected disabled>Cargando años...</option>');
+			$("#mes").empty().append('<option value="-1" selected disabled>Seleccione el mes...</option>');
+
+			var data = new Object();
+			data.id_pblu = selectedParticipante;
+
+
+		// Petición para obtener los años del participante seleccionado
+		js.ajax({
+			url: '@Url.Action("GetAnioCreacionParticipante", "BO_EstadosDeCuenta")',
+			type: "POST",
+			dataType: "json",
+			data: data,
+			success: function (data) {
+				console.log(data);
+				if(data.result.mensaje) {
+					alert(data.result.mensaje);
+					let $anioSelect = $("#anio");
+					return;
+				}
+				let anios = data.result.data;
+				let $anioSelect = $("#anio");
+				$anioSelect.empty().append('<option value="-1" selected disabled>Seleccione el año...</option>');
+				anios.forEach(anio => {
+					$anioSelect.append(`<option value="${anio}">${anio}</option>`);
+				});
+			},
+			error: function () {
+				alert("Error al cargar los años.");
+			}
+		});
+	});
+
+	js("#anio").change(function() {
+		selectedAnio = $(this).val();
+		console.log(selectedAnio);
+		// Validar que se haya seleccionado un año válido
+		if (!selectedAnio || selectedAnio === "-1") {
+			return;
+		}
+
+		$("#mes").empty().append('<option value="-1" selected disabled>Cargando meses...</option>');
+
+		js.ajax({
+			url: '@Url.Action("GetMeses", "BO_EstadosDeCuenta")',
+			type: "POST",
+			dataType: "json",
+			data: { anio: selectedAnio },
+			success: function (data) {
+				let meses = data.result.data;
+				let $mesSelect = $("#mes");
+				$mesSelect.empty().append('<option value="-1" selected disabled>Seleccione el mes...</option>');
+				 for (let key in meses) {
+						if(meses[key] == null) {
+							return;
+						}
+						$mesSelect.append(`<option value="${key}" data-mes="${meses[key]}">${meses[key]}</option>`);
+				 }
+			},
+			error: function () {
+				alert("Error al cargar los meses.");
+			}
+		});
+	});
+	js("#mes").change(function() {
+		selectedMes = $(this).val();
+		let selectedOption = $(this).find(":selected");
+		mes = selectedOption.data("mes"); // Obtener el valor del atributo personalizado
+
+	});
+	js("#executeRequest").click(function (e) {
+			e.preventDefault();
+			   // Deshabilitar el botón y los select mientras se ejecuta la consulta
+			js("#executeRequest, #participantes, #anio, #mes").prop("disabled", true);
+			 let isValid = true;
+						// Verifica si los selects tienen un valor válido
+			js("#participantes, #anio, #mes").each(function() {
+				if ($(this).val() === "-1" || $(this).val() === null) {
+					$(this).addClass("is-invalid"); // Agrega una clase de Bootstrap para resaltar el error
+					isValid = false;
+				} else {
+					$(this).removeClass("is-invalid"); // Quita la clase si ya fue corregido
+				}
+			});
+			if (!isValid) {
+				alert("Por favor, selecciona todas las opciones antes de continuar.");
+				js("#executeRequest, #participantes, #anio, #mes").prop("disabled", false);
+				return;
+			}
+
+			 let samePblu = tableData.some(item => item.pblu === participante);
+			 if(!samePblu) {
+				 table.clear().draw();
+					bodyEdos = [];
+					auxDataTableRows = [];
+					tableData = []; 
+					selectedRowIds = []; 
+			 }
+
+				let contieneDigito = /[1-9]/.test(selectedMes.toString());
+
+
+
+				if (!contieneDigito) {
+					selectedMes = obtenerNumeroMes(selectedMes);
+				} 
+				js.ajax({
+					url: '@Url.Action("ExistePDF", "BO_EstadosDeCuenta")',
+					type: "POST",
+					dataType: "json",
+					data: { pblu: selectedParticipante, anio: selectedAnio, mes:selectedMes },
+					success: function (res) {
+						if (res.result.data) {
+							let existingRow = tableData.some(item =>
+								item.pblu === participante &&
+								item.anio === selectedAnio &&
+								item.mes === mes &&
+								item.concentradora === concentradora
+							);
+
+							if(existingRow) {
+								alert("Estado de Cuenta ya presenté en la tabla.");
+								return;
+							}
+
+								// Crear el nuevo registro
+							var nuevoRegistro = {
+							  pblu: participante,
+							  anio: selectedAnio,
+							  mes: mes,
+							  concentradora: concentradora,
+							};
+							table.clear().draw();
+							table.row.add(nuevoRegistro).draw();
+							tableData = [];
+							tableData.push(nuevoRegistro);
+							auxDataTableRows = [];
+							auxDataTableRows.push({id:selectedParticipante, ...nuevoRegistro});
+							bodyEdos = [];
+							bodyEdos.push({ pblu: selectedParticipante, anio: selectedAnio, mes:selectedMes }); // Guardar registro para descarga
+						} else {
+							alert("No se encontró Estado de Cuenta en este periodo.");
+						}
+					},
+					error: function () {
+						alert("Error al cargar los años.");
+					},
+					complete: function () {
+						// Volver a habilitar los elementos después de la consulta
+						js("#executeRequest, #participantes, #anio, #mes").prop("disabled", false);
+								validarBotonDescarga();
+					}
+				});
+		});
+		validarBotonDescarga();
+	});
+		function obtenerNumeroMes(mes) {
+		const meses = {
+			"enero": "01",
+			"febrero": "02",
+			"marzo": "03",
+			"abril": "04",
+			"mayo": "05",
+			"junio": "06",
+			"julio": "07",
+			"agosto": "08",
+			"septiembre": "09",
+			"octubre": "10",
+			"noviembre": "11",
+			"diciembre": "12"
+		};
+
+		return meses[mes.toLowerCase()] || "00"; // Retorna "00" si no es un mes válido
+	}
+	function inicializarTabla() {
+		table = js("#tabla").DataTable({
+			paging: false,        // Desactiva el paginado
+			searching: false,     // Desactiva el campo de búsqueda
+			ordering: false,      // Desactiva el ordenamiento de columnas
+			info: false,          // Oculta el resumen de la tabla
+			lengthChange: false,   // Desactiva el selector de filas por página
+			pageLength: -1,       // Muestra todas las filas
+			data: data,
+			columnDefs: [
+				{
+					orderable: false,
+					className: "dt-body-center",
+					targets: 0, // La primera columna será para los checkboxes
+					render: function (data, type, row) {
+						return `<input type="checkbox" class="row-checkbox" data-id="${row.idPblu}">`;
+					},
+				},
+			],
+			destroy: true,
+			responsive: true,
+			scrollX: true,
+			ordering: true,
+			paging: true,
+			language: {
+				url: "../lib/Spanish.json",
+			},
+			columns: [
+				{data: null, title: "Sel"}, // Columna del checkbox (se renderiza manualmente)
+				{data: "pblu", title: "Participante"},
+				{data: "anio", title: "Año"},
+				{data: "mes", title: "Mes"},
+				{
+					data: "concentradora",
+					render: function (data, type, row) {
+						return data ? data : "N/A";
+					},
+				},
+				{
+					data: null,
+					orderable: false,
+					render: function (data, type, row, meta) {
+						return `
+				<button class="btn btn-outline-none p-0 mx-1" onclick="visualizarEstadoDeCuenta(${meta.row})" title="Ver Estado de Cuenta">
+					<i class="fa-solid fa-file-pdf"></i>
+				</button>
+			`;
+					},
+				},
+			],
+		});
+	}
+		function obtenerListaParticipantes() {
+			js.ajax({
+				type: "GET",
+				url: '@Url.Action("GetParticipantes", "BO_EstadosDeCuenta")',
+				dataType: "json",
+				success: function (data) {
+					if (data.result.codigo === 1) {
+						llenarSelectEstados(data.result.data);
+					} else {
+						console.error("Error:", data);
+					}
+				},
+				error: function (xhr, status, error) {
+					console.error("Error en la petición:", error);
+				}
+			});
+		}
+	function obtenerAnioParticipante(idPblu) {
+		js.ajax({
+				type: "POST",
+				url: '@Url.Action("GetParticipantes", "BO_EstadosDeCuenta")',
+				dataType: "json",
+				success: function (data) {
+					if (data.result.codigo === 1) {
+						llenarSelectEstados(data.result.data);
+					} else {
+						console.error("Error:", data);
+					}
+				},
+				error: function (xhr, status, error) {
+					console.error("Error en la petición:", error);
+				}
+			});
+	}
+
+	function llenarSelectEstados(data) {
+		let select = js("#participantes");
+		select.empty(); // Limpiar opciones anteriores
+		select.append('<option value="">Seleccione un participante</option>'); // Opción por defecto
+
+		js.each(data, function (index, item) {
+				select.append(`<option value="${item.id}" data-concentradora="${item.clabe}" data-participante="${item.descripcion}" >${item.descripcion}</option>`);
+		});
+	}
+	function validarBotonDescarga() {
+		let checkedCount = js(".row-checkbox:checked").length; // Contar checkboxes seleccionados
+		js("#descargarEstadosDeCuenta").prop("disabled", checkedCount === 0);
+	}
+	function visualizarEstadoDeCuenta(rowIndex) {
+		 // Obtener la fila de datos a partir del índice de fila
+	var rowData = table.row(rowIndex).data();
+	var pbluSeleccionado = rowData.pblu;  // Extraer el pblu de la fila seleccionada
+	var mesSeleccionado = rowData.mes;
+		console.log(pbluSeleccionado)
+		console.log(auxDataTableRows)
+	var objetoEncontrado = auxDataTableRows.find(item => item.mes === mesSeleccionado);
+
+	if (objetoEncontrado) {
+		let res = bodyEdos.find(item => item.mes === obtenerNumeroMes(objetoEncontrado.mes));
+
+		if (res) {
+				js.ajax({
+				url: '@Url.Action("VisualizarPDF", "BO_EstadosDeCuenta")',
+				type: "POST",
+				dataType: "json",
+				data:res,
+				success: function (data) {
+					base64ToPDF(data.result.data.rawBytes);
+				},
+				error: function () {
+					alert("Error al tratar de visualizar PDF.");
+				}
+			});
+		} else {
+			console.log("El ID no se encontró en el arreglo de ID.");
+		}
+	} else {
+		console.log("El nombre no se encontró en el arreglo con nombre.");
+	}
+
+	}
+		function base64ToPDF(base64Data) {
+		const byteCharacters = atob(base64Data); // Decodificar Base64 a binario
+		const byteNumbers = new Array(byteCharacters.length);
+		for (let i = 0; i < byteCharacters.length; i++) {
+			byteNumbers[i] = byteCharacters.charCodeAt(i);
+		}
+		const byteArray = new Uint8Array(byteNumbers);
+		const blob = new Blob([byteArray], { type: 'application/pdf' });
+
+			// Crea una URL del Blob y la abre en una nueva pestaña
+		const blobUrl = URL.createObjectURL(blob);
+		window.open(blobUrl, '_blank');
+	}
+</script>
