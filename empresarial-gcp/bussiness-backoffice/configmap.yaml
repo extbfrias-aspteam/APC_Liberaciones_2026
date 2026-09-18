@@ -12,4 +12,4 @@ data:
   CORE_BANKING_URL: http://domain-banking-core:8081
   CORE_BANKING_URL: http://domain-banking-core:8081
   ONBOARDING_BANKING_URL: http://domain-backoffice:8081/api/dominio/onboarding/management
-  TIME_TOKEN: "30"
+  TIME_TOKEN: "60"

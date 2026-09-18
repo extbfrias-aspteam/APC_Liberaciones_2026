@@ -24,6 +24,11 @@ spec:
               name: banking-business-config
           - secretRef:
               name: banking-business-secret
+        env:
+          - name: TZ
+            value: "America/Mexico_City"
+          - name: JAVA_TOOL_OPTIONS
+            value: "-Duser.timezone=America/Mexico_City"
         ports:
         - containerPort: 8080
         resources:

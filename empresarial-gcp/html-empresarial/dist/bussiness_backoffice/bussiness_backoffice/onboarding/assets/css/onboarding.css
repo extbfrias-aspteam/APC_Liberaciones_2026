@@ -1017,6 +1017,10 @@ tr:hover {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.grid-5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
 /* Campos cuyo label/contenido es largo: ocupan 2 columnas para no apretarse. */
 .col-span-2 {
   grid-column: span 2;
@@ -1058,7 +1062,8 @@ tr:hover {
 @media (max-width: 768px) {
   .grid-2,
   .grid-3,
-  .grid-4 {
+  .grid-4,
+  .grid-5 {
     grid-template-columns: 1fr;
   }
 }

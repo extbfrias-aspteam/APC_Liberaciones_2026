@@ -24,6 +24,11 @@ spec:
               name: backoffice-domain-config
           - secretRef:
               name: backoffice-domain-secret
+          env:
+          - name: TZ
+            value: "America/Mexico_City"
+          - name: JAVA_TOOL_OPTIONS
+            value: "-Duser.timezone=America/Mexico_City"        
           ports:
             - containerPort: 8081
           resources:

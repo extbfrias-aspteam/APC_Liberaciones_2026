@@ -8,7 +8,7 @@ data:
   BASE_EXTERNAL_SERVICE: http://lcoalhost:8081/
   BASE_CORE_SERVICE_CAUDEX: https://api-caudex-aspprod.aspintegraopciones.mx
   API_CORE_OAUTH_CAUDEX: https://api-caudex-aspprod.aspintegraopciones.mx/oauth2/token
-  EIYU_SERVICE_URL: http://10.40.0.64:9091
+  EIYU_SERVICE_URL: http://10.40.0.64:80
   EIYU_MOCK_ENABLED: "false"
   EIYU_CONNECT_TIMEOUT_MS: "60000"
   EIYU_READ_TIMEOUT_MS: "900000"
@@ -16,3 +16,5 @@ data:
   CECOBAN_SERVICE_URL: http://172.17.8.28:8000
   CECOBAN_MOCK_ENABLED: "false"
   CECOBAN_OAUTH: http://172.17.8.28:8000/
+  EIYU_ACCOUNT_UDN_ID: "8631"
+  EIYU_ACCOUNT_LEVEL: "4"

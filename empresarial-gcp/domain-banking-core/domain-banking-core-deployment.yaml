@@ -34,6 +34,10 @@ spec:
                   key: EIYU_PRIVATE_KEY_PASSWORD
             - name: EIYU_PUBLIC_CERTIFICATE_PATH
               value: /etc/eiyu/certs/eiyu-public.crt
+            - name: TZ
+              value: "America/Mexico_City"
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Duser.timezone=America/Mexico_City"
           volumeMounts:
             - name: eiyu-crypto-certs
               mountPath: /etc/eiyu/certs
