@@ -1,0 +1,14 @@
+version: '3.9'
+
+services:
+  flask-backend:
+    build: ./aval-ms
+    container_name: flask-backend
+    ports:
+      - "5808:5808"
+    restart: always
+
+networks:
+  default:
+    external:
+      name: token_aval_net
