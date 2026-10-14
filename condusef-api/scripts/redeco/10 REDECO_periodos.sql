@@ -1,0 +1,21 @@
+INSERT INTO redeco.periodos (mes, anio, fecha_inicial, fecha_final, activo, fecha_cierre, id_empresa) VALUES(3, 2024, '2024-03-01', '2024-03-31', true, NULL, 1);
+INSERT INTO redeco.periodos (mes, anio, fecha_inicial, fecha_final, activo, fecha_cierre, id_empresa) VALUES(4, 2024, '2024-04-01', '2024-04-30', false, NULL, 1);
+INSERT INTO redeco.periodos (mes, anio, fecha_inicial, fecha_final, activo, fecha_cierre, id_empresa) VALUES(5, 2024, '2024-05-01', '2024-05-31', false, NULL, 1);
+INSERT INTO redeco.periodos (mes, anio, fecha_inicial, fecha_final, activo, fecha_cierre, id_empresa) VALUES(6, 2024, '2024-06-01', '2024-06-30', false, NULL, 1);
+INSERT INTO redeco.periodos (mes, anio, fecha_inicial, fecha_final, activo, fecha_cierre, id_empresa) VALUES(7, 2024, '2024-07-01', '2024-07-31', false, NULL, 1);
+INSERT INTO redeco.periodos (mes, anio, fecha_inicial, fecha_final, activo, fecha_cierre, id_empresa) VALUES(8, 2024, '2024-08-01', '2024-08-31', false, NULL, 1);
+INSERT INTO redeco.periodos (mes, anio, fecha_inicial, fecha_final, activo, fecha_cierre, id_empresa) VALUES(9, 2024, '2024-09-01', '2024-09-30', false, NULL, 1);
+INSERT INTO redeco.periodos (mes, anio, fecha_inicial, fecha_final, activo, fecha_cierre, id_empresa) VALUES(10, 2024, '2024-10-01', '2024-10-31', false, NULL, 1);
+INSERT INTO redeco.periodos (mes, anio, fecha_inicial, fecha_final, activo, fecha_cierre, id_empresa) VALUES(11, 2024, '2024-11-01', '2024-11-30', false, NULL, 1);
+INSERT INTO redeco.periodos (mes, anio, fecha_inicial, fecha_final, activo, fecha_cierre, id_empresa) VALUES(12, 2024, '2024-12-01', '2024-12-31', false, NULL, 1);
+
+INSERT INTO redeco.periodos (mes, anio, fecha_inicial, fecha_final, activo, fecha_cierre, id_empresa) VALUES(3, 2024, '2024-03-01', '2024-03-31', true, NULL, 2);
+INSERT INTO redeco.periodos (mes, anio, fecha_inicial, fecha_final, activo, fecha_cierre, id_empresa) VALUES(4, 2024, '2024-04-01', '2024-04-30', false, NULL, 2);
+INSERT INTO redeco.periodos (mes, anio, fecha_inicial, fecha_final, activo, fecha_cierre, id_empresa) VALUES(5, 2024, '2024-05-01', '2024-05-31', false, NULL, 2);
+INSERT INTO redeco.periodos (mes, anio, fecha_inicial, fecha_final, activo, fecha_cierre, id_empresa) VALUES(6, 2024, '2024-06-01', '2024-06-30', false, NULL, 2);
+INSERT INTO redeco.periodos (mes, anio, fecha_inicial, fecha_final, activo, fecha_cierre, id_empresa) VALUES(7, 2024, '2024-07-01', '2024-07-31', false, NULL, 2);
+INSERT INTO redeco.periodos (mes, anio, fecha_inicial, fecha_final, activo, fecha_cierre, id_empresa) VALUES(8, 2024, '2024-08-01', '2024-08-31', false, NULL, 2);
+INSERT INTO redeco.periodos (mes, anio, fecha_inicial, fecha_final, activo, fecha_cierre, id_empresa) VALUES(9, 2024, '2024-09-01', '2024-09-30', false, NULL, 2);
+INSERT INTO redeco.periodos (mes, anio, fecha_inicial, fecha_final, activo, fecha_cierre, id_empresa) VALUES(10, 2024, '2024-10-01', '2024-10-31', false, NULL, 2);
+INSERT INTO redeco.periodos (mes, anio, fecha_inicial, fecha_final, activo, fecha_cierre, id_empresa) VALUES(11, 2024, '2024-11-01', '2024-11-30', false, NULL, 2);
+INSERT INTO redeco.periodos (mes, anio, fecha_inicial, fecha_final, activo, fecha_cierre, id_empresa) VALUES(12, 2024, '2024-12-01', '2024-12-31', false, NULL, 2);

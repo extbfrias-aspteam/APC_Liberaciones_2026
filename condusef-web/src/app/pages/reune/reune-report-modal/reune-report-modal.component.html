@@ -1,0 +1,73 @@
+<div class="modal-header">
+    <h4 class="modal-title">Reportar registros pendientes</h4>
+</div>
+<div class="modal-body p-4">
+    <div class="row">
+        @if (this.registros.length){
+            <div class="col-lg-12">
+                <ul class="list-inline">
+                    <li class="list-inline-item">
+                        Seleccionar registros que se reportarán a traves del API REUNE
+                    </li>
+                </ul>
+            </div>
+            <form [formGroup]="form" (ngSubmit)="reportarRegistros()" novalidate>
+                <div class="list-group mx-0">
+                   <div class="list-group mx-0">
+                    @for (registro of registros; track registro) {
+                        <label class="list-group-item d-flex gap-2">
+                          <input class="form-check-input flex-shrink-0" type="checkbox" type="checkbox" [value]="registro.folio" (change)="onCheckboxChange($event)">
+                          <span>
+                            {{registro.folio}} -
+                            {{registro.tipo == 1 ? 'Consulta' : registro.tipo == 2 ? 'Reclamación' : 'Aclaración'}}
+                            <small class="d-block text-muted">{{registro.producto}} - {{registro.subproducto}}</small>
+                          </span>
+                        </label>
+                      }
+                    </div>
+                </div>
+                @if (this.form.controls['folios'].errors?.['required']) {
+                    <p class="text-danger mt-3">
+                        Seleccionar al menos 1 registro.
+                    </p>
+                }
+            </form>
+        }@else{
+            <div class="col-lg-12">
+                <ul class="list-inline">
+                    <li class="list-inline-item">
+                       No hay registros pendientes de reportar
+                    </li>
+                </ul>
+            </div>
+        }
+        
+        
+    </div>
+
+    <ngx-ui-loader 
+        [loaderId]="'loader-01'"
+        [bgsType]="'square-jelly-box'" 
+        [fgsType]="'square-jelly-box'"
+        [hasProgressBar]="true"
+        bgsColor="#ed5565"
+        fgsColor="#ed5565"
+        pbColor="#ed5565">
+    </ngx-ui-loader>  
+</div>
+<div class="modal-footer">
+    <button 
+        type="button" 
+        class="btn btn-white" 
+        [disabled]="procesando"
+        (click)="this.activeModal.close()">
+        Cancelar
+    </button>
+    <button 
+        type="button" 
+        class="btn btn-primary mx-3"
+        [disabled]="!this.form.valid"
+        (click)="reportarRegistros()"> 
+        <i class="fa fa-upload"></i> Reportar registros
+    </button>
+</div>

@@ -1,0 +1,27 @@
+<div class="row wrapper border-bottom white-bg page-heading mb-3 pt-2">
+    <nav class="navbar sticky-top white-bg" role="navigation" style="margin-bottom: 0">
+        <div class="navbar-header">
+          <a class="navbar-minimalize minimalize-styl-2 btn btn-primary" (click)="toggleNavigation()" href="javascript:void();">
+            <i class="fa fa-bars"></i>
+          </a>
+          <div class="navbar-breadcrumb">
+            <app-breadcrumb></app-breadcrumb>
+          </div>
+        </div>
+        <ul class="nav navbar-top-links navbar-right">
+          @if (this.usuarioAutenticado) {
+            <li class="d-none d-lg-block">
+              <span class="m-r-sm text-muted welcome-message">
+                {{this.usuarioAutenticado.nombre}}
+              </span>
+            </li>
+          }
+          <!--Boton de cerrar sesión-->
+          <li class="dropdown">
+              <a data-bs-toggle="tooltip" data-bs-placement="top" title="Cerrar sesión" class="dropdown-toggle count-info" (click)="logout()">
+                  <i class="fa fa-sign-out" style="font-size: 20px;"></i>
+              </a>
+          </li>
+        </ul>
+    </nav>
+  </div>

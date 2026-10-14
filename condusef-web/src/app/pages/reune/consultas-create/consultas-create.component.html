@@ -1,0 +1,577 @@
+@if(errores && errores.length > 0){ 
+    <ngb-alert [dismissible]="false" class="d-block" type="danger" style="padding: 9px 18px;">
+        Revisar los siguientes errores:
+    </ngb-alert>
+    <ul>
+        @for(error of errores; track $index) {
+            <li>{{error}}</li>
+        }
+    </ul>
+ }
+<div class="container">
+    <div class="col-lg-12 animated fadeInRight">
+        <div class="ibox">
+            <div class="ibox-content">
+                <div class="row wrapper border-bottom page-heading pb-0">
+                    <div class="col-lg-6">
+                        <h4>
+                            @if(editar){
+                                EDITAR CONSULTA {{registro?.ConsultasFolio}}
+                            } @else {
+                                REGISTRAR NUEVA CONSULTA
+                            }
+                        </h4>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end">
+
+                </div>
+                <div class="row mt-3">
+                    <div class="col-lg-12">
+                        <ul class="list-inline">
+                            <li class="list-inline-item">
+                                <h5 class="mt-0">
+                                    Los campos marcados con <code>*</code> son obligatorios.
+                                </h5>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="pb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                        <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                        </symbol>
+                        <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                        </symbol>
+                        <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                        </symbol>
+                    </svg>
+                    <div class="alert alert-warning d-flex align-items-center" role="alert">
+                        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill"/></svg>
+                        <div>
+                            Captura de consultas para el trimestre <strong>{{ this.periodo?.mes }}-{{ this.periodo?.anio }}</strong>, del {{this.periodo?.fecha_inicial}} al {{this.periodo?.fecha_final}}
+                        </div>
+                    </div>
+                </div>
+
+                <form [formGroup]="form" (ngSubmit)="guardarRegistro()">
+                    <input type="hidden" id="Id" formControlName="Id" name="Id" value="">
+                    <input type="hidden" id="NumConsultas" formControlName="NumConsultas" name="NumConsultas" value="1">
+                    <input type="hidden" id="ConsultasTrim" formControlName="ConsultasTrim" name="ConsultasTrim" value="">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="ConsultasFecRecepcion" class="form-label">Fecha de recepci&oacute;n <code>*</code></label>
+                                <div class="input-group">
+                                    <input
+                                       class="form-control"
+                                       placeholder="yyyy-mm-dd"
+                                       name="ConsultasFecRecepcion"
+                                       ngbDatepicker
+                                       #d="ngbDatepicker"
+                                       id="ConsultasFecRecepcion" 
+                                       formControlName="ConsultasFecRecepcion"
+                                       [class.is-invalid] = "form.get('ConsultasFecRecepcion')?.invalid && form.get('ConsultasFecRecepcion')?.touched"
+                                       [placement]="placement"
+                                       [positionTarget]="buttonConsultasFecRecepcion"
+                                       [minDate]="inicio_periodo"
+                                       [maxDate]="fin_periodo"
+                                       [startDate]="inicio_periodo"
+                                   />
+                                   <button #buttonConsultasFecRecepcion class="btn btn-secondary" type="button" (click)="d.toggle()" type="button" placement="top" ngbTooltip="Seleccionar fecha">
+                                        <i class="fa-regular fa-calendar"></i>
+                                    </button>
+                                </div>  
+                                
+                                @if (form.get('ConsultasFecRecepcion')?.invalid && form.get('ConsultasFecRecepcion')?.errors && (form.get('ConsultasFecRecepcion')?.dirty || form.get('ConsultasFecRecepcion')?.touched)) {
+                                    @if (form.get('ConsultasFecRecepcion')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>
+                                    }
+                                }
+                                @if (form.get('ConsultasFecRecepcion')?.hasError('errorCondusef')) {
+                                    <small class="text-danger">
+                                        {{ form.get('ConsultasFecRecepcion')?.getError('errorCondusef') }}
+                                    </small>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="Sucursal" class="form-label">Sucursal <code>*</code></label>
+                                <select class="form-select" 
+                                        aria-label="" 
+                                        name="Sucursal" 
+                                        id="Sucursal" 
+                                        formControlName="Sucursal"
+                                        [class.is-invalid] = "form.get('Sucursal')?.invalid && form.get('Sucursal')?.touched">
+                                            <option value=null>- Seleccionar -</option>
+                                            <option [ngValue]="1">MOD ENSENADA</option>
+                                            <option [ngValue]="2">SUCURSAL VIRTUAL</option>
+                                            <option [ngValue]="3">MODCDMX</option>
+                                            <option [ngValue]="4">CEDIS</option>
+                                            <option [ngValue]="5">LA PAZ</option>
+                                            <option [ngValue]="6">CABO SAN LUCAS</option>
+                                            <option [ngValue]="7">MATRIZ</option>
+                                            <option [ngValue]="8">LORETO</option>
+                                            <option [ngValue]="9">ENSENADA</option>
+                                            <option [ngValue]="10">SAN LUIS RIO COLORADO</option>
+                                            <option [ngValue]="11">TIJUANA</option>
+                                            <option [ngValue]="12">SAN JOSE DEL CABO</option>
+                                            <option [ngValue]="13">GUASAVE</option>
+                                            <option [ngValue]="14">NAVOJOA</option>
+                                            <option [ngValue]="15">OBREGON</option>
+                                            <option [ngValue]="16">HUATABAMPO</option>
+                                            <option [ngValue]="17">CONSTITUCIÓN</option>
+                                            <option [ngValue]="18">SANTA ROSALIA</option>
+                                            <option [ngValue]="19">GUAMUCHIL</option>
+                                            <option [ngValue]="20">MEXICALI</option>
+                                            <option [ngValue]="21">PUERTO PEÑASCO</option>
+                                            <option [ngValue]="22">HERMOSILLO</option>
+                                            <option [ngValue]="23">CHIHUAHUA</option>
+                                            <option [ngValue]="24">GUADALUPE VICTORIA</option>
+                                            <option [ngValue]="25">CABORCA</option>
+                                            <option [ngValue]="26">VIZCAINO</option>
+                                            <option [ngValue]="27">GUAYMAS</option>
+                                            <option [ngValue]="28">MAZATLÁN</option>
+                                            <option [ngValue]="29">PUERTO VALLARTA</option>
+                                            <option [ngValue]="30">TORREON</option>
+                                            <option [ngValue]="31">DELICIAS</option>
+                                            <option [ngValue]="32">SAN QUINTÍN</option>
+                                </select>
+
+                                @if (form.get('Sucursal')?.invalid && form.get('Sucursal')?.errors && (form.get('Sucursal')?.dirty || form.get('Sucursal')?.touched)) {
+                                    @if (form.get('Sucursal')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>    
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="ConsultasEstatusCon" class="form-label">Estado de la consulta <code>*</code></label>
+                                <select class="form-select" 
+                                        aria-label="" 
+                                        name="ConsultasEstatusCon" 
+                                        id="ConsultasEstatusCon" 
+                                        formControlName="ConsultasEstatusCon"
+                                        [class.is-invalid] = "form.get('ConsultasEstatusCon')?.invalid && form.get('ConsultasEstatusCon')?.touched"
+                                        (change)="estadoChange()">
+                                            <option value=null>- Seleccionar -</option>
+                                            <option [ngValue]="1">Pendiente</option>
+                                            <option [ngValue]="2">Concluida</option>
+                                </select>
+
+                                @if (form.get('ConsultasEstatusCon')?.invalid && form.get('ConsultasEstatusCon')?.errors && (form.get('ConsultasEstatusCon')?.dirty || form.get('ConsultasEstatusCon')?.touched)) {
+                                    @if (form.get('ConsultasEstatusCon')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>
+                                    }
+                                }
+                                @if (form.get('ConsultasEstatusCon')?.hasError('errorCondusef')) {
+                                    <small class="text-danger">
+                                        {{ form.get('ConsultasEstatusCon')?.getError('errorCondusef') }}
+                                    </small>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="ConsultasFolio" class="form-label">Folio <code>*</code></label>
+                                <div class="input-group">
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="ConsultasFolio" 
+                                           formControlName="ConsultasFolio"
+                                           [class.is-invalid] = "form.get('ConsultasFolio')?.invalid && form.get('ConsultasFolio')?.touched"
+                                           readonly>
+                                    <button class="btn btn-secondary" 
+                                            type="button" 
+                                            id="btn-generar-folio"
+                                            [disabled]="!generarFolio"
+                                            placement="top" ngbTooltip="Generar nuevo folio"
+                                            (click)="nuevoConsultasFolio()">
+                                        <i class="fa fa-refresh"></i>
+                                    </button>
+                                </div>
+
+                                @if (form.get('ConsultasFolio')?.invalid && form.get('ConsultasFolio')?.errors && (form.get('ConsultasFolio')?.dirty || form.get('ConsultasFolio')?.touched)) {
+                                    @if (form.get('ConsultasFolio')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>
+                                    }
+                                }
+                                @if (form.get('ConsultasFolio')?.hasError('errorCondusef')) {
+                                    <small class="text-danger">
+                                        {{ form.get('ConsultasFolio')?.getError('errorCondusef') }}
+                                    </small>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="MediosId" class="form-label">Medio de recepción <code>*</code></label>
+                                <select class="form-select" 
+                                        aria-label="" 
+                                        name="MediosId" 
+                                        id="MediosId" 
+                                        formControlName="MediosId"
+                                        [class.is-invalid] = "form.get('MediosId')?.invalid && form.get('MediosId')?.touched">
+                                            <option value=null>- Seleccionar -</option>
+                                            @for (item of mediosRecepcion; track $index) { <!--*ngFor="let item of mediosRecepcion"-->
+                                                <option [ngValue]="item.medioId">{{ item.medioDsc }}</option>
+                                            }
+                                </select>
+
+                                @if (form.get('MediosId')?.invalid && form.get('MediosId')?.errors && (form.get('MediosId')?.dirty || form.get('MediosId')?.touched)) {
+                                    @if (form.get('MediosId')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>
+                                    }
+                                }
+                                @if (form.get('MediosId')?.hasError('errorCondusef')) {
+                                    <small class="text-danger">
+                                        {{ form.get('MediosId')?.getError('errorCondusef') }}
+                                    </small>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="ConsultascatnivelatenId" class="form-label">Nivel de atención <code [style.visibility]="showCode ? 'visible' : 'hidden'">*</code></label>
+                                <select class="form-select" 
+                                        aria-label="" 
+                                        name="ConsultascatnivelatenId" 
+                                        id="ConsultascatnivelatenId" 
+                                        formControlName="ConsultascatnivelatenId"
+                                        [class.is-invalid] = "form.get('ConsultascatnivelatenId')?.invalid && form.get('ConsultascatnivelatenId')?.touched">
+                                            <option value=null>- Seleccionar -</option>
+                                            @for (item of nivelesAtencion; track $index) { <!--*ngFor="let item of nivelesAtencion"-->
+                                                <option [ngValue]="item.nivelDeAtencionId">{{ item.nivelDeAtencionDsc }}</option>
+                                            }
+                                </select>
+
+                                @if (form.get('ConsultascatnivelatenId')?.invalid && form.get('ConsultascatnivelatenId')?.errors && (form.get('ConsultascatnivelatenId')?.dirty || form.get('ConsultascatnivelatenId')?.touched)) {
+                                    @if (form.get('ConsultascatnivelatenId')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>    
+                                    }
+                                }
+                                @if (form.get('ConsultascatnivelatenId')?.hasError('errorCondusef')) {
+                                    <small class="text-danger">
+                                        {{ form.get('ConsultascatnivelatenId')?.getError('errorCondusef') }}
+                                    </small>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="ConsultasCP" class="form-label">Codigo postal <code>*</code></label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="ConsultasCP" 
+                                       formControlName="ConsultasCP"
+                                       (change)="codigoPostalChange()"
+                                       [class.is-invalid] = "form.get('ConsultasCP')?.invalid && form.get('ConsultasCP')?.touched">
+
+                                @if (form.get('ConsultasCP')?.invalid && form.get('ConsultasCP')?.errors && (form.get('ConsultasCP')?.dirty || form.get('ConsultasCP')?.touched)) {
+                                    @if (form.get('ConsultasCP')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>
+                                    }
+                                }
+                                
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="EstadosId" class="form-label">Entidad federativa <code>*</code></label>
+                                <select class="form-select" 
+                                        aria-label=""
+                                        name="EstadosId" 
+                                        id="EstadosId" 
+                                        formControlName="EstadosId"
+                                        (change)="entidadFedChange()"
+                                        [class.is-invalid] = "form.get('EstadosId')?.invalid && form.get('EstadosId')?.touched">
+                                            <option value=null>- Seleccionar -</option>
+                                            @for (item of entidadesFed; track $index) { <!--*ngFor="let item of entidadesFed"-->
+                                                <option [ngValue]="item.claveEdo">{{ item.estado }}</option>
+                                            }
+                                </select>
+
+                                @if (form.get('EstadosId')?.invalid && form.get('EstadosId')?.errors && (form.get('EstadosId')?.dirty || form.get('EstadosId')?.touched)) {
+                                    @if (form.get('EstadosId')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>
+                                    }
+                                }
+                                @if (form.get('EstadosId')?.hasError('errorCondusef')) {
+                                    <small class="text-danger">
+                                        {{ form.get('EstadosId')?.getError('errorCondusef') }}
+                                    </small>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="ConsultasColId" class="form-label">Colonia <code>*</code></label>
+                                <select class="form-select" 
+                                        aria-label="" 
+                                        name="ConsultasColId" 
+                                        id="ConsultasColId" 
+                                        formControlName="ConsultasColId"
+                                        [class.is-invalid] = "form.get('ConsultasColId')?.invalid && form.get('ConsultasColId')?.touched"
+                                        (change)="coloniaChange()">
+                                            <option value=null>- Seleccionar -</option>
+                                            @for (item of colonias; track $index) { <!--*ngFor="let item of colonias"-->
+                                                <option [ngValue]="item.coloniaId">{{ item.colonia }}</option>
+                                            }
+                                </select>
+
+                                @if (form.get('ConsultasColId')?.invalid && form.get('ConsultasColId')?.errors && (form.get('ConsultasColId')?.dirty || form.get('ConsultasColId')?.touched)) {
+                                    @if (form.get('ConsultasColId')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>
+                                    }
+                                }
+                                @if (form.get('ConsultasColId')?.hasError('errorCondusef')) {
+                                    <small class="text-danger">
+                                        {{ form.get('ConsultasColId')?.getError('errorCondusef') }}
+                                    </small>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="ConsultasLocId" class="form-label">Tipo de localidad</label>
+                                <select class="form-select" 
+                                        aria-label="" 
+                                        name="ConsultasLocId" 
+                                        id="ConsultasLocId" 
+                                        formControlName="ConsultasLocId">
+                                            @for (item of localidades; track $index) { <!--*ngFor="let item of localidades"-->
+                                                <option [ngValue]="item.tipoLocalidadId">{{ item.tipoLocalidad }}</option>
+                                            }
+                                </select>
+                                @if (form.get('ConsultasLocId')?.hasError('errorCondusef')) {
+                                    <small class="text-danger">
+                                        {{ form.get('ConsultasLocId')?.getError('errorCondusef') }}
+                                    </small>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="ConsultasMpioId" class="form-label">Municipio/Alcaldia <code>*</code></label>
+                                <select class="form-select" 
+                                        aria-label="" 
+                                        name="ConsultasMpioId" 
+                                        id="ConsultasMpioId" 
+                                        formControlName="ConsultasMpioId"
+                                        [class.is-invalid] = "form.get('ConsultasMpioId')?.invalid && form.get('ConsultasMpioId')?.touched">
+                                            <option value=null>- Seleccionar -</option>
+                                            @for (item of municipios; track $index) { <!--*ngFor="let item of municipios"-->
+                                                <option [ngValue]="item.municipioId">{{ item.municipio }}</option>
+                                            }
+                                </select>
+
+                                @if (form.get('ConsultasMpioId')?.invalid && form.get('ConsultasMpioId')?.errors && (form.get('ConsultasMpioId')?.dirty || form.get('ConsultasMpioId')?.touched)) {
+                                    @if (form.get('ConsultasMpioId')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>
+                                    }
+                                }
+                                @if (form.get('ConsultasMpioId')?.hasError('errorCondusef')) {
+                                    <small class="text-danger">
+                                        {{ form.get('ConsultasMpioId')?.getError('errorCondusef') }}
+                                    </small>
+                                }
+                            </div>        
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="ConsultasPori" class="form-label">Posible robo de identidad (ConsultasPori) <code>*</code></label>
+                                <select class="form-select" 
+                                        aria-label="" 
+                                        name="ConsultasPori" 
+                                        id="ConsultasPori" 
+                                        formControlName="ConsultasPori"
+                                        [class.is-invalid] = "form.get('ConsultasPori')?.invalid && form.get('ConsultasPori')?.touched">
+                                            <option value=null>- Seleccionar -</option>
+                                            <option value="SI">SI</option>
+                                            <option value="NO">NO</option>
+                                </select>
+                                
+                                @if (form.get('ConsultasPori')?.invalid && form.get('ConsultasPori')?.errors && (form.get('ConsultasPori')?.dirty || form.get('ConsultasPori')?.touched)) {
+                                    @if (form.get('ConsultasPori')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>
+                                    }
+                                }
+                                @if (form.get('ConsultasPori')?.hasError('errorCondusef')) {
+                                    <small class="text-danger">
+                                        {{ form.get('ConsultasPori')?.getError('errorCondusef') }}
+                                    </small>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="Producto" class="form-label">Producto <code>*</code></label>
+                                <select class="form-select" 
+                                        aria-label="" 
+                                        name="Producto" 
+                                        id="Producto" 
+                                        formControlName="Producto"
+                                        [class.is-invalid] = "form.get('Producto')?.invalid && form.get('Producto')?.touched"
+                                        (change)="obtenerCausas()">
+                                            <option value=null>- Seleccionar -</option>
+                                            @for (item of productos; track $index) { <!--*ngFor="let item of productos"-->
+                                                <option [value]="item.productId">{{ item.product + ' - ' + item.subproduct }}</option>
+                                            }
+                                </select>
+
+                                @if (form.get('Producto')?.invalid && form.get('Producto')?.errors && (form.get('Producto')?.dirty || form.get('Producto')?.touched)) {
+                                    @if (form.get('Producto')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>
+                                    }
+                                }
+                                @if (form.get('Producto')?.hasError('errorCondusef')) {
+                                    <small class="text-danger">
+                                        {{ form.get('Producto')?.getError('errorCondusef') }}
+                                    </small>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="CausaId" class="form-label">Causa <code>*</code></label>
+                                <select class="form-select" 
+                                        aria-label="" 
+                                        name="CausaId" 
+                                        id="CausaId" 
+                                        formControlName="CausaId"
+                                        [class.is-invalid] = "form.get('CausaId')?.invalid && form.get('CausaId')?.touched">
+                                            <option value=null>- Seleccionar -</option>
+                                            @for (item of causas; track $index) {
+                                                <option [ngValue]="item.causaId">{{ item.causa }}</option>
+                                            }
+                                </select>
+
+                                @if (form.get('CausaId')?.invalid && form.get('CausaId')?.errors && (form.get('CausaId')?.dirty || form.get('CausaId')?.touched)) {
+                                    @if (form.get('CausaId')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>
+                                    }
+                                }
+                                @if (form.get('CausaId')?.hasError('errorCondusef')) {
+                                    <small class="text-danger">
+                                        {{ form.get('CausaId')?.getError('errorCondusef') }}
+                                    </small>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="ConsultasFecAten" class="form-label">Fecha de atenci&oacute;n</label>
+                                <div class="input-group">
+                                    <input
+                                       class="form-control"
+                                       placeholder="yyyy-mm-dd"
+                                       name="ConsultasFecAten"
+                                       ngbDatepicker
+                                       #d2="ngbDatepicker"
+                                       id="ConsultasFecAten" 
+                                       formControlName="ConsultasFecAten"
+                                       [class.is-invalid] = "form.get('ConsultasFecAten')?.invalid && form.get('ConsultasFecAten')?.touched"
+                                       [placement]="placement"
+                                       [positionTarget]="buttonConsultasFecAten"
+                                       [minDate]="inicio_periodo"
+                                       [maxDate]="fin_periodo"
+                                       [startDate]="inicio_periodo"
+                                   />
+                                   <button #buttonConsultasFecAten class="btn btn-secondary" type="button" (click)="d2.toggle()" type="button" placement="top" ngbTooltip="Seleccionar fecha">
+                                        <i class="fa-regular fa-calendar"></i>
+                                    </button>
+                                </div>  
+
+                                @if (form.get('ConsultasFecAten')?.invalid && form.get('ConsultasFecAten')?.errors && (form.get('ConsultasFecAten')?.dirty || form.get('ConsultasFecAten')?.touched)) {
+                                    @if (form.get('ConsultasFecAten')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>
+                                    }
+                                }
+                                @if (form.get('ConsultasFecAten')?.hasError('errorCondusef')) {
+                                    <small class="text-danger">
+                                        {{ form.get('ConsultasFecAten')?.getError('errorCondusef') }}
+                                    </small>
+                                }
+                            </div>                    
+                        </div>
+                    </div>
+                    <br>
+
+                    <div class="row">
+                        <div class="col-md-12 d-flex justify-content-end">
+                            <button type="submit" 
+                                    class="btn btn-white"
+                                    [routerLink]="['/reune/consultar']">Regresar
+                            </button>
+
+                            &nbsp;
+                            &nbsp;
+                            &nbsp;
+                            
+                            @if(editar){
+                                <button type="button" 
+                                        class="btn btn-primary"
+                                        (click)="editarRegistro()" 
+                                        [disabled]="!this.form.valid">Editar registro
+                                </button>
+                            }@else{
+                                <button type="submit" 
+                                        class="btn btn-primary" 
+                                        [disabled]="!this.form.valid">Guardar registro
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </form>
+                
+                &nbsp;
+                &nbsp;
+                &nbsp;
+            </div>
+        </div>
+    </div>
+</div>

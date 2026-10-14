@@ -1,0 +1,869 @@
+<div class="container">
+    <div class="col-lg-12 animated fadeInRight">
+        <div class="ibox">
+            <div class="ibox-content">
+                <div class="row wrapper border-bottom page-heading pb-0">
+                    <div class="col-lg-6">
+                        <h4>NUEVO REGISTRO DE QUEJAS</h4>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end">
+
+                </div>
+                <div class="row mt-3">
+                    <div class="col-lg-12">
+                        <ul class="list-inline">
+                            <li class="list-inline-item">
+                                <h5 class="mt-0">
+                                    Los campos marcados con <code>*</code> son obligatorios.
+                                </h5>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="pb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                        <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                        </symbol>
+                        <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                        </symbol>
+                        <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                        </symbol>
+                    </svg>
+                    <div class="alert alert-warning d-flex align-items-center" role="alert">
+                        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill"/></svg>
+                        <div>
+                            Captura de quejas para el periodo <strong>{{ this.periodo?.mes }}-{{ this.periodo?.anio }}</strong>, del {{this.periodo?.fecha_inicial}} al {{this.periodo?.fecha_final}}
+                        </div>
+                    </div>
+                </div>
+
+                <form [formGroup]="form" (ngSubmit)="guardarQueja()">
+                    <h3 class="pb-3">
+                        <span class="badge bg-secondary">DATOS DEL CLIENTE</span>
+                    </h3>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="nombreCliente" class="form-label">Nombre del cliente <code>*</code></label>
+                                <input type="text"
+                                       data-date-format=""
+                                       class="form-control"
+                                       id="nombreCliente"
+                                       formControlName="nombreCliente"
+                                       [class.is-invalid] = "form.get('nombreCliente')?.invalid && form.get('nombreCliente')?.touched">
+                                
+                                       @if (form.get('nombreCliente')?.invalid && form.get('nombreCliente')?.errors && (form.get('nombreCliente')?.dirty || form.get('nombreCliente')?.touched)) {
+                                            <small class="text-danger" *ngIf="form.get('nombreCliente')?.hasError('required')">
+                                                Este campo es obligatorio.
+                                            </small>    
+                                       }
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="correoCliente" class="form-label">Correo electrónico <code>*</code></label>
+                                <input type="text"
+                                       data-date-format=""
+                                       class="form-control"  
+                                       id="correoCliente"
+                                       formControlName="correoCliente" 
+                                       [class.is-invalid] = "form.get('correoCliente')?.invalid && form.get('correoCliente')?.touched">
+
+                                @if (form.get('correoCliente')?.invalid && form.get('correoCliente')?.errors && (form.get('correoCliente')?.dirty || form.get('correoCliente')?.touched)) {
+                                    @if (form.get('correoCliente')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>    
+                                    }
+                                    @if (form.get('correoCliente')?.hasError('email')) {
+                                        <small class="text-danger">
+                                            Estructuctura de la cuenta inválida
+                                        </small>    
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="telefonoCliente" class="form-label">Teléfono de contacto <code>*</code></label>
+                                <input type="text"
+                                       data-date-format=""
+                                       class="form-control"  
+                                       id="telefonoCliente"
+                                       formControlName="telefonoCliente" 
+                                       [class.is-invalid] = "form.get('telefonoCliente')?.invalid && form.get('telefonoCliente')?.touched">
+
+                                @if (form.get('telefonoCliente')?.invalid && form.get('telefonoCliente')?.errors && (form.get('telefonoCliente')?.dirty || form.get('telefonoCliente')?.touched)) {
+                                    @if (form.get('telefonoCliente')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>    
+                                    }
+                                    @if (form.get('telefonoCliente')?.hasError('maxlength')) {
+                                        <small class="text-danger">
+                                            El número de telefono debe ser de 10 números
+                                        </small>
+                                    }
+                                    @if (form.get('telefonoCliente')?.hasError('minlength')) {
+                                        <small class="text-danger">
+                                            El número de telefono debe ser de 10 números
+                                        </small>
+                                    }
+                                }
+                            </div>        
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="sucursal" class="form-label">Sucursal <code>*</code></label>
+                                <select class="form-select" 
+                                        aria-label="" 
+                                        name="sucursal" 
+                                        id="sucursal" 
+                                        formControlName="sucursal"
+                                        [class.is-invalid] = "form.get('sucursal')?.invalid && form.get('sucursal')?.touched">
+                                            <option value=null>- Seleccionar -</option>
+                                            <option [ngValue]="1">MOD ENSENADA</option>
+                                            <option [ngValue]="2">SUCURSAL VIRTUAL</option>
+                                            <option [ngValue]="3">MODCDMX</option>
+                                            <option [ngValue]="4">CEDIS</option>
+                                            <option [ngValue]="5">LA PAZ</option>
+                                            <option [ngValue]="6">CABO SAN LUCAS</option>
+                                            <option [ngValue]="7">MATRIZ</option>
+                                            <option [ngValue]="8">LORETO</option>
+                                            <option [ngValue]="9">ENSENADA</option>
+                                            <option [ngValue]="10">SAN LUIS RIO COLORADO</option>
+                                            <option [ngValue]="11">TIJUANA</option>
+                                            <option [ngValue]="12">SAN JOSE DEL CABO</option>
+                                            <option [ngValue]="13">GUASAVE</option>
+                                            <option [ngValue]="14">NAVOJOA</option>
+                                            <option [ngValue]="15">OBREGON</option>
+                                            <option [ngValue]="16">HUATABAMPO</option>
+                                            <option [ngValue]="17">CONSTITUCIÓN</option>
+                                            <option [ngValue]="18">SANTA ROSALIA</option>
+                                            <option [ngValue]="19">GUAMUCHIL</option>
+                                            <option [ngValue]="20">MEXICALI</option>
+                                            <option [ngValue]="21">PUERTO PEÑASCO</option>
+                                            <option [ngValue]="22">HERMOSILLO</option>
+                                            <option [ngValue]="23">CHIHUAHUA</option>
+                                            <option [ngValue]="24">GUADALUPE VICTORIA</option>
+                                            <option [ngValue]="25">CABORCA</option>
+                                            <option [ngValue]="26">VIZCAINO</option>
+                                            <option [ngValue]="27">GUAYMAS</option>
+                                            <option [ngValue]="28">MAZATLÁN</option>
+                                            <option [ngValue]="29">PUERTO VALLARTA</option>
+                                            <option [ngValue]="30">TORREON</option>
+                                            <option [ngValue]="31">DELICIAS</option>
+                                            <option [ngValue]="32">SAN QUINTÍN</option>
+                                </select>
+
+                                @if (form.get('sucursal')?.invalid && form.get('sucursal')?.errors && (form.get('sucursal')?.dirty || form.get('sucursal')?.touched)) {
+                                    @if (form.get('sucursal')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>    
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="numCredito" class="form-label">Número de crédito <code>*</code></label>
+                                <input type="text"
+                                       data-date-format=""
+                                       class="form-control"  
+                                       id="numCredito"
+                                       formControlName="numCredito" 
+                                       [class.is-invalid] = "form.get('numCredito')?.invalid && form.get('numCredito')?.touched">
+
+                                @if (form.get('numCredito')?.invalid && form.get('numCredito')?.errors && (form.get('numCredito')?.dirty || form.get('numCredito')?.touched)) {
+                                    @if (form.get('numCredito')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>    
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="despachoCobranza" class="form-label">Nombre del despacho de cobranza <code>*</code></label>
+                                <input 
+                                    type="text"
+                                    data-date-format=""
+                                    class="form-control"  
+                                    id="despachoCobranza"
+                                    formControlName="despachoCobranza" 
+                                    [class.is-invalid] = "form.get('despachoCobranza')?.invalid && form.get('despachoCobranza')?.touched">
+                                
+                                @if (form.get('despachoCobranza')?.invalid && form.get('despachoCobranza')?.errors && (form.get('despachoCobranza')?.dirty || form.get('despachoCobranza')?.touched)) {
+                                    @if (form.get('despachoCobranza')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <h3 class="pb-3">
+                        <span class="badge bg-secondary">DATOS DE LA QUEJA</span>
+                    </h3>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="fechaRecepcion" class="form-label">
+                                    Fecha de la queja <code>*</code>
+                                </label>
+                                <!--
+                                <input type="date"
+                                       data-date-format=""
+                                       class="form-control"  
+                                       id="fechaRecepcion"
+                                       formControlName="fechaRecepcion" 
+                                       [class.is-invalid] = "form.get('fechaRecepcion')?.invalid && form.get('fechaRecepcion')?.touched">
+                                -->
+                                <div class="input-group">
+                                    <input ngbDatepicker
+                                           #e="ngbDatepicker"
+                                           name="fechaRecepcion"
+                                           class="form-control"
+                                           formControlName="fechaRecepcion"
+                                           readonly 
+                                           [class.is-invalid] = "form.get('fechaRecepcion')?.invalid && form.get('fechaRecepcion')?.touched"/>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline btn-border-calendar calendar" (click)="e.toggle()" type="button">
+                                            <img src="assets/img/icons/calendar.svg" style="width: 1.5rem; height: 1.5rem; cursor: pointer;" />
+                                        </button>
+                                    </div>
+                                </div>
+                                @if (form.get('fechaRecepcion')?.invalid && form.get('fechaRecepcion')?.errors && (form.get('fechaRecepcion')?.dirty || form.get('fechaRecepcion')?.touched)) {
+                                    @if (form.get('fechaRecepcion')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="numQuejas" class="form-label">Número de quejas <code>*</code></label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="numQuejas" 
+                                       formControlName="numQuejas"
+                                       [class.is-invalid] = "form.get('numQuejas')?.invalid && form.get('numQuejas')?.touched">
+
+                                @if (form.get('numQuejas')?.invalid && form.get('numQuejas')?.errors && (form.get('numQuejas')?.dirty || form.get('numQuejas')?.touched)) {
+                                    @if (form.get('numQuejas')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>
+                                    }
+                                    @if (form.get('numQuejas')?.hasError('min')) {
+                                        <small class="text-danger">
+                                            La cantidad mínima es debe ser 1
+                                        </small>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="numMes" class="form-label">Mes a informar <code>*</code></label>
+                                <select class="form-select" 
+                                        aria-label="" 
+                                        name="numMes" 
+                                        id="numMes" 
+                                        formControlName="numMes"
+                                        [class.is-invalid] = "form.get('numMes')?.invalid && form.get('numMes')?.touched">
+                                            <option value=null>- Seleccionar -</option>
+                                            <option [ngValue]="1">Enero</option>
+                                            <option [ngValue]="2">Febrero</option>
+                                            <option [ngValue]="3">Marzo</option>
+                                            <option [ngValue]="4">Abril</option>
+                                            <option [ngValue]="5">Mayo</option>
+                                            <option [ngValue]="6">Junio</option>
+                                            <option [ngValue]="7">Julio</option>
+                                            <option [ngValue]="8">Agosto</option>
+                                            <option [ngValue]="9">Septiembre</option>
+                                            <option [ngValue]="10">Octubre</option>
+                                            <option [ngValue]="11">Noviembre</option>
+                                            <option [ngValue]="12">Diciembre</option>
+                                </select>
+
+                                @if (form.get('numMes')?.invalid && form.get('numMes')?.errors && (form.get('numMes')?.dirty || form.get('numMes')?.touched)) {
+                                    @if (form.get('numMes')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="numFolio" class="form-label">Folio <code>*</code></label>
+                                <div class="input-group">
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="numFolio" 
+                                           formControlName="numFolio"
+                                           [class.is-invalid] = "form.get('numFolio')?.invalid && form.get('numFolio')?.touched"
+                                           readonly>
+                                    <button class="btn btn-secondary" 
+                                            type="button" 
+                                            id="btn-generar-folio"
+                                            [disabled]="!generarFolio"
+                                            (click)="nuevoNumFolio()">
+                                        <i class="fa fa-refresh"></i>
+                                    </button>
+                                </div>
+
+                                @if (form.get('numFolio')?.invalid && form.get('numFolio')?.errors && (form.get('numFolio')?.dirty || form.get('numFolio')?.touched)) {
+                                    @if (form.get('numFolio')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="idMedioRecepcion" class="form-label">Medio de recepción <code>*</code></label>
+                                <select class="form-select" 
+                                        aria-label="" 
+                                        name="idMedioRecepcion" 
+                                        id="idMedioRecepcion" 
+                                        formControlName="idMedioRecepcion"
+                                        [class.is-invalid] = "form.get('idMedioRecepcion')?.invalid && form.get('idMedioRecepcion')?.touched">
+                                            <option value=null>- Seleccionar -</option>
+                                            @for (item of mediosRecepcion; track $index) {
+                                                <option [ngValue]="item.medioId">{{ item.medioDsc }}</option>
+                                            }
+                                </select>
+
+                                @if (form.get('idMedioRecepcion')?.invalid && form.get('idMedioRecepcion')?.errors && (form.get('idMedioRecepcion')?.dirty || form.get('idMedioRecepcion')?.touched)) {
+                                    @if (form.get('idMedioRecepcion')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="idNivelAtencion" class="form-label">Nivel de atención o Contacto <code>*</code></label>
+                                <select class="form-select" 
+                                        aria-label="" 
+                                        name="idNivelAtencion" 
+                                        id="idNivelAtencion" 
+                                        formControlName="idNivelAtencion"
+                                        [class.is-invalid] = "form.get('idNivelAtencion')?.invalid && form.get('idNivelAtencion')?.touched">
+                                            <option value=null>- Seleccionar -</option>
+                                            @for (item of nivelesAtencion; track $index) {
+                                                <option [ngValue]="item.nivelDeAtencionId">{{ item.nivelDeAtencionDsc }}</option>
+                                            }
+                                </select>
+
+                                @if (form.get('idNivelAtencion')?.invalid && form.get('idNivelAtencion')?.errors && (form.get('idNivelAtencion')?.dirty || form.get('idNivelAtencion')?.touched)) {
+                                    @if (form.get('idNivelAtencion')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>    
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="idTipoPersona" class="form-label">Tipo de persona <code>*</code></label>
+                                <select class="form-select" 
+                                        aria-label="" 
+                                        name="idTipoPersona" 
+                                        id="idTipoPersona" 
+                                        formControlName="idTipoPersona"
+                                        [class.is-invalid] = "form.get('idTipoPersona')?.invalid && form.get('idTipoPersona')?.touched" 
+                                        (change)="tipoPersonaChange()">
+                                            <option value=null>- Seleccionar -</option>
+                                            <option [ngValue]="1">Persona Física</option>
+                                            <option [ngValue]="2">Persona Moral</option>
+                                </select>
+
+                                @if (form.get('idTipoPersona')?.invalid && form.get('idTipoPersona')?.errors && (form.get('idTipoPersona')?.dirty || form.get('idTipoPersona')?.touched)) {
+                                    @if (form.get('idTipoPersona')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="personaSexo" class="form-label">Sexo</label>
+                                <select class="form-select" 
+                                        aria-label="" 
+                                        name="personaSexo" 
+                                        id="personaSexo" 
+                                        formControlName="personaSexo"
+                                        [class.is-invalid] = "form.get('personaSexo')?.invalid && form.get('personaSexo')?.touched">
+                                            <option value=null>- Seleccionar -</option>
+                                            <option value="H">Hombre</option>
+                                            <option value="M">Mujer</option>
+                                </select>
+
+                                @if (form.get('personaSexo')?.invalid && form.get('personaSexo')?.errors && (form.get('personaSexo')?.dirty || form.get('personaSexo')?.touched)) {
+                                    @if (form.get('personaSexo')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="personaEdad" class="form-label">Edad</label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="personaEdad" 
+                                       formControlName="personaEdad"
+                                       [class.is-invalid] = "form.get('personaEdad')?.invalid && form.get('personaEdad')?.touched">
+
+                                @if (form.get('personaEdad')?.invalid && form.get('personaEdad')?.errors && (form.get('personaEdad')?.dirty || form.get('personaEdad')?.touched)) {
+                                    @if (form.get('personaEdad')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>
+                                    }
+                                    @if (form.get('personaEdad')?.hasError('max')) {
+                                        <small class="text-danger">
+                                            La longitud máxima es de 3 cifras
+                                        </small>
+                                    }
+                                    @if (form.get('personaEdad')?.hasError('pattern')) {
+                                        <small class="text-danger">
+                                            No puede ser un número negativo
+                                        </small>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="codPostal" class="form-label">C&oacute;digo postal <code>*</code></label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="codPostal" 
+                                       formControlName="codPostal"
+                                       (change)="codigoPostalChange()"
+                                       [class.is-invalid] = "form.get('codPostal')?.invalid && form.get('codPostal')?.touched">
+
+                                @if (form.get('codPostal')?.invalid && form.get('codPostal')?.errors && (form.get('codPostal')?.dirty || form.get('codPostal')?.touched)) {
+                                    @if (form.get('codPostal')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="idEntidadFed" class="form-label">Entidad federativa <code>*</code></label>
+                                <select class="form-select" 
+                                        aria-label=""
+                                        name="idEntidadFed" 
+                                        id="idEntidadFed" 
+                                        formControlName="idEntidadFed"
+                                        (change)="entidadFedChange()"
+                                        [class.is-invalid] = "form.get('idEntidadFed')?.invalid && form.get('idEntidadFed')?.touched">
+                                            <option value=null>- Seleccionar -</option>
+                                            @for (item of entidadesFed; track $index) {
+                                                <option [ngValue]="item.claveEdo">{{ item.estado }}</option>
+                                            }
+                                </select>
+
+                                @if (form.get('idEntidadFed')?.invalid && form.get('idEntidadFed')?.errors && (form.get('idEntidadFed')?.dirty || form.get('idEntidadFed')?.touched)) {
+                                    @if (form.get('idEntidadFed')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="idColonia" class="form-label">Colonia <code>*</code></label>
+                                <select class="form-select" 
+                                        aria-label="" 
+                                        name="idColonia" 
+                                        id="idColonia" 
+                                        formControlName="idColonia"
+                                        [class.is-invalid] = "form.get('idColonia')?.invalid && form.get('idColonia')?.touched"
+                                        (change)="coloniaChange()">
+                                            <option value=null>- Seleccionar -</option>
+                                            @for (item of colonias; track $index) {
+                                                <option [ngValue]="item.coloniaId">{{ item.colonia }}</option>
+                                            }
+                                </select>
+
+                                @if (form.get('idColonia')?.invalid && form.get('idColonia')?.errors && (form.get('idColonia')?.dirty || form.get('idColonia')?.touched)) {
+                                    @if (form.get('idColonia')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es requerido
+                                        </small>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="idLocalidad" class="form-label">Localidad</label>
+                                <select class="form-select" 
+                                        aria-label="" 
+                                        name="idLocalidad" 
+                                        id="idLocalidad" 
+                                        formControlName="idLocalidad">
+                                            <option value=null>- Seleccionar -</option>
+                                            @for (item of localidades; track $index) {
+                                                <option [ngValue]="item.tipoLocalidadId">{{ item.tipoLocalidad }}</option>
+                                            }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="idMunicipio" class="form-label">Municipio/Alcaldia <code>*</code></label>
+                                <select class="form-select" 
+                                        aria-label="" 
+                                        name="idMunicipio" 
+                                        id="idMunicipio" 
+                                        formControlName="idMunicipio"
+                                        [class.is-invalid] = "form.get('idMunicipio')?.invalid && form.get('idMunicipio')?.touched">
+                                            <option value=null>- Seleccionar -</option>
+                                            @for (item of municipios; track $index) {
+                                                <option [ngValue]="item.municipioId">{{ item.municipio }}</option>
+                                            }
+                                </select>
+
+                                @if (form.get('idMunicipio')?.invalid && form.get('idMunicipio')?.errors && (form.get('idMunicipio')?.dirty || form.get('idMunicipio')?.touched)) {
+                                    @if (form.get('idMunicipio')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es requerido
+                                        </small>
+                                    }
+                                }
+                            </div>        
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="pori" class="form-label">Posible robo de identidad (PORI) <code>*</code></label>
+                                <select class="form-select" 
+                                        aria-label="" 
+                                        name="pori" 
+                                        id="pori" 
+                                        formControlName="pori"
+                                        [class.is-invalid] = "form.get('pori')?.invalid && form.get('pori')?.touched">
+                                            <option value=null>- Seleccionar -</option>
+                                            <option value="SI">SI</option>
+                                            <option value="NO">NO</option>
+                                </select>
+                                
+                                @if (form.get('pori')?.invalid && form.get('pori')?.errors && (form.get('pori')?.dirty || form.get('pori')?.touched)) {
+                                    @if (form.get('pori')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es requerido
+                                        </small>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="estatus" class="form-label">Estado <code>*</code></label>
+                                <select class="form-select" 
+                                        aria-label="" 
+                                        name="estatus" 
+                                        id="estatus" 
+                                        formControlName="estatus"
+                                        [class.is-invalid] = "form.get('estatus')?.invalid && form.get('estatus')?.touched"
+                                        (change)="estadoChange()">
+                                            <option value=null>- Seleccionar -</option>
+                                            <option [ngValue]="1">Pendiente</option>
+                                            <option [ngValue]="2">Concluida</option>
+                                </select>
+
+                                @if (form.get('estatus')?.invalid && form.get('estatus')?.errors && (form.get('estatus')?.dirty || form.get('estatus')?.touched)) {
+                                    @if (form.get('estatus')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es requerido.
+                                        </small>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="idRespuestaRes" class="form-label">Sentido de la resolución</label>
+                                <select class="form-select" 
+                                        aria-label="" 
+                                        name="idRespuestaRes" 
+                                        id="idRespuestaRes" 
+                                        formControlName="idRespuestaRes"
+                                        [class.is-invalid] = "form.get('idRespuestaRes')?.invalid && form.get('idRespuestaRes')?.touched">
+                                            <option value=null>- Seleccionar -</option>
+                                            <option [ngValue]="1">Totalmente favorable al usuario</option>
+                                            <option [ngValue]="2">Desfavorable al usuario</option>
+                                            <option [ngValue]="3">Parcialmente favorable al usuario</option>
+                                </select>
+
+                                @if (form.get('idRespuestaRes')?.invalid && form.get('idRespuestaRes')?.errors && (form.get('idRespuestaRes')?.dirty || form.get('idRespuestaRes')?.touched)) {
+                                    @if (form.get('idRespuestaRes')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es requerido
+                                        </small>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="fechaResolucion" class="form-label">Fecha de la resolución</label>
+                                <!--
+                                <input type="date" 
+                                       class="form-control" 
+                                       id="fechaResolucion" 
+                                       formControlName="fechaResolucion"
+                                       [class.is-invalid] = "form.get('fechaResolucion')?.invalid && form.get('fechaResolucion')?.touched">
+                                -->
+                                <div class="input-group">
+                                    <input ngbDatepicker
+                                           #e2="ngbDatepicker"
+                                           name="fechaResolucion"
+                                           class="form-control"
+                                           formControlName="fechaResolucion"
+                                           readonly 
+                                           [class.is-invalid] = "form.get('fechaResolucion')?.invalid && form.get('fechaResolucion')?.touched"/>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline btn-border-calendar calendar" (click)="e2.toggle()" type="button">
+                                            <img src="assets/img/icons/calendar.svg" style="width: 1.5rem; height: 1.5rem; cursor: pointer;" />
+                                        </button>
+                                    </div>
+                                </div>
+                                @if (form.get('fechaResolucion')?.invalid && form.get('fechaResolucion')?.errors && (form.get('fechaResolucion')?.dirty || form.get('fechaResolucion')?.touched)) {
+                                    @if (form.get('fechaResolucion')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es requerido
+                                        </small>
+                                    }
+                                }
+                            </div>                    
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="fechaNotificacion" class="form-label">Fecha de notificación</label>
+                                <!--
+                                <input type="date" 
+                                       class="form-control" 
+                                       id="fechaNotificacion" 
+                                       formControlName="fechaNotificacion"
+                                       [class.is-invalid] = "form.get('fechaNotificacion')?.invalid && form.get('fechaNotificacion')?.touched">
+                                -->
+                                <div class="input-group">
+                                    <input ngbDatepicker
+                                           #e3="ngbDatepicker"
+                                           name="fechaNotificacion"
+                                           class="form-control"
+                                           formControlName="fechaNotificacion"
+                                           readonly 
+                                           [class.is-invalid] = "form.get('fechaNotificacion')?.invalid && form.get('fechaNotificacion')?.touched"/>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline btn-border-calendar calendar" (click)="e3.toggle()" type="button">
+                                            <img src="assets/img/icons/calendar.svg" style="width: 1.5rem; height: 1.5rem; cursor: pointer;" />
+                                        </button>
+                                    </div>
+                                </div>
+                                @if (form.get('fechaNotificacion')?.invalid && form.get('fechaNotificacion')?.errors && (form.get('fechaNotificacion')?.dirty || form.get('fechaNotificacion')?.touched)) {
+                                    @if (form.get('fechaNotificacion')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es requerido
+                                        </small>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="numPenalizacion" class="form-label">Número de penalización</label>
+                                <input type="number"
+                                       class="form-control"
+                                       id="numPenalizacion"
+                                       formControlName="numPenalizacion"
+                                       (change)="numPenalizacionChange()"
+                                       [class.is-invalid] = "form.get('numPenalizacion')?.invalid && form.get('numPenalizacion')?.touched">
+                                
+                                @if (form.get('numPenalizacion')?.invalid && form.get('numPenalizacion')?.errors && (form.get('numPenalizacion')?.dirty || form.get('numPenalizacion')?.touched)) {
+                                    @if (form.get('numPenalizacion')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es obligatorio.
+                                        </small>
+                                    }
+                                    @if (form.get('numPenalizacion')?.hasError('max')) {
+                                        <small class="text-danger">
+                                            La longitud máxima es de 4 cifras
+                                        </small>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="idPenalizacion" class="form-label">Tipo de penalización impuesta</label>
+                                <select class="form-select" 
+                                        aria-label="" 
+                                        name="idPenalizacion" 
+                                        id="idPenalizacion" 
+                                        formControlName="idPenalizacion"
+                                        [class.is-invalid] = "form.get('idPenalizacion')?.invalid && form.get('idPenalizacion')?.touched">
+                                            <option value=null>- Seleccionar -</option>
+                                            <option [ngValue]="1">Contractuales - Cancelación del contrato</option>
+                                            <option [ngValue]="2">Contractuales - Reasignación de cartera</option>
+                                            <option [ngValue]="3">Economicas - Multa</option>
+                                </select>
+
+                                @if (form.get('idPenalizacion')?.invalid && form.get('idPenalizacion')?.errors && (form.get('idPenalizacion')?.dirty || form.get('idPenalizacion')?.touched)) {
+                                    @if (form.get('idPenalizacion')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es requerido
+                                        </small>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="idProducto" class="form-label">Producto <code>*</code></label>
+                                <select class="form-select" 
+                                        aria-label=""
+                                        name="idProducto"
+                                        id="idProducto"
+                                        formControlName="idProducto"
+                                        [class.is-invalid] = "form.get('idProducto')?.invalid && form.get('idProducto')?.touched"
+                                        (change)="obtenerCausas()">
+                                            <option value=null>- Seleccionar -</option>
+                                            @for (item of productos; track $index) {
+                                                <option [value]="item.productId">{{ item.product }}</option>
+                                            }
+                                </select>
+
+                                @if (form.get('idProducto')?.invalid && form.get('idProducto')?.errors && (form.get('idProducto')?.dirty || form.get('idProducto')?.touched)) {
+                                    @if (form.get('idProducto')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es requerido
+                                        </small>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="idCausa" class="form-label">Causa <code>*</code></label>
+                                <select class="form-select" 
+                                        aria-label="" 
+                                        name="idCausa" 
+                                        id="idCausa" 
+                                        formControlName="idCausa"
+                                        [class.is-invalid] = "form.get('idCausa')?.invalid && form.get('idCausa')?.touched">
+                                            <option value=null>- Seleccionar -</option>
+                                            @for (item of causas; track $index) {
+                                                <option [value]="item.causaId">{{ item.causa }}</option>
+                                            }
+                                </select>
+
+                                @if (form.get('idCausa')?.invalid && form.get('idCausa')?.errors && (form.get('idCausa')?.dirty || form.get('idCausa')?.touched)) {
+                                    @if (form.get('idCausa')?.hasError('required')) {
+                                        <small class="text-danger">
+                                            Este campo es requerido
+                                        </small>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <br>
+
+                    <div class="row">
+                        <div class="col-md-12 d-flex justify-content-end">
+                            <button type="submit" 
+                                    class="btn btn-white"
+                                    [routerLink]="['/redeco/consultar']">Regresar a Consulta
+                            </button>
+
+                            &nbsp;
+                            &nbsp;
+                            &nbsp;
+                            
+                            @if (editar) {
+                                <button type="button" 
+                                        class="btn btn-primary"
+                                        (click)="editarQueja()" 
+                                        [disabled]="!this.form.valid">Editar Registro
+                                </button>
+                            } @else {
+                                <button type="submit" 
+                                        class="btn btn-primary" 
+                                        >Guardar Registro
+                                </button>
+                                <!--
+                                <button type="submit" 
+                                        class="btn btn-primary" 
+                                        [disabled]="!this.form.valid">Guardar Registro
+                                </button>
+                                -->
+                            }
+                        </div>
+                    </div>
+                </form>
+                
+                &nbsp;
+                &nbsp;
+                &nbsp;
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,10 @@
+INSERT INTO redeco.cat_medios_recepcion (id,nombre) VALUES (1,'Correo Electrónico');
+INSERT INTO redeco.cat_medios_recepcion (id,nombre) VALUES (2,'Página de internet');
+INSERT INTO redeco.cat_medios_recepcion (id,nombre) VALUES (3,'Sucursales');
+INSERT INTO redeco.cat_medios_recepcion (id,nombre) VALUES (4,'Teléfono');
+INSERT INTO redeco.cat_medios_recepcion (id,nombre) VALUES (5,'UNE');
+INSERT INTO redeco.cat_medios_recepcion (id,nombre) VALUES (10,'Aplicación informática');
+INSERT INTO redeco.cat_medios_recepcion (id,nombre) VALUES (17,'Oficinas de atención');
+INSERT INTO redeco.cat_medios_recepcion (id,nombre) VALUES (20,'Aplicación móvil');
+INSERT INTO redeco.cat_medios_recepcion (id,nombre) VALUES (22,'API''s');
+INSERT INTO redeco.cat_medios_recepcion (id,nombre) VALUES (23,'Boots');

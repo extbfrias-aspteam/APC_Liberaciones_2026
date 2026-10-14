@@ -1,0 +1,70 @@
+<nav class="navbar-default navbar-static-side" role="navigation">
+    <div class="sidebar-collapse">
+      <ul id="side-menu" class="nav">
+        <li class="nav-header">
+          <div class="dropdown profile-element">
+            <img alt="image" class="pb-3" src="assets/img/logo.png" />
+            <!--
+              <img alt="image" class="rounded-circle" src="assets/img/logo-white.png" width="80" height="70"/>
+            -->
+            @if (this.empresa) {
+              <a data-toggle="dropdown" class="dropdown-toggle">
+                <span class="block m-t-xs font-bold">{{this.empresa.nombre.substring(0, 22)}}...</span>
+                <span class="text-muted text-xs block">
+                  {{this.empresa.sector.substring(0, 25)}}...
+                </span>
+              </a>
+            } @else {
+              <a data-toggle="dropdown" class="dropdown-toggle">
+                <span class="block m-t-xs font-bold">Desconocido</span>
+                <span class="text-muted text-xs block">
+                  -
+                </span>
+              </a>
+            }
+          </div>
+          <div class="logo-element">
+              <img src="assets/img/logo-small.png" width="30" height="30" />
+          </div>
+        </li>
+        
+        <li [ngClass]="{ 'mm-active': activeRoute('redeco'), 'active': activeRoute('redeco') }">
+          <a href="#" aria-expanded="true">
+            <i class="fas fa-hand-holding-usd"></i><span class="nav-label">REDECO</span><span class="fa arrow"></span>
+          </a>
+          <ul class="nav nav-second-level">
+            <li>
+              <a href="#" [routerLink]="['redeco', 'consultar']">Resumen</a>
+            </li>
+            <li>
+              <a href="#" [routerLink]="['redeco', 'periodos', 'redeco']">Periodos</a>
+            </li>
+          </ul>
+        </li>
+
+        <li [ngClass]="{ 'mm-active': activeRoute('reune'), 'active': activeRoute('reune') }">
+          <a href="#" aria-expanded="true">
+            <i class="fas fa-clipboard"></i><span class="nav-label">REUNE</span><span class="fa arrow"></span>
+          </a>
+          <ul class="nav nav-second-level" [routerLinkActive]="['active']">
+            <li>
+              <a href="#" [routerLink]="['reune', 'consultar']">Resumen</a>
+            </li>
+            <li>
+              <a href="#" [routerLink]="['reune', 'trimestres', 'reune']">Trimestres</a>
+            </li>
+            <li>
+              <a href="#" [routerLink]="['reune', 'consultas', 'registrar']">Registrar consulta</a>
+            </li>
+            <li>
+              <a href="#" [routerLink]="['reune', 'aclaraciones', 'registrar']">Registrar aclaraciones</a>
+            </li>
+            <li>
+              <a href="#" [routerLink]="['reune', 'reclamaciones', 'registrar']">Registrar reclamaciones</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  

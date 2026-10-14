@@ -1,0 +1,100 @@
+<div class="modal-header">
+    <h4 class="modal-title">Actualizar Token</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body p-4">
+    
+    <div class="row">
+        <div class="col-lg-12">
+            <ul class="list-inline">
+                <li class="list-inline-item">
+                    <p>Inicia sesión con las credenciales creadas en la API {{paramEsquema?.toUpperCase()}} de CONDUSEF para obtener un nuevo Token</p>
+                    <h5 class="pb-3">
+                        Los campos marcados con <code>*</code> son obligatorios.
+                    </h5>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row col-md-12">
+        <div class="col-md-5">
+            <form [formGroup]="userForm" (ngSubmit)="iniciarSesionCONDUSEF()">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Usuario <code>*</code></label>
+                    <input 
+                        type="text"
+                        class="form-control"
+                        formControlName="username" 
+                        [class.is-invalid] = "userForm.get('username')?.invalid && userForm.get('username')?.touched">
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Contraseña <code>*</code></label>
+                    <input 
+                        type="password"
+                        class="form-control"
+                        formControlName="password" 
+                        [class.is-invalid] = "userForm.get('password')?.invalid && userForm.get('password')?.touched">
+                </div>
+                <div class="mb-3">
+                    <label for="schema" class="form-label">Esquema <code>*</code></label>
+                    <input 
+                        type="text"
+                        class="form-control"
+                        formControlName="schema" 
+                        [class.is-invalid] = "userForm.get('schema')?.invalid && userForm.get('schema')?.touched" readonly>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 d-flex justify-content-end">
+                        <button 
+                            type="submit" 
+                            class="btn btn-secondary" 
+                            [disabled]="!this.userForm.valid">Iniciar sesión</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-1">
+            <div class="d-flex" style="height: 270px;">
+                <div class="vr"></div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <form [formGroup]="tokenForm">
+                <div class="mb-3">
+                    <label for="token" class="form-label">Token <code>*</code></label>
+                    <textarea
+                        class="form-control"
+                        style="height: 250px;"
+                        id="token"
+                        formControlName="token"
+                        readonly
+                        [class.is-invalid] = "tokenForm.get('token')?.invalid && tokenForm.get('token')?.touched">
+                    </textarea>
+                </div>
+            </form>
+        </div>      
+    </div>
+    
+    <ngx-ui-loader 
+        [loaderId]="'loader-01'"
+        [bgsType]="'square-jelly-box'" 
+        [fgsType]="'square-jelly-box'"
+        [hasProgressBar]="true"
+        bgsColor="#ed5565"
+        fgsColor="#ed5565"
+        pbColor="#ed5565">
+    </ngx-ui-loader>  
+</div>
+<div class="modal-footer">
+    <button 
+        type="button" 
+        class="btn btn-white" 
+        (click)="activeModal.dismiss()">Cancelar</button>
+
+    <button 
+        type="button" 
+        class="btn btn-primary" 
+        [disabled]="!this.tokenForm.valid"
+        (click)="this.activeModal.close()">Aceptar</button>
+</div>

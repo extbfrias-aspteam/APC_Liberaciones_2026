@@ -1,0 +1,80 @@
+<div class="modal-header">
+    <h4 class="modal-title">
+        Evidencias Folio {{this.paramQueja!.numFolio}}
+    </h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body p-4">
+    @if(paramQueja) {
+      <div class="row">
+        <div class="col-md-12">            
+            <input #fileInput type="file" (change)="onFileSelected($event)" hidden="true" />
+            <div class="col-12 rmpm dropzone" appDragDrop (files)="onFileDropped($event)">
+              <div class="dz-message">
+                <div class="centered">Para cargar un archivo como evidencia, arrastre y suelte el archivo en esta área <br>ó
+                  <br>
+                  <button type="button" class="btn btn-secondary btn-sm mt-2" (click)="fileInput.click()">
+                    Seleccione un archivo
+                  </button>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="table-responsive mt-3">
+            <table class="table table-striped table-sm">
+              <thead>
+                  <tr>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Fecha de carga</th>
+                    <th></th>
+                  </tr>
+              </thead>
+              <tbody>
+                  @for (doc of evidencias; track doc.id) {
+                    <tr>
+                      <td><strong>{{doc.nombreDoc}}</strong></td>
+                      <td style="width: 150px;">{{doc.fechaCreacion | date: "dd/MM/yyyy HH:mm:ss" : 'GMT' }}</td>
+                      <td class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-sm btn-secondary mx-1" (click)="descargarArchivo(doc)">
+                          <i class="fa fa-download"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">Falta el parametro queja!</h4>
+        <p>No se ha especificado una queja para la ventana de evidencias.</p>
+        <!--
+        <hr>
+        <p class="mb-0">Whenever you need to, be sure to use margin utilities to keep things nice and tidy.</p>
+        -->
+      </div>
+    }
+</div>
+<div class="modal-footer">
+    <button type="button"
+            class="btn btn-white"
+            (click)="activeModal.dismiss()">
+        Cerrar
+    </button>
+</div>
+
+<ngx-ui-loader 
+  [loaderId]="'loader-01'"
+  [bgsType]="'square-jelly-box'" 
+  [fgsType]="'square-jelly-box'"
+  [hasProgressBar]="true"
+  bgsColor="#ed5565"
+  fgsColor="#ed5565"
+  pbColor="#ed5565">
+</ngx-ui-loader>  

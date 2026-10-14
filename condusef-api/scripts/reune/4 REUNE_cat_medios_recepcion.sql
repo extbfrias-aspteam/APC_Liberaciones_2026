@@ -1,0 +1,15 @@
+INSERT INTO reune.cat_medios_recepcion VALUES (1, 'Correo Electrónico');
+INSERT INTO reune.cat_medios_recepcion VALUES (2, 'Página de internet');
+INSERT INTO reune.cat_medios_recepcion VALUES (3, 'Sucursales');
+INSERT INTO reune.cat_medios_recepcion VALUES (4, 'Teléfono');
+INSERT INTO reune.cat_medios_recepcion VALUES (5, 'UNE');
+INSERT INTO reune.cat_medios_recepcion VALUES (6, 'CONDUSEF-SIGE gestión electrónica');
+INSERT INTO reune.cat_medios_recepcion VALUES (7, 'CONDUSEF-Gestión ordinaria');
+INSERT INTO reune.cat_medios_recepcion VALUES (8, 'Mensajeria');
+INSERT INTO reune.cat_medios_recepcion VALUES (9, 'Fax');
+INSERT INTO reune.cat_medios_recepcion VALUES (17, 'Oficinas de atención');
+INSERT INTO reune.cat_medios_recepcion VALUES (18, 'Centro de atención telefónica');
+INSERT INTO reune.cat_medios_recepcion VALUES (20, 'Aplicación móvil');
+INSERT INTO reune.cat_medios_recepcion VALUES (21, 'Interfaces');
+INSERT INTO reune.cat_medios_recepcion VALUES (22, 'API''s');
+INSERT INTO reune.cat_medios_recepcion VALUES (23, 'Bots');

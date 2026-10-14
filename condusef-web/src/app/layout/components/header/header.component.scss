@@ -1,0 +1,12 @@
+.navbar-breadcrumb {
+    float: left;
+    height: 50px;
+    padding: 0;
+    display: block;
+  }
+
+  @media (min-width: 1200px) {
+  .navbar-breadcrumb {
+    min-width: 470px;
+  }
+}

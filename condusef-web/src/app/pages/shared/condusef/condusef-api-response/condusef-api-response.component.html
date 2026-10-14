@@ -1,0 +1,151 @@
+<div class="modal-header">
+    <h4 class="modal-title">Respuesta API Condusef</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('Cross click')"></button>
+</div>
+<div class="modal-body">
+    <div ngbAccordion [closeOthers]="false">
+        @for (key of this.getApiResponseKeys(); track $index) {
+            @if(getApiResponseData(key); as response) {
+                @if(response.status.length > 1){
+                    <div ngbAccordionItem [collapsed]="false">
+                        <h2 ngbAccordionHeader style="margin: 0;">
+                            <button ngbAccordionButton style="padding: 12px 20px;">{{ key.charAt(0).toUpperCase() + key.slice(1)}}</button>
+                        </h2>
+                        <div ngbAccordionCollapse>
+                            <div ngbAccordionBody>
+                                <ng-template>
+                                    
+                                    @if(response.success){ 
+                                        <ngb-alert [dismissible]="false" class="d-block" type="success" style="padding: 9px 18px;">
+                                            {{response.message}}
+                                        </ngb-alert>
+                                        <!-- @if(response.data) {
+                                            <ul>
+                                                @for(folio of response.data!; track folio;) {
+                                                    <li>{{folio}}</li>
+                                                }
+                                            </ul>
+                                        } -->
+                                     }@else{ 
+                                        <ul class="list-group">
+                                            <ngb-alert [dismissible]="false" class="d-block" type="danger" style="padding: 9px 18px;">
+                                                {{response.message}}
+                                                @switch (key) {
+                                                    @case ("quejas") {
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-sm btn-secondary mx-1 float-right"
+                                                            (click)="quejaCollapsed = quejaCollapsed"
+                                                            [attr.aria-expanded]="!quejaCollapsed"
+                                                            aria-controls="quejaCollapsed"
+                                                            placement="top" ngbTooltip="Mostrar código"
+                                                            style="float: right;"
+                                                        >
+                                                            <i class="fa-solid fa-code"></i>
+                                                        </button>
+                                                    }
+                                                    @case ("consultas") {
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-sm btn-secondary mx-1 float-right"
+                                                            (click)="consultaCollapsed = !consultaCollapsed"
+                                                            [attr.aria-expanded]="!consultaCollapsed"
+                                                            aria-controls="consultaCollapsed"
+                                                            placement="top" ngbTooltip="Mostrar código"
+                                                            style="float: right;"
+                                                        >
+                                                            <i class="fa-solid fa-code"></i>
+                                                        </button>
+                                                    }
+                                                    @case ("reclamaciones") {
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-sm btn-secondary mx-1"
+                                                            (click)="reclamacionCollapsed = !reclamacionCollapsed"
+                                                            [attr.aria-expanded]="!reclamacionCollapsed"
+                                                            aria-controls="reclamacionCollapsed"
+                                                            placement="top" ngbTooltip="Mostrar código"
+                                                            style="float: right;"
+                                                        >
+                                                            <i class="fa-solid fa-code"></i>
+                                                        </button>
+                                                    }
+                                                    @case ("aclaraciones") {
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-sm btn-secondary mx-1 float-right"
+                                                            (click)="aclaracionCollapsed = !aclaracionCollapsed"
+                                                            [attr.aria-expanded]="!aclaracionCollapsed"
+                                                            aria-controls="aclaracionCollapsed"
+                                                            placement="top" ngbTooltip="Mostrar código"
+                                                            style="float: right;"
+                                                        >
+                                                            <i class="fa-solid fa-code"></i>
+                                                        </button>
+                                                    }
+                                                }
+                                                
+                                            </ngb-alert>
+                                            @switch (key) {
+                                                @case ("quejas") {
+                                                    <div #collapse="ngbCollapse" [(ngbCollapse)]="quejaCollapsed">
+                                                        <div class="input-group">
+                                                            <textarea class="form-control" aria-label="JSON Queja" rows="10">{{getJSONString(response.data)}}</textarea>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @case ("consultas") {
+                                                    <div #collapse="ngbCollapse" [(ngbCollapse)]="consultaCollapsed">
+                                                        <div class="input-group">
+                                                            <textarea class="form-control" aria-label="JSON Consulta" rows="10">{{getJSONString(response.data)}}</textarea>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @case ("reclamaciones") {
+                                                    <div #collapse="ngbCollapse" [(ngbCollapse)]="reclamacionCollapsed">
+                                                        <div class="card">
+                                                            <div class="card-body">
+                                                                <div class="input-group">
+                                                                    <textarea class="form-control" aria-label="JSON Reclamación" rows="10">{{getJSONString(response.data)}}</textarea>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @case ("aclaraciones") {
+                                                    <div #collapse="ngbCollapse" [(ngbCollapse)]="aclaracionCollapsed">
+                                                        <div class="input-group">
+                                                            <textarea class="form-control" aria-label="JSON Aclaración" rows="10">{{getJSONString(response.data)}}</textarea>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            }
+                                            
+                                            @for(errorKey of this.getErrorKeys(response); track $index) {
+                                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                    <b>{{errorKey}}</b>
+                                                    <span class="badge bg-danger badge-pill">{{ response.errors[errorKey].length}}</span>
+                                                    <ul>
+                                                        @for(error of response.errors[errorKey]; track $index) {
+                                                            <li>{{error}}</li>
+                                                        }
+                                                    </ul>
+                                                    <button class="btn btn-sm btn-secondary mx-1" (click)="this.navegarEditar(errorKey, key, response.errors[errorKey])" placement="top" ngbTooltip="Editar">
+                                                        <i class="fa fa-edit"></i>
+                                                    </button>
+                                                </li>
+                                            }    
+                                        </ul>
+                                    }
+                                </ng-template>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        }  
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.close('Close click')">Cerrar</button>
+</div>

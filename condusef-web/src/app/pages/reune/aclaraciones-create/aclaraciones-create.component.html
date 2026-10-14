@@ -1,0 +1,1210 @@
+@if(errores && errores.length > 0){
+<ngb-alert
+  [dismissible]="false"
+  class="d-block"
+  type="danger"
+  style="padding: 9px 18px"
+>
+  Revisar los siguientes errores:
+</ngb-alert>
+<ul>
+  @for(error of errores; track $index) {
+  <li>{{ error }}</li>
+  }
+</ul>
+}
+<div class="container">
+  <div class="col-lg-12 animated fadeInRight">
+    <div class="ibox">
+      <div class="ibox-content">
+        <div class="row wrapper border-bottom page-heading pb-0">
+          <div class="col-lg-6">
+            <h4>
+              @if(editar){ EDITAR ACLARACI&Oacute;N
+              {{ registro?.AclaracionFolioAtencion }}
+              } @else { REGISTRAR NUEVA ACLARACI&Oacute;N }
+            </h4>
+          </div>
+        </div>
+        <div class="d-flex justify-content-end"></div>
+        <div class="row mt-3">
+          <div class="col-lg-12">
+            <ul class="list-inline">
+              <li class="list-inline-item">
+                <h5 class="mt-0">
+                  Los campos marcados con <code>*</code> son obligatorios.
+                </h5>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="pb-3">
+          <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
+            <symbol
+              id="check-circle-fill"
+              fill="currentColor"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"
+              />
+            </symbol>
+            <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+              <path
+                d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"
+              />
+            </symbol>
+            <symbol
+              id="exclamation-triangle-fill"
+              fill="currentColor"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"
+              />
+            </symbol>
+          </svg>
+          <div
+            class="alert alert-warning d-flex align-items-center"
+            role="alert"
+          >
+            <svg
+              class="bi flex-shrink-0 me-2"
+              width="24"
+              height="24"
+              role="img"
+              aria-label="Info:"
+            >
+              <use xlink:href="#info-fill" />
+            </svg>
+            <div>
+              Captura de aclaraciones para el trimestre
+              <strong>{{ this.periodo?.mes }}-{{ this.periodo?.anio }}</strong
+              >, del {{ this.periodo?.fecha_inicial }} al
+              {{ this.periodo?.fecha_final }}
+            </div>
+          </div>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="guardarRegistro()">
+          <input
+            type="hidden"
+            id="Id"
+            formControlName="Id"
+            name="Id"
+            value=""
+          />
+          <input
+            type="hidden"
+            id="AclaracionNumero"
+            formControlName="AclaracionNumero"
+            name="AclaracionNumero"
+            value="1"
+          />
+          <input
+            type="hidden"
+            id="AclaracionTrimestre"
+            formControlName="AclaracionTrimestre"
+            name="AclaracionTrimestre"
+            value=""
+          />
+          <div class="row">
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="AclaracionFechaAclaracion" class="form-label"
+                  >Fecha de recepci&oacute;n <code>*</code></label
+                >
+                <div class="input-group">
+                  <input
+                    class="form-control"
+                    placeholder="yyyy-mm-dd"
+                    name="AclaracionFechaAclaracion"
+                    ngbDatepicker
+                    #d="ngbDatepicker"
+                    id="AclaracionFechaAclaracion"
+                    formControlName="AclaracionFechaAclaracion"
+                    [class.is-invalid]="
+                      form.get('AclaracionFechaAclaracion')?.invalid &&
+                      form.get('AclaracionFechaAclaracion')?.touched
+                    "
+                    [placement]="placement"
+                    [positionTarget]="buttonAclaracionFechaAclaracion"
+                    [minDate]="inicio_periodo"
+                    [maxDate]="fin_periodo"
+                    [startDate]="inicio_periodo"
+                    [(ngModel)]="model1"
+                  />
+                  <button
+                    #buttonAclaracionFechaAclaracion
+                    class="btn btn-secondary"
+                    type="button"
+                    (click)="d.toggle()"
+                    type="button"
+                    placement="top"
+                    ngbTooltip="Seleccionar fecha"
+                  >
+                    <i class="fa-regular fa-calendar"></i>
+                  </button>
+                </div>
+
+                @if (form.get('AclaracionFechaAclaracion')?.invalid &&
+                form.get('AclaracionFechaAclaracion')?.errors &&
+                (form.get('AclaracionFechaAclaracion')?.dirty ||
+                form.get('AclaracionFechaAclaracion')?.touched)) { @if
+                (form.get('AclaracionFechaAclaracion')?.hasError('required')) {
+                <small class="text-danger"> Este campo es obligatorio. </small>
+                } } @if
+                (form.get('AclaracionFechaAclaracion')?.hasError('errorCondusef'))
+                {
+                <small class="text-danger">
+                  {{
+                    form
+                      .get("AclaracionFechaAclaracion")
+                      ?.getError("errorCondusef")
+                  }}
+                </small>
+                }
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="Sucursal" class="form-label"
+                  >Sucursal <code>*</code></label
+                >
+                <select
+                  class="form-select"
+                  aria-label=""
+                  name="Sucursal"
+                  id="Sucursal"
+                  formControlName="Sucursal"
+                  [class.is-invalid]="
+                    form.get('Sucursal')?.invalid &&
+                    form.get('Sucursal')?.touched
+                  "
+                >
+                  <option value="null">- Seleccionar -</option>
+                  <option [ngValue]="1">MOD ENSENADA</option>
+                  <option [ngValue]="2">SUCURSAL VIRTUAL</option>
+                  <option [ngValue]="3">MODCDMX</option>
+                  <option [ngValue]="4">CEDIS</option>
+                  <option [ngValue]="5">LA PAZ</option>
+                  <option [ngValue]="6">CABO SAN LUCAS</option>
+                  <option [ngValue]="7">MATRIZ</option>
+                  <option [ngValue]="8">LORETO</option>
+                  <option [ngValue]="9">ENSENADA</option>
+                  <option [ngValue]="10">SAN LUIS RIO COLORADO</option>
+                  <option [ngValue]="11">TIJUANA</option>
+                  <option [ngValue]="12">SAN JOSE DEL CABO</option>
+                  <option [ngValue]="13">GUASAVE</option>
+                  <option [ngValue]="14">NAVOJOA</option>
+                  <option [ngValue]="15">OBREGON</option>
+                  <option [ngValue]="16">HUATABAMPO</option>
+                  <option [ngValue]="17">CONSTITUCIÓN</option>
+                  <option [ngValue]="18">SANTA ROSALIA</option>
+                  <option [ngValue]="19">GUAMUCHIL</option>
+                  <option [ngValue]="20">MEXICALI</option>
+                  <option [ngValue]="21">PUERTO PEÑASCO</option>
+                  <option [ngValue]="22">HERMOSILLO</option>
+                  <option [ngValue]="23">CHIHUAHUA</option>
+                  <option [ngValue]="24">GUADALUPE VICTORIA</option>
+                  <option [ngValue]="25">CABORCA</option>
+                  <option [ngValue]="26">VIZCAINO</option>
+                  <option [ngValue]="27">GUAYMAS</option>
+                  <option [ngValue]="28">MAZATLÁN</option>
+                  <option [ngValue]="29">PUERTO VALLARTA</option>
+                  <option [ngValue]="30">TORREON</option>
+                  <option [ngValue]="31">DELICIAS</option>
+                  <option [ngValue]="32">SAN QUINTÍN</option>
+                </select>
+
+                @if (form.get('Sucursal')?.invalid &&
+                form.get('Sucursal')?.errors && (form.get('Sucursal')?.dirty ||
+                form.get('Sucursal')?.touched)) { @if
+                (form.get('Sucursal')?.hasError('required')) {
+                <small class="text-danger"> Este campo es obligatorio. </small>
+                } }
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="AclaracionPori" class="form-label"
+                  >Posible robo de identidad (PORI) <code>*</code></label
+                >
+                <select
+                  class="form-select"
+                  aria-label=""
+                  name="AclaracionPori"
+                  id="AclaracionPori"
+                  formControlName="AclaracionPori"
+                  [class.is-invalid]="
+                    form.get('AclaracionPori')?.invalid &&
+                    form.get('AclaracionPori')?.touched
+                  "
+                >
+                  <option value="null">- Seleccionar -</option>
+                  <option value="SI">SI</option>
+                  <option value="NO">NO</option>
+                </select>
+
+                @if (form.get('AclaracionPori')?.invalid &&
+                form.get('AclaracionPori')?.errors &&
+                (form.get('AclaracionPori')?.dirty ||
+                form.get('AclaracionPori')?.touched)) { @if
+                (form.get('AclaracionPori')?.hasError('required')) {
+                <small class="text-danger"> Este campo es obligatorio. </small>
+                } } @if (form.get('AclaracionPori')?.hasError('errorCondusef'))
+                {
+                <small class="text-danger">
+                  {{ form.get("AclaracionPori")?.getError("errorCondusef") }}
+                </small>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="AclaracionFolioAtencion" class="form-label"
+                  >Folio <code>*</code></label
+                >
+                <div class="input-group">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="AclaracionFolioAtencion"
+                    formControlName="AclaracionFolioAtencion"
+                    [class.is-invalid]="
+                      form.get('AclaracionFolioAtencion')?.invalid &&
+                      form.get('AclaracionFolioAtencion')?.touched
+                    "
+                    readonly
+                  />
+                  <button
+                    class="btn btn-secondary"
+                    type="button"
+                    id="btn-generar-folio"
+                    [disabled]="!generarFolio"
+                    placement="top"
+                    ngbTooltip="Generar nuevo folio"
+                    (click)="nuevoAclaracionFolioAtencion()"
+                  >
+                    <i class="fa fa-refresh"></i>
+                  </button>
+                </div>
+
+                @if (form.get('AclaracionFolioAtencion')?.invalid &&
+                form.get('AclaracionFolioAtencion')?.errors &&
+                (form.get('AclaracionFolioAtencion')?.dirty ||
+                form.get('AclaracionFolioAtencion')?.touched)) { @if
+                (form.get('AclaracionFolioAtencion')?.hasError('required')) {
+                <small class="text-danger"> Este campo es obligatorio. </small>
+                } } @if
+                (form.get('AclaracionFolioAtencion')?.hasError('errorCondusef'))
+                {
+                <small class="text-danger">
+                  {{
+                    form
+                      .get("AclaracionFolioAtencion")
+                      ?.getError("errorCondusef")
+                  }}
+                </small>
+                }
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="AclaracionMedioRecepcionCanal" class="form-label"
+                  >Medio de recepción <code>*</code></label
+                >
+                <select
+                  class="form-select"
+                  aria-label=""
+                  name="AclaracionMedioRecepcionCanal"
+                  id="AclaracionMedioRecepcionCanal"
+                  formControlName="AclaracionMedioRecepcionCanal"
+                  (change)="medioChange()"
+                  [class.is-invalid]="
+                    form.get('AclaracionMedioRecepcionCanal')?.invalid &&
+                    form.get('AclaracionMedioRecepcionCanal')?.touched
+                  "
+                >
+                  <option value="null">- Seleccionar -</option>
+                  @for (item of mediosRecepcion; track $index) {
+                  <!--*ngFor="let item of mediosRecepcion"-->
+                  <option [ngValue]="item.medioId">{{ item.medioDsc }}</option>
+                  }
+                </select>
+
+                @if (form.get('AclaracionMedioRecepcionCanal')?.invalid &&
+                form.get('AclaracionMedioRecepcionCanal')?.errors &&
+                (form.get('AclaracionMedioRecepcionCanal')?.dirty ||
+                form.get('AclaracionMedioRecepcionCanal')?.touched)) { @if
+                (form.get('AclaracionMedioRecepcionCanal')?.hasError('required'))
+                {
+                <small class="text-danger"> Este campo es obligatorio. </small>
+                } } @if
+                (form.get('AclaracionMedioRecepcionCanal')?.hasError('errorCondusef'))
+                {
+                <small class="text-danger">
+                  {{
+                    form
+                      .get("AclaracionMedioRecepcionCanal")
+                      ?.getError("errorCondusef")
+                  }}
+                </small>
+                }
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="AclaracionEstadoConPend" class="form-label"
+                  >Estado de la aclaracion <code>*</code></label
+                >
+                <select
+                  class="form-select"
+                  aria-label=""
+                  name="AclaracionEstadoConPend"
+                  id="AclaracionEstadoConPend"
+                  formControlName="AclaracionEstadoConPend"
+                  [class.is-invalid]="
+                    form.get('AclaracionEstadoConPend')?.invalid &&
+                    form.get('AclaracionEstadoConPend')?.touched
+                  "
+                  (change)="estadoChange()"
+                >
+                  <option value="null">- Seleccionar -</option>
+                  <option [ngValue]="1">Pendiente</option>
+                  <option [ngValue]="2">Concluida</option>
+                </select>
+
+                @if (form.get('AclaracionEstadoConPend')?.invalid &&
+                form.get('AclaracionEstadoConPend')?.errors &&
+                (form.get('AclaracionEstadoConPend')?.dirty ||
+                form.get('AclaracionEstadoConPend')?.touched)) { @if
+                (form.get('AclaracionEstadoConPend')?.hasError('required')) {
+                <small class="text-danger"> Este campo es obligatorio. </small>
+                } } @if
+                (form.get('AclaracionEstadoConPend')?.hasError('errorCondusef'))
+                {
+                <small class="text-danger">
+                  {{
+                    form
+                      .get("AclaracionEstadoConPend")
+                      ?.getError("errorCondusef")
+                  }}
+                </small>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="AclaracionCodigoPostal" class="form-label"
+                  >Codigo postal</label
+                >
+                <input
+                  type="number"
+                  class="form-control"
+                  id="AclaracionCodigoPostal"
+                  formControlName="AclaracionCodigoPostal"
+                  (change)="codigoPostalChange()"
+                  [class.is-invalid]="
+                    form.get('AclaracionCodigoPostal')?.invalid &&
+                    form.get('AclaracionCodigoPostal')?.touched
+                  "
+                />
+
+                @if (form.get('AclaracionCodigoPostal')?.invalid &&
+                form.get('AclaracionCodigoPostal')?.errors &&
+                (form.get('AclaracionCodigoPostal')?.dirty ||
+                form.get('AclaracionCodigoPostal')?.touched)) { @if
+                (form.get('AclaracionCodigoPostal')?.hasError('required')) {
+                <small class="text-danger"> Este campo es obligatorio. </small>
+                } } @if
+                (form.get('AclaracionCodigoPostal')?.hasError('errorCondusef'))
+                {
+                <small class="text-danger">
+                  {{
+                    form
+                      .get("AclaracionCodigoPostal")
+                      ?.getError("errorCondusef")
+                  }}
+                </small>
+                }
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="AclaracionEntidadFederativa" class="form-label"
+                  >Entidad federativa <code>*</code></label
+                >
+                <select
+                  class="form-select"
+                  aria-label=""
+                  name="AclaracionEntidadFederativa"
+                  id="AclaracionEntidadFederativa"
+                  formControlName="AclaracionEntidadFederativa"
+                  (change)="entidadFedChange()"
+                  [class.is-invalid]="
+                    form.get('AclaracionEntidadFederativa')?.invalid &&
+                    form.get('AclaracionEntidadFederativa')?.touched
+                  "
+                >
+                  <option value="null">- Seleccionar -</option>
+                  @for (item of entidadesFed; track $index) {
+                  <!--*ngFor="let item of entidadesFed"-->
+                  <option [ngValue]="item.claveEdo">{{ item.estado }}</option>
+                  }
+                </select>
+
+                @if (form.get('AclaracionEntidadFederativa')?.invalid &&
+                form.get('AclaracionEntidadFederativa')?.errors &&
+                (form.get('AclaracionEntidadFederativa')?.dirty ||
+                form.get('AclaracionEntidadFederativa')?.touched)) { @if
+                (form.get('AclaracionEntidadFederativa')?.hasError('required'))
+                {
+                <small class="text-danger"> Este campo es obligatorio. </small>
+                } } @if
+                (form.get('AclaracionEntidadFederativa')?.hasError('errorCondusef'))
+                {
+                <small class="text-danger">
+                  {{
+                    form
+                      .get("AclaracionEntidadFederativa")
+                      ?.getError("errorCondusef")
+                  }}
+                </small>
+                }
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="AclaracionColonia" class="form-label"
+                  >Colonia</label
+                >
+                <select
+                  class="form-select"
+                  aria-label=""
+                  name="AclaracionColonia"
+                  id="AclaracionColonia"
+                  formControlName="AclaracionColonia"
+                  [class.is-invalid]="
+                    form.get('AclaracionColonia')?.invalid &&
+                    form.get('AclaracionColonia')?.touched
+                  "
+                  (change)="coloniaChange()"
+                >
+                  <option value="null">- Seleccionar -</option>
+                  @for (item of colonias; track $index) {
+                  <!--*ngFor="let item of colonias"-->
+                  <option [ngValue]="item.coloniaId">{{ item.colonia }}</option>
+                  }
+                </select>
+                @if (form.get('AclaracionColonia')?.hasError('errorCondusef')) {
+                <small class="text-danger">
+                  {{ form.get("AclaracionColonia")?.getError("errorCondusef") }}
+                </small>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="AclaracionLocalidad" class="form-label"
+                  >Tipo de localidad</label
+                >
+                <select
+                  class="form-select"
+                  aria-label=""
+                  name="AclaracionLocalidad"
+                  id="AclaracionLocalidad"
+                  formControlName="AclaracionLocalidad"
+                >
+                  @for (item of localidades; track $index) {
+                  <!--*ngFor="let item of localidades"-->
+                  <option [ngValue]="item.tipoLocalidadId">
+                    {{ item.tipoLocalidad }}
+                  </option>
+                  }
+                </select>
+                @if (form.get('AclaracionLocalidad')?.hasError('errorCondusef'))
+                {
+                <small class="text-danger">
+                  {{
+                    form.get("AclaracionLocalidad")?.getError("errorCondusef")
+                  }}
+                </small>
+                }
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="AclaracionMunicipioAlcaldia" class="form-label"
+                  >Municipio/Alcaldia <code>*</code></label
+                >
+                <select
+                  class="form-select"
+                  aria-label=""
+                  name="AclaracionMunicipioAlcaldia"
+                  id="AclaracionMunicipioAlcaldia"
+                  formControlName="AclaracionMunicipioAlcaldia"
+                  [class.is-invalid]="
+                    form.get('AclaracionMunicipioAlcaldia')?.invalid &&
+                    form.get('AclaracionMunicipioAlcaldia')?.touched
+                  "
+                >
+                  <option value="null">- Seleccionar -</option>
+                  @for (item of municipios; track $index) {
+                  <!--*ngFor="let item of municipios"-->
+                  <option [ngValue]="item.municipioId">
+                    {{ item.municipio }}
+                  </option>
+                  }
+                </select>
+
+                @if (form.get('AclaracionMunicipioAlcaldia')?.invalid &&
+                form.get('AclaracionMunicipioAlcaldia')?.errors &&
+                (form.get('AclaracionMunicipioAlcaldia')?.dirty ||
+                form.get('AclaracionMunicipioAlcaldia')?.touched)) { @if
+                (form.get('AclaracionMunicipioAlcaldia')?.hasError('required'))
+                {
+                <small class="text-danger"> Este campo es obligatorio. </small>
+                } } @if
+                (form.get('AclaracionMunicipioAlcaldia')?.hasError('errorCondusef'))
+                {
+                <small class="text-danger">
+                  {{
+                    form
+                      .get("AclaracionMunicipioAlcaldia")
+                      ?.getError("errorCondusef")
+                  }}
+                </small>
+                }
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="AclaracionNivelAtencion" class="form-label"
+                  >Nivel de atención
+                  <code [style.visibility]="showCode ? 'visible' : 'hidden'"
+                    >*</code
+                  ></label
+                >
+                <select
+                  class="form-select"
+                  aria-label=""
+                  name="AclaracionNivelAtencion"
+                  id="AclaracionNivelAtencion"
+                  formControlName="AclaracionNivelAtencion"
+                  [class.is-invalid]="
+                    form.get('AclaracionNivelAtencion')?.invalid &&
+                    form.get('AclaracionNivelAtencion')?.touched
+                  "
+                >
+                  <option value="null">- Seleccionar -</option>
+                  @for (item of nivelesAtencion; track $index) {
+                  <!--*ngFor="let item of nivelesAtencion"-->
+                  <option [ngValue]="item.nivelDeAtencionId">
+                    {{ item.nivelDeAtencionDsc }}
+                  </option>
+                  }
+                </select>
+
+                @if (form.get('AclaracionNivelAtencion')?.invalid &&
+                form.get('AclaracionNivelAtencion')?.errors &&
+                (form.get('AclaracionNivelAtencion')?.dirty ||
+                form.get('AclaracionNivelAtencion')?.touched)) { @if
+                (form.get('AclaracionNivelAtencion')?.hasError('required')) {
+                <small class="text-danger"> Este campo es obligatorio. </small>
+                } } @if
+                (form.get('AclaracionNivelAtencion')?.hasError('errorCondusef'))
+                {
+                <small class="text-danger">
+                  {{
+                    form
+                      .get("AclaracionNivelAtencion")
+                      ?.getError("errorCondusef")
+                  }}
+                </small>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="AclaracionProductoServicio" class="form-label"
+                  >Producto <code>*</code></label
+                >
+                <select
+                  class="form-select"
+                  aria-label=""
+                  name="AclaracionProductoServicio"
+                  id="AclaracionProductoServicio"
+                  formControlName="AclaracionProductoServicio"
+                  [class.is-invalid]="
+                    form.get('AclaracionProductoServicio')?.invalid &&
+                    form.get('AclaracionProductoServicio')?.touched
+                  "
+                  (change)="obtenerCausas()"
+                >
+                  <option value="null">- Seleccionar -</option>
+                  @for (item of productos; track $index) {
+                  <!--*ngFor="let item of productos"-->
+                  <option [value]="item.productId">
+                    {{ item.product + " - " + item.subproduct }}
+                  </option>
+                  }
+                </select>
+
+                @if (form.get('AclaracionProductoServicio')?.invalid &&
+                form.get('AclaracionProductoServicio')?.errors &&
+                (form.get('AclaracionProductoServicio')?.dirty ||
+                form.get('AclaracionProductoServicio')?.touched)) { @if
+                (form.get('AclaracionProductoServicio')?.hasError('required')) {
+                <small class="text-danger"> Este campo es obligatorio. </small>
+                } } @if
+                (form.get('AclaracionProductoServicio')?.hasError('errorCondusef'))
+                {
+                <small class="text-danger">
+                  {{
+                    form
+                      .get("AclaracionProductoServicio")
+                      ?.getError("errorCondusef")
+                  }}
+                </small>
+                }
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="mb-3">
+                <label for="AclaracionCausaMotivo" class="form-label"
+                  >Causa o Motivo <code>*</code></label
+                >
+                <select
+                  class="form-select"
+                  aria-label=""
+                  name="AclaracionCausaMotivo"
+                  id="AclaracionCausaMotivo"
+                  formControlName="AclaracionCausaMotivo"
+                  [class.is-invalid]="
+                    form.get('AclaracionCausaMotivo')?.invalid &&
+                    form.get('AclaracionCausaMotivo')?.touched
+                  "
+                >
+                  <option value="null">- Seleccionar -</option>
+                  @for (item of causas; track $index) {
+                  <!--*ngFor="let item of causas"-->
+                  <option [ngValue]="item.causaId">{{ item.causa }}</option>
+                  }
+                </select>
+
+                @if (form.get('AclaracionCausaMotivo')?.invalid &&
+                form.get('AclaracionCausaMotivo')?.errors &&
+                (form.get('AclaracionCausaMotivo')?.dirty ||
+                form.get('AclaracionCausaMotivo')?.touched)) { @if
+                (form.get('AclaracionCausaMotivo')?.hasError('required')) {
+                <small class="text-danger"> Este campo es obligatorio. </small>
+                } } @if
+                (form.get('AclaracionCausaMotivo')?.hasError('errorCondusef')) {
+                <small class="text-danger">
+                  {{
+                    form.get("AclaracionCausaMotivo")?.getError("errorCondusef")
+                  }}
+                </small>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="AclaracionFechaAtencion" class="form-label"
+                  >Fecha de atenci&oacute;n</label
+                >
+                <div class="input-group">
+                  <input
+                    class="form-control"
+                    placeholder="yyyy-mm-dd"
+                    name="AclaracionFechaAtencion"
+                    ngbDatepicker
+                    #d2="ngbDatepicker"
+                    id="AclaracionFechaAtencion"
+                    formControlName="AclaracionFechaAtencion"
+                    [class.is-invalid]="
+                      form.get('AclaracionFechaAtencion')?.invalid &&
+                      form.get('AclaracionFechaAtencion')?.touched
+                    "
+                    [placement]="placement"
+                    [positionTarget]="buttonAclaracionFechaAtencion"
+                    [minDate]="inicio_periodo"
+                    [maxDate]="fin_periodo"
+                    [startDate]="inicio_periodo"
+                    [(ngModel)]="model2"
+                  />
+                  <button
+                    #buttonAclaracionFechaAtencion
+                    class="btn btn-secondary"
+                    type="button"
+                    (click)="d2.toggle()"
+                    type="button"
+                    placement="top"
+                    ngbTooltip="Seleccionar fecha"
+                  >
+                    <i class="fa-regular fa-calendar"></i>
+                  </button>
+                </div>
+
+                @if (form.get('AclaracionFechaAtencion')?.invalid &&
+                form.get('AclaracionFechaAtencion')?.errors &&
+                (form.get('AclaracionFechaAtencion')?.dirty ||
+                form.get('AclaracionFechaAtencion')?.touched)) { @if
+                (form.get('AclaracionFechaAtencion')?.hasError('required')) {
+                <small class="text-danger"> Este campo es obligatorio. </small>
+                } } @if
+                (form.get('AclaracionFechaAtencion')?.hasError('errorCondusef'))
+                {
+                <small class="text-danger">
+                  {{
+                    form
+                      .get("AclaracionFechaAtencion")
+                      ?.getError("errorCondusef")
+                  }}
+                </small>
+                }
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3 form-check form-switch form-switch-md">
+                <label
+                  class="form-check-label form-label"
+                  for="AclaracionReversa"
+                  >ReversaSIGE</label
+                >
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id="AclaracionReversa"
+                  formControlName="AclaracionReversa"
+                />
+
+                @if (form.get('AclaracionReversa')?.invalid &&
+                form.get('AclaracionReversa')?.errors &&
+                (form.get('AclaracionReversa')?.dirty ||
+                form.get('AclaracionReversa')?.touched)) { @if
+                (form.get('AclaracionReversa')?.hasError('required')) {
+                <small class="text-danger"> Este campo es obligatorio. </small>
+                } } @if
+                (form.get('AclaracionReversa')?.hasError('errorCondusef')) {
+                <small class="text-danger">
+                  {{ form.get("AclaracionReversa")?.getError("errorCondusef") }}
+                </small>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="AclaracionTipoPersona" class="form-label"
+                  >Tipo de persona <code>*</code></label
+                >
+                <select
+                  class="form-select"
+                  aria-label=""
+                  name="AclaracionTipoPersona"
+                  id="AclaracionTipoPersona"
+                  formControlName="AclaracionTipoPersona"
+                  [class.is-invalid]="
+                    form.get('AclaracionTipoPersona')?.invalid &&
+                    form.get('AclaracionTipoPersona')?.touched
+                  "
+                  (change)="tipoPersonaChange()"
+                >
+                  <option value="null">- Seleccionar -</option>
+                  <option [ngValue]="1">Persona Física</option>
+                  <option [ngValue]="2">Persona Moral</option>
+                </select>
+
+                @if (form.get('AclaracionTipoPersona')?.invalid &&
+                form.get('AclaracionTipoPersona')?.errors &&
+                (form.get('AclaracionTipoPersona')?.dirty ||
+                form.get('AclaracionTipoPersona')?.touched)) { @if
+                (form.get('AclaracionTipoPersona')?.hasError('required')) {
+                <small class="text-danger"> Este campo es obligatorio. </small>
+                } } @if
+                (form.get('AclaracionTipoPersona')?.hasError('errorCondusef')) {
+                <small class="text-danger">
+                  {{
+                    form.get("AclaracionTipoPersona")?.getError("errorCondusef")
+                  }}
+                </small>
+                }
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="AclaracionSexo" class="form-label">Sexo</label>
+                <select
+                  class="form-select"
+                  aria-label=""
+                  name="AclaracionSexo"
+                  id="AclaracionSexo"
+                  formControlName="AclaracionSexo"
+                  [class.is-invalid]="
+                    form.get('AclaracionSexo')?.invalid &&
+                    form.get('AclaracionSexo')?.touched
+                  "
+                >
+                  <option value="null">- Seleccionar -</option>
+                  <option value="H">Hombre</option>
+                  <option value="M">Mujer</option>
+                </select>
+
+                @if (form.get('AclaracionSexo')?.invalid &&
+                form.get('AclaracionSexo')?.errors &&
+                (form.get('AclaracionSexo')?.dirty ||
+                form.get('AclaracionSexo')?.touched)) { @if
+                (form.get('AclaracionSexo')?.hasError('required')) {
+                <small class="text-danger"> Este campo es obligatorio. </small>
+                } } @if (form.get('AclaracionSexo')?.hasError('errorCondusef'))
+                {
+                <small class="text-danger">
+                  {{ form.get("AclaracionSexo")?.getError("errorCondusef") }}
+                </small>
+                }
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="AclaracionEdad" class="form-label">Edad</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="AclaracionEdad"
+                  min="18"
+                  max="120"
+                  formControlName="AclaracionEdad"
+                  [class.is-invalid]="
+                    form.get('AclaracionEdad')?.invalid &&
+                    form.get('AclaracionEdad')?.touched
+                  "
+                />
+
+                @if (form.get('AclaracionEdad')?.invalid &&
+                form.get('AclaracionEdad')?.errors &&
+                (form.get('AclaracionEdad')?.dirty ||
+                form.get('AclaracionEdad')?.touched)) { @if
+                (form.get('AclaracionEdad')?.hasError('required')) {
+                <small class="text-danger"> Este campo es obligatorio. </small>
+                } @if (form.get('AclaracionEdad')?.hasError('max')) {
+                <small class="text-danger"> La edad máxima es 120 </small>
+                } @if (form.get('AclaracionEdad')?.hasError('min')) {
+                <small class="text-danger"> La edad mínima es 18 </small>
+                } } @if (form.get('AclaracionEdad')?.hasError('errorCondusef'))
+                {
+                <small class="text-danger">
+                  {{ form.get("AclaracionEdad")?.getError("errorCondusef") }}
+                </small>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="AclaracionMonetario" class="form-label"
+                  >Monetario <code>*</code></label
+                >
+                <select
+                  class="form-select"
+                  aria-label=""
+                  name="AclaracionMonetario"
+                  id="AclaracionMonetario"
+                  formControlName="AclaracionMonetario"
+                  (change)="aclaracionMonetarioChange()"
+                  [class.is-invalid]="
+                    form.get('AclaracionMonetario')?.invalid &&
+                    form.get('AclaracionMonetario')?.touched
+                  "
+                >
+                  <option value="null">- Seleccionar -</option>
+                  <option value="SI">SI</option>
+                  <option value="NO">NO</option>
+                </select>
+
+                @if (form.get('AclaracionMonetario')?.invalid &&
+                form.get('AclaracionMonetario')?.errors &&
+                (form.get('AclaracionMonetario')?.dirty ||
+                form.get('AclaracionMonetario')?.touched)) { @if
+                (form.get('AclaracionMonetario')?.hasError('required')) {
+                <small class="text-danger"> Este campo es obligatorio. </small>
+                } } @if
+                (form.get('AclaracionMonetario')?.hasError('errorCondusef')) {
+                <small class="text-danger">
+                  {{
+                    form.get("AclaracionMonetario")?.getError("errorCondusef")
+                  }}
+                </small>
+                }
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="AclaracionMontoReclamado" class="form-label"
+                  >Monto Reclamado
+                </label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="AclaracionMontoReclamado"
+                  formControlName="AclaracionMontoReclamado"
+                  [class.is-invalid]="
+                    form.get('AclaracionMontoReclamado')?.invalid &&
+                    form.get('AclaracionMontoReclamado')?.touched
+                  "
+                />
+
+                @if (form.get('AclaracionMontoReclamado')?.invalid &&
+                form.get('AclaracionMontoReclamado')?.errors &&
+                (form.get('AclaracionMontoReclamado')?.dirty ||
+                form.get('AclaracionMontoReclamado')?.touched)) { @if
+                (form.get('AclaracionMontoReclamado')?.hasError('required')) {
+                <small class="text-danger"> Este campo es obligatorio. </small>
+                } } @if
+                (form.get('AclaracionMontoReclamado')?.hasError('errorCondusef'))
+                {
+                <small class="text-danger">
+                  {{
+                    form
+                      .get("AclaracionMontoReclamado")
+                      ?.getError("errorCondusef")
+                  }}
+                </small>
+                }
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="AclaracionFechaResolucion" class="form-label"
+                  >Fecha de la resolución</label
+                >
+                <div class="input-group">
+                  <input
+                    class="form-control"
+                    placeholder="yyyy-mm-dd"
+                    name="AclaracionFechaResolucion"
+                    ngbDatepicker
+                    #d3="ngbDatepicker"
+                    id="AclaracionFechaResolucion"
+                    formControlName="AclaracionFechaResolucion"
+                    [class.is-invalid]="
+                      form.get('AclaracionFechaResolucion')?.invalid &&
+                      form.get('AclaracionFechaResolucion')?.touched
+                    "
+                    [positionTarget]="buttonAclaracionFechaResolucion"
+                    [minDate]="inicio_periodo"
+                    [maxDate]="fin_periodo"
+                    [startDate]="inicio_periodo"
+                    [(ngModel)]="model3"
+                  />
+                  <button
+                    #buttonAclaracionFechaResolucion
+                    class="btn btn-secondary"
+                    type="button"
+                    (click)="d3.toggle()"
+                    type="button"
+                    placement="top"
+                    ngbTooltip="Seleccionar fecha"
+                  >
+                    <i class="fa-regular fa-calendar"></i>
+                  </button>
+                </div>
+
+                @if (form.get('AclaracionFechaResolucion')?.invalid &&
+                form.get('AclaracionFechaResolucion')?.errors &&
+                (form.get('AclaracionFechaResolucion')?.dirty ||
+                form.get('AclaracionFechaResolucion')?.touched)) { @if
+                (form.get('AclaracionFechaResolucion')?.hasError('required')) {
+                <small class="text-danger"> Este campo es obligatorio. </small>
+                } } @if
+                (form.get('AclaracionFechaResolucion')?.hasError('errorCondusef'))
+                {
+                <small class="text-danger">
+                  {{
+                    form
+                      .get("AclaracionFechaResolucion")
+                      ?.getError("errorCondusef")
+                  }}
+                </small>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="AclaracionOperacionExtranjero" class="form-label">
+                  Operaci&oacute;n en el extranjero <code>*</code></label
+                >
+                <select
+                  class="form-select"
+                  aria-label=""
+                  name="AclaracionOperacionExtranjero"
+                  id="AclaracionOperacionExtranjero"
+                  formControlName="AclaracionOperacionExtranjero"
+                  [class.is-invalid]="
+                    form.get('AclaracionOperacionExtranjero')?.invalid &&
+                    form.get('AclaracionOperacionExtranjero')?.touched
+                  "
+                >
+                  <option value="null">- Seleccionar -</option>
+                  <option value="SI">SI</option>
+                  <option value="NO">NO</option>
+                </select>
+
+                @if (form.get('AclaracionOperacionExtranjero')?.invalid &&
+                form.get('AclaracionOperacionExtranjero')?.errors &&
+                (form.get('AclaracionOperacionExtranjero')?.dirty ||
+                form.get('AclaracionOperacionExtranjero')?.touched)) { @if
+                (form.get('AclaracionOperacionExtranjero')?.hasError('required'))
+                {
+                <small class="text-danger"> Este campo es obligatorio. </small>
+                } } @if
+                (form.get('AclaracionOperacionExtranjero')?.hasError('errorCondusef'))
+                {
+                <small class="text-danger">
+                  {{
+                    form
+                      .get("AclaracionOperacionExtranjero")
+                      ?.getError("errorCondusef")
+                  }}
+                </small>
+                }
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="AclaracionFolioCondusef" class="form-label"
+                  >Folio CONDUSEF</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="AclaracionFolioCondusef"
+                  formControlName="AclaracionFolioCondusef"
+                />
+              </div>
+              @if
+              (form.get('AclaracionFolioCondusef')?.hasError('errorCondusef')) {
+              <small class="text-danger">
+                {{
+                  form.get("AclaracionFolioCondusef")?.getError("errorCondusef")
+                }}
+              </small>
+              }
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="AclaracionFechaNotifiUsuario" class="form-label"
+                  >Fecha de notificación</label
+                >
+                <div class="input-group">
+                  <input
+                    class="form-control"
+                    placeholder="yyyy-mm-dd"
+                    name="AclaracionFechaNotifiUsuario"
+                    ngbDatepicker
+                    #d4="ngbDatepicker"
+                    id="AclaracionFechaNotifiUsuario"
+                    formControlName="AclaracionFechaNotifiUsuario"
+                    [class.is-invalid]="
+                      form.get('AclaracionFechaNotifiUsuario')?.invalid &&
+                      form.get('AclaracionFechaNotifiUsuario')?.touched
+                    "
+                    [positionTarget]="buttonAclaracionFechaNotifiUsuario"
+                    [minDate]="inicio_periodo"
+                    [maxDate]="fin_periodo"
+                    [startDate]="inicio_periodo"
+                    [(ngModel)]="model4"
+                  />
+                  <button
+                    #buttonAclaracionFechaNotifiUsuario
+                    class="btn btn-secondary"
+                    type="button"
+                    (click)="d4.toggle()"
+                    type="button"
+                    placement="top"
+                    ngbTooltip="Seleccionar fecha"
+                  >
+                    <i class="fa-regular fa-calendar"></i>
+                  </button>
+                </div>
+
+                @if (form.get('AclaracionFechaNotifiUsuario')?.invalid &&
+                form.get('AclaracionFechaNotifiUsuario')?.errors &&
+                (form.get('AclaracionFechaNotifiUsuario')?.dirty ||
+                form.get('AclaracionFechaNotifiUsuario')?.touched)) { @if
+                (form.get('AclaracionFechaNotifiUsuario')?.hasError('required'))
+                {
+                <small class="text-danger"> Este campo es obligatorio. </small>
+                } } @if
+                (form.get('AclaracionFechaNotifiUsuario')?.hasError('errorCondusef'))
+                {
+                <small class="text-danger">
+                  {{
+                    form
+                      .get("AclaracionFechaNotifiUsuario")
+                      ?.getError("errorCondusef")
+                  }}
+                </small>
+                }
+              </div>
+            </div>
+          </div>
+          <br />
+          <div class="row">
+            <div class="col-md-12 d-flex justify-content-end">
+              <button
+                type="button"
+                class="btn btn-white"
+                [routerLink]="['/reune/consultar']"
+              >
+                Regresar
+              </button>
+
+              &nbsp; &nbsp; &nbsp; @if (editar) {
+              <button
+                type="button"
+                class="btn btn-primary"
+                (click)="editarRegistro()"
+                [disabled]="!this.form.valid"
+              >
+                Editar registro
+              </button>
+              } @else {
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="!this.form.valid"
+              >
+                Guardar registro
+              </button>
+              }
+            </div>
+          </div>
+        </form>
+
+
+
+
+
+        
+        &nbsp; &nbsp; &nbsp;
+      </div>
+    </div>
+  </div>
+</div>

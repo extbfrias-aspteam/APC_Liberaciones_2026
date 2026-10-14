@@ -1,0 +1,194 @@
+<div class="container mb-5">
+  <div class="row">
+    <div class="col-lg-6 animated fadeInRight">
+      <!--Bloque de conexión a api de redeco-->
+      <div class="ibox">
+        <div class="ibox-content" style="height: 170px;">
+          <div class="row wrapper border-bottom page-heading pb-0">
+            <div class="col-lg-12">
+                <h4>CONEXIÓN CON API REDECO</h4>
+            </div>
+          </div>
+          <div class="d-flex pb-3">
+            <button data-bs-toggle="tooltip" data-bs-placement="top" title="Actualizar token" class="btn btn-primary mt-3" (click)="modalActualizarToken()">
+              <i class="fa fa-refresh"></i> Actualizar token
+            </button>
+            <button data-bs-toggle="tooltip" data-bs-placement="top" title="Reportar quejas" class="btn btn-primary mt-3 mx-3" (click)="modalReportarQuejas()">
+              <i class="fa fa-upload"></i> Reportar quejas
+            </button>
+            <button data-bs-toggle="tooltip" data-bs-placement="top" title="Consultar quejas" class="btn btn-primary mt-3" (click)="modalConsultarQuejasREDECO()">
+              <i class="fa fa-search"></i> Consultar quejas
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="col-lg-6 animated fadeInRight">
+      <!--Bloque de periodo activo-->
+      <div class="ibox">
+        <div class="ibox-content">
+          <div class="row wrapper border-bottom page-heading pb-0 mb-3">
+            <div class="col-lg-12">
+                <h4>PERIODO ABIERTO</h4>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                    <tr>
+                      <th scope="col">Mes</th>
+                      <th scope="col">Fecha Inicial</th>
+                      <th scope="col">Fecha Final</th>
+                      <th scope="col">Quejas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    @if(this.periodo) {
+                      <td><strong>{{this.periodo.mes}}</strong></td>
+                      <td>{{this.periodo.fecha_inicial}}</td>
+                      <td>{{this.periodo.fecha_final}}</td>
+                      <td><strong>{{this.total}}</strong></td>
+                    } @else {
+                      <td colspan="5">
+                        <h5 class="text-center">No existe un periodo activo...</h5>
+                      </td>
+                    }
+                  </tr>
+                  </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="col-lg-12 animated fadeInRight">
+      <!--Listado de quejas-->
+      <div class="ibox">
+        <div class="ibox-content">
+          <div class="row wrapper border-bottom page-heading">
+            <div class="col-lg-6">
+                <h4>QUEJAS REGISTRADAS EN EL PERIODO</h4>
+            </div>
+            <div class="col-lg-6">
+              <div class="row">
+                <div class="d-flex justify-content-end">
+                  <button data-bs-toggle="tooltip" data-bs-placement="top" title="Nuevo registro" class="btn btn-sm btn-secondary mt-1 mx-2" 
+                          [disabled]="!this.periodo" 
+                          [routerLink]="['/redeco/registrar']" 
+                          [state]="{'periodo': periodo, 'editar': false, 'queja': null}">
+                    <i class="fa fa-plus"></i> Nuevo registro
+                  </button>
+                  <button data-bs-toggle="tooltip" data-bs-placement="top" title="Refrescar" class="btn btn-sm btn-secondary mt-1"  placement="top" ngbTooltip="Refrescar" [disabled]="!this.periodo" (click)="obtenerQuejasPaginado()">
+                    <i class="fa fa-refresh"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row pt-4">
+            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2">
+              <select class="form-select" [(ngModel)]="limit" (ngModelChange)="obtenerQuejasPaginado()">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+            </div>
+            <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
+              <ngb-pagination class="d-flex justify-content-end" 
+                              [(page)]="offset" 
+                              [pageSize]="limit"
+                              [collectionSize]="total" 
+                              [boundaryLinks]="true" 
+                              [ellipses]="false" 
+                              [maxSize]="maxPageSize"
+                              (pageChange)="paginationPageChange()" 
+                              size="sm">
+              </ngb-pagination>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="table-responsive">
+              <table class="table table-striped table-sm" style="border: 0px solid #DDDDDD">
+                <thead>
+                    <tr>
+                      <th scope="col">Folio</th>
+                      <th scope="col">Producto</th>
+                      <th scope="col">Mes</th>
+                      <th scope="col">Estado</th>
+                      <th scope="col"></th>
+                      <th style="min-width: 150px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (queja of quejas; track queja.numFolio) {
+                      <tr>
+                        <td><strong>{{queja.numFolio}}</strong></td>
+                        <td>{{queja.producto}}</td>
+                        <td>{{queja.numMes}}</td>
+                        <td *ngIf="queja.estatus == 1">Pendiente</td>
+                        <td *ngIf="queja.estatus == 2">Concluida</td>
+                        <td *ngIf="queja.reportado"><span class="badge bg-success text-dark">Reportado</span></td>
+                        <td *ngIf="!queja.reportado"><span class="badge bg-warning text-dark">No Reportado</span></td>
+                        <td style="min-width: 150px;">
+                          <button data-bs-toggle="tooltip" data-bs-placement="top" ngbTooltip="Evidencias" class="btn btn-sm btn-secondary" (click)="modalEvidencias(queja)">
+                            <i class="fa fa-list"></i>
+                          </button>
+                          @if (!queja.reportado) {
+                            <button data-bs-toggle="tooltip" data-bs-placement="top" ngbTooltip="Editar" class="btn btn-sm btn-secondary ms-1" (click)="navegarEditarQueja(queja)">
+                              <i class="fa fa-edit"></i>
+                            </button>
+                            <button data-bs-toggle="tooltip" data-bs-placement="top" ngbTooltip="Reportar a condusef" class="btn btn-sm btn-secondary ms-1" (click)="reportarQueja(queja.numFolio)">
+                              <i class="fa fa-upload"></i>
+                            </button>
+                            <button data-bs-toggle="tooltip" data-bs-placement="top" ngbTooltip="Eliminar" class="btn btn-sm btn-danger ms-1" (click)="eliminarQueja(queja.numFolio)">
+                              <i class="fa fa-trash"></i>
+                            </button>
+                          } @else {
+                            <button data-bs-toggle="tooltip" data-bs-placement="top" ngbTooltip="Eliminar de condusef" class="btn btn-sm btn-danger ms-1" (click)="eliminarQuejaCondusef(queja.numFolio)">
+                              <i class="fa fa-chain-broken"></i>
+                            </button>
+                          }
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2">
+              <select class="form-select" [(ngModel)]="limit" (ngModelChange)="obtenerQuejasPaginado()">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+            </div>
+            <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
+              <ngb-pagination class="d-flex justify-content-end" 
+                              [(page)]="offset" 
+                              [pageSize]="limit"
+                              [collectionSize]="total" 
+                              [boundaryLinks]="true" 
+                              [ellipses]="false" 
+                              [maxSize]="maxPageSize"
+                              (pageChange)="paginationPageChange()" 
+                              size="sm">
+              </ngb-pagination>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

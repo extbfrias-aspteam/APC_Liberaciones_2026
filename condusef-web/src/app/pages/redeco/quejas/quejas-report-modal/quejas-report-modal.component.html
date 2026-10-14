@@ -1,0 +1,78 @@
+<div class="modal-header">
+    <h4 class="modal-title">Reportar Quejas</h4>
+</div>
+<div class="modal-body p-4">
+    <div class="row">
+        <div class="col-lg-12">
+            <ul class="list-inline">
+                <li class="list-inline-item">
+                    Resumen de quejas que se reportarán a traves del API REDECO
+                </li>
+            </ul>
+        </div>
+
+        <ul ngbNav #nav="ngbNav" [(activeId)]="tabActivo" class="nav-tabs">
+            <li [ngbNavItem]="1">
+                <button ngbNavLink>Json</button>
+                <ng-template ngbNavContent>
+                    <h5 class="mt-2 pb-2"> {{quejas.length}} queja(s) sin reportar </h5>
+                    <form [formGroup]="form">
+                        <div class="mb-3">
+                            <textarea
+                                class="form-control"
+                                style="height: 350px;"
+                                id="jfile"
+                                formControlName="jfile"
+                                readonly
+                                [class.is-invalid] = "form.get('token')?.invalid && form.get('token')?.touched">
+                            </textarea>    
+                        </div>
+                    </form>
+                </ng-template>
+            </li>
+        </ul>
+
+        <div [ngbNavOutlet]="nav" class="mt-2">
+        
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12 d-flex justify-content-end">
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    [disabled]="!(quejas.length > 0)"
+                    (click)="guardarComoJSON()">
+                    <i class="fa fa-download"></i> Guardar archivo JSON
+                </button>
+
+                <button 
+                    type="button" 
+                    class="btn btn-primary mx-3"
+                    [disabled]="!(quejas.length > 0)"
+                    (click)="reportarQuejas()"> 
+                    <i class="fa fa-upload"></i> Reportar quejas
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <ngx-ui-loader 
+        [loaderId]="'loader-01'"
+        [bgsType]="'square-jelly-box'" 
+        [fgsType]="'square-jelly-box'"
+        [hasProgressBar]="true"
+        bgsColor="#ed5565"
+        fgsColor="#ed5565"
+        pbColor="#ed5565">
+    </ngx-ui-loader>  
+</div>
+<div class="modal-footer">
+    <button 
+        type="button" 
+        class="btn btn-white" 
+        [disabled]="procesando"
+        (click)="cerrar()">
+        Cerrar
+    </button>
+</div>

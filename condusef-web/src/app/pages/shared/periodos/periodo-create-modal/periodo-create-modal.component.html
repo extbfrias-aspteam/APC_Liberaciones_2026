@@ -1,0 +1,174 @@
+<div class="modal-header">
+    <h4 class="modal-title">
+        Nuevo Periodo
+    </h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body p-4">
+    <div class="row">
+        <div class="col-lg-12">
+            <ul class="list-inline">
+                <li class="list-inline-item">
+                    <p>Los campos marcados con <code>*</code> son obligatorios</p>
+                </li>
+            </ul>
+        </div>
+
+        <form [formGroup]="form">
+            @if (tipo == 1){
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="mes" class="form-label">Mes <code>*</code></label>
+                            <select 
+                                class="form-select" 
+                                aria-label="" 
+                                name="mes" 
+                                id="mes" 
+                                formControlName="mes"
+                                [class.is-invalid] = "form.get('mes')?.invalid && form.get('mes')?.touched">
+                                    <option [ngValue]="0">- Seleccionar -</option>
+                                    <option [ngValue]="1">Enero</option>
+                                    <option [ngValue]="2">Febrero</option>
+                                    <option [ngValue]="3">Marzo</option>
+                                    <option [ngValue]="4">Abril</option>
+                                    <option [ngValue]="5">Mayo</option>
+                                    <option [ngValue]="6">Junio</option>
+                                    <option [ngValue]="7">Julio</option>
+                                    <option [ngValue]="8">Agosto</option>
+                                    <option [ngValue]="9">Septiembre</option>
+                                    <option [ngValue]="10">Octubre</option>
+                                    <option [ngValue]="11">Noviembre</option>
+                                    <option [ngValue]="12">Diciembre</option>
+                            </select>
+                        </div>        
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="anio" class="form-label">Año <code>*</code></label>
+                            <input 
+                                type="number"
+                                data-date-format=""
+                                class="form-control"  
+                                id="anio"
+                                formControlName="anio" 
+                                [class.is-invalid] = "form.get('anio')?.invalid && form.get('anio')?.touched" readonly>
+                        </div>        
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="fecha_inicial" class="form-label">
+                                Fecha inicial del periodo <code>*</code>
+                            </label>
+                            <div class="input-group">
+                                <input ngbDatepicker
+                                    #d="ngbDatepicker"
+                                    id="fecha_inicial"
+                                    name="fecha_inicial"
+                                    class="form-control"
+                                    placeholder="dd-mm-yyyy"
+                                    formControlName="fecha_inicial"
+                                    readonly 
+                                    [class.is-invalid] = "form.get('fecha_inicial')?.invalid && form.get('fecha_inicial')?.touched"/>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline btn-border-calendar calendar" (click)="d.toggle()" type="button">
+                                        <img src="assets/img/icons/calendar.svg" style="width: 1.5rem; height: 1.5rem; cursor: pointer;" />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>        
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="fecha_final" class="form-label">
+                                Fecha final del periodo <code>*</code>
+                            </label>
+                            <div class="input-group">
+                                <input ngbDatepicker
+                                    #e="ngbDatepicker"
+                                    id="fecha_final"
+                                    name="fecha_final"
+                                    class="form-control"
+                                    placeholder="dd-mm-yyyy"
+                                    formControlName="fecha_final"
+                                    readonly 
+                                    [class.is-invalid] = "form.get('fecha_final')?.invalid && form.get('fecha_final')?.touched"/>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline btn-border-calendar calendar" (click)="e.toggle()" type="button">
+                                        <img src="assets/img/icons/calendar.svg" style="width: 1.5rem; height: 1.5rem; cursor: pointer;" />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>        
+                    </div>
+                </div>
+            }
+            @if (tipo == 3){
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="mb-3">
+                            <label for="mes" class="form-label">Trimestre <code>*</code></label>
+                            <select 
+                                class="form-select" 
+                                aria-label="" 
+                                name="mes" 
+                                id="mes" 
+                                formControlName="mes"
+                                [class.is-invalid] = "form.get('mes')?.invalid && form.get('mes')?.touched">
+                                    <option selected>- Seleccionar -</option>
+                                    <option [ngValue]="1">Del 1 de enero al 31 de marzo</option>
+                                    <option [ngValue]="2">Del 1 de abril al 30 de junio</option>
+                                    <option [ngValue]="3">Del 1 de julio al 30 de septiembre</option>
+                                    <option [ngValue]="4">Del 1 de octubre al 31 de diciembre</option>
+                            </select>
+                        </div>        
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="mb-3">
+                            <label for="anio" class="form-label">Año <code>*</code></label>
+                            <select 
+                                class="form-select" 
+                                aria-label="" 
+                                name="anio" 
+                                id="anio" 
+                                formControlName="anio"
+                                [class.is-invalid] = "form.get('anio')?.invalid && form.get('anio')?.touched">
+                                    <option selected>- Seleccionar -</option>
+                                    @for (anio of anios; track anio) {
+                                        <option [ngValue]="anio">{{anio}}</option>
+                                      }
+                            </select>
+                        </div>        
+                    </div>
+                </div>
+            }
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input id="activo" 
+                                   class="form-check-input"  
+                                   type="checkbox" 
+                                   formControlName="activo">
+                            <label for="activo">Activar Periodo</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>        
+    </div>
+</div>
+<div class="modal-footer">
+    <button 
+        type="button" 
+        class="btn btn-white" 
+        (click)="activeModal.dismiss()">Cancelar</button>
+
+    <button 
+        (click)="cerrarModal()"
+        class="btn btn-primary"
+        [disabled]="!this.form.valid">Guardar</button>
+</div>

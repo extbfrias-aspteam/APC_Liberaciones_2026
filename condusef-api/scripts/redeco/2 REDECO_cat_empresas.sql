@@ -1,0 +1,2 @@
+INSERT INTO redeco.cat_empresas (id, nombre, sector, denominacion) VALUES(1, 'ASP Integra Opciones', 'Sociedades Financieras Populares', 'Opciones Empresariales del Noreste, S.A. de C.V., S.F.P.');
+INSERT INTO redeco.cat_empresas (id, nombre, sector, denominacion) VALUES(2, 'ASP Consultores & Representación', 'Sociedades Financieras de Objeto Múltiple E.N.R.', 'ASP Consultores & Representación, S.A. de C.V., SOFOM, E.N.R.');
