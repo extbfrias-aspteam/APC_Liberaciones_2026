@@ -1,0 +1,43 @@
+services:
+  webhook_3ds:
+    build: .
+    container_name: webhook_3ds
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - NC_DB_USER=${NC_DB_USER}
+      - NC_DB_PASSWORD=${NC_DB_PASSWORD}
+      - NC_DB_HOST=${NC_DB_HOST}
+      - NC_DB_PORT=${NC_DB_PORT}
+      - NC_DB_NAME=${NC_DB_NAME}
+      - AES_KEY=${AES_KEY}
+    ports:
+      - "8080:8080"  # Expose port 8000 to the host 
+    networks:
+      - webhook_network
+    # Puerto 8000 no expuesto al host, solo dentro de la red interna
+
+  nginx:
+    image: nginx:latest
+    container_name: webhook_nginx
+    restart: always
+    depends_on:
+      - webhook_3ds
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/nginx/ssl
+    networks:
+      - webhook_network
+
+networks:
+  webhook_network:
+    driver: bridge
